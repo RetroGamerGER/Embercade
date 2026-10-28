@@ -1,0 +1,42 @@
+diff --git a/python-src/batocera-launch/batocera_launch/logging.py b/python-src/batocera-launch/batocera_launch/logging.py
+--- a/python-src/batocera-launch/batocera_launch/logging.py
++++ b/python-src/batocera-launch/batocera_launch/logging.py
+@@ -6,3 +6,5 @@ import logging
+ import sys
+ from contextlib import contextmanager
++from logging.handlers import RotatingFileHandler
++from os import environ
+ from typing import TYPE_CHECKING, TextIO
+@@ -120,10 +122,14 @@ def setup_logging() -> Generator[None]:
+     stdout_handler = EpipeTolerantStreamHandler(stream=sys.stdout)
+     stdout_handler.setLevel(logging.DEBUG)
+     stdout_handler.setFormatter(formatter)
+     stdout_handler.addFilter(lambda r: r.levelno < error_level)
++    if environ.get('EMBERCADE_DESKTOP') == '1':
++        stdout_handler.addFilter(lambda r: r.name != 'emulator')
+ 
+     stderr_handler = EpipeTolerantStreamHandler(stream=sys.stderr)
+     stderr_handler.setLevel(error_level)
+     stderr_handler.setFormatter(formatter)
++    if environ.get('EMBERCADE_DESKTOP') == '1':
++        stderr_handler.addFilter(lambda r: r.name != 'emulator')
+ 
+     logger.setLevel(logging.DEBUG)
+@@ -133,5 +139,7 @@ def setup_logging() -> Generator[None]:
+     try:
+         from batocera_common.paths import LOGS
+ 
+-        file_handler = logging.FileHandler(filename=LOGS / 'batocera-launch.log', encoding='utf-8', mode='w')
++        file_handler = RotatingFileHandler(
++            filename=LOGS / 'batocera-launch.log', encoding='utf-8', maxBytes=8 * 1024 * 1024, backupCount=2
++        )
+         file_handler.setLevel(logging.NOTSET)  # Log all messages to the one file
+@@ -141,5 +149,6 @@ def setup_logging() -> Generator[None]:
+         logger.addHandler(file_handler)
+ 
+-        emulator_file_handler = logging.FileHandler(
+-            filename=LOGS / 'batocera-launch-emulator.log', encoding='utf-8', mode='w'
++        emulator_file_handler = RotatingFileHandler(
++            filename=LOGS / 'batocera-launch-emulator.log', encoding='utf-8',
++            maxBytes=8 * 1024 * 1024, backupCount=2
+         )

@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -euo pipefail
+project_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
+lock_file="$project_root/runtime/decorations.lock"
+output="$project_root/.work/decorations"
+if [[ -L "$output" ]]; then
+  printf 'Refusing symlinked decoration output.\n' >&2
+  exit 1
+fi
+if [[ -f "$output/embercade-decorations.lock" ]] && cmp -s "$lock_file" "$output/embercade-decorations.lock"; then
+  PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="$project_root/src" python -m embercade.decorations --destination "$output"
+  exit
+fi
+build_root="$(mktemp -d "$project_root/.work/decorations-build.XXXXXX")"
+trap 'find "$build_root" -depth -delete' EXIT
+readarray -t values < <(python - "$lock_file" <<'PY'
+import sys,tomllib
+with open(sys.argv[1], 'rb') as stream: lock=tomllib.load(stream)['retrobat']
+print(lock['source_url']); print(lock['source_sha256'])
+PY
+)
+curl --fail --location --retry 2 --output "$build_root/source.tar.gz" "${values[0]}"
+printf '%s  %s\n' "${values[1]}" "$build_root/source.tar.gz" | sha256sum --check
+mkdir "$build_root/source"
+bsdtar -xf "$build_root/source.tar.gz" -C "$build_root/source" --strip-components 1
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="$project_root/src" python -m embercade.decorations \
+  --source "$build_root/source" --destination "$build_root/prepared" --lock "$lock_file"
+if [[ -e "$output" ]]; then
+  printf 'Existing mismatched decoration output: preserve/move it before preparing again.\n' >&2
+  exit 1
+fi
+mv -- "$build_root/prepared" "$output"

@@ -1,0 +1,29 @@
+diff --git a/python-src/batocera-launch-dolphin/batocera_launch_dolphin/controllers.py b/python-src/batocera-launch-dolphin/batocera_launch_dolphin/controllers.py
+--- a/python-src/batocera-launch-dolphin/batocera_launch_dolphin/controllers.py
++++ b/python-src/batocera-launch-dolphin/batocera_launch_dolphin/controllers.py
+@@ -3,6 +3,7 @@
+ import ast
+ import logging
+ import re
++from os import environ
+ from typing import TYPE_CHECKING
+ 
+ from batocera_common.configparser import CaseSensitiveConfigParser
+@@ -40,6 +41,17 @@
+             generate_controller_config_guns('WiimoteNew.ini', 'Wiimote', metadata, guns)
+             # You can use the gamecube pads on the wii together with wiimotes
+             generate_controller_config_gamecube(emulator, players_controllers, {}, rom)
++        elif environ.get('EMBERCADE_DESKTOP') == '1' and emulator.config.get('emulatedwiimotes') in (None, '', 'auto'):
++            # Keep Batocera's one configuration option and both native generators.
++            # Desktop launch probes current permitted HID slots; a DolphinBar
++            # alone is not evidence that a remote is connected. Extensions, IR
++            # and motion remain Dolphin's responsibility, not separate mappings.
++            if environ.get('EMBERCADE_WII_REAL_CONNECTED') == '1':
++                generate_controller_config_realwiimotes('WiimoteNew.ini', 'Wiimote')
++                generate_controller_config_gamecube(emulator, players_controllers, {}, rom)
++            else:
++                generate_controller_config_emulatedwiimotes(emulator, players_controllers, {}, rom)
++                remove_controller_config_gamecube()
+         elif not emulator.config.get_bool('emulatedwiimotes', True):
+             generate_controller_config_realwiimotes('WiimoteNew.ini', 'Wiimote')
+             generate_controller_config_gamecube(emulator, players_controllers, {}, rom)

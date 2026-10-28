@@ -1,0 +1,14 @@
+diff --git a/es-app/src/guis/GuiMenu.cpp b/es-app/src/guis/GuiMenu.cpp
+--- a/es-app/src/guis/GuiMenu.cpp
++++ b/es-app/src/guis/GuiMenu.cpp
+@@ -5432,6 +5432,10 @@
+ 				info.name = folder.substr(path.size() + 1);
+ 				info.path = folder;
+ 
++				// Internal default alias and unsupported animation are not menu choices.
++				if (info.name == "default" || Utils::FileSystem::exists(folder + "/.embercade-unavailable"))
++					continue;
++
+ 				if (system != nullptr && Utils::String::startsWith(info.name, "default"))
+ 				{
+ 					std::string systemImg = path + "/"+ info.name +"/systems/" + system->getName() + ".png";

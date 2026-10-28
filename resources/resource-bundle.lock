@@ -1,0 +1,11 @@
+[bundle]
+# These are non-shader Batocera 44 desktop resources captured in the
+# read-only sibling embercade-reference bundle.  Stage creation verifies every
+# byte before copying; the bundle is build input, never a runtime dependency.
+es_systems = "401638d6cbc26e574456f36a4b59007b823b576b35422f519640be9bfd3efc23"
+es_features = "2adf259267ba13aaae6808254aa24ef264b2c1d08e97879502fc97b67c1c045a"
+es_savestates = "6eae08aa339ce99e1ffa1be74261a141597440b63d3ea89c8e1ffe45d7f556c0"
+carbon_theme = "574a9dbc5e7a235dd9fd34a86dd4449b232f32109f311d51a85034a272b58c6d"
+# Historical old decoration capture, retained as audit/Gold reference only.
+# New payloads MUST NOT copy it; use runtime/decorations.lock instead.
+decorations = "3dd818e528e8889f414de83deafcbebd205a92a028c1c46be424c489b4f43a52"

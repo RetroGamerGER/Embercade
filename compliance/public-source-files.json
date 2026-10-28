@@ -1,0 +1,24 @@
+{
+  "format": 1,
+  "large_source_files": [
+    {
+      "path": "resources/branding/source/embercade-icon-master.jpg",
+      "bytes": 10333213,
+      "sha256": "576c32f7c893e4c1c344f62cd5615fe1ad01599d79744a8cf8b149d7ff4459ba",
+      "reason": "Owner-confirmed Canva AI branding master; retained original under the recorded rights-scoped grant."
+    },
+    {
+      "path": "resources/branding/source/embercade-landscape-master.jpg",
+      "bytes": 17387281,
+      "sha256": "cd267260ae749fcdf4f982aaf45b03e6366085eaf3319f35b79b8f939b8d3786",
+      "reason": "Owner-confirmed Canva AI branding master; retained original under the recorded rights-scoped grant."
+    },
+    {
+      "path": "resources/branding/source/embercade-portrait-master.jpg",
+      "bytes": 38156376,
+      "sha256": "d6dff3160e483400c9ac9e76b2869d283d3acdf6c305556fdc0b510a758fddae",
+      "reason": "Owner-confirmed Canva AI branding master; retained original under the recorded rights-scoped grant."
+    }
+  ],
+  "scope": "Exact retained original artwork only. Changed or additional large files are not exempt."
+}

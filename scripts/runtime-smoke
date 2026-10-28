@@ -1,0 +1,122 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+project_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
+runtime_root="$project_root/.work/runtime"
+runtime_python="$runtime_root/venv/bin/python"
+launcher="$runtime_root/venv/bin/batocera-launch"
+batocera_license="$runtime_root/src/COPYING"
+
+if [[ ! -x "$runtime_python" || ! -x "$launcher" || ! -f "$batocera_license" ]]; then
+  printf 'Runtime is not prepared. Run scripts/runtime-prepare first.\n' >&2
+  exit 1
+fi
+
+export HOME="$runtime_root/home"
+export PYTHONNOUSERSITE=1
+unset PYTHONPATH || true
+
+"$runtime_python" -I - "$project_root/runtime/requirements.lock" <<'PY'
+from importlib import import_module, metadata
+from pathlib import Path
+import re
+import sys
+
+locked = {}
+for raw_line in Path(sys.argv[1]).read_text(encoding='utf-8').splitlines():
+    line = raw_line.strip()
+    if not line or line.startswith('#'):
+        continue
+    match = re.fullmatch(r'([A-Za-z0-9_.-]+)==([^\s]+)', line)
+    if match is None:
+        raise RuntimeError(f'unpinned runtime requirement: {line}')
+    locked[match.group(1)] = match.group(2)
+for distribution, expected in locked.items():
+    actual = metadata.version(distribution)
+    if actual != expected:
+        raise RuntimeError(f'{distribution}: expected {expected}, found {actual}')
+print(f'OK locked dependencies {len(locked)}')
+
+for distribution in (
+    'batocera-common',
+    'batocera-launch',
+    'batocera-configgen',
+    'batocera-launch-dolphin',
+    'batocera-launch-pcsx2',
+    'batocera-launch-rpcs3',
+):
+    actual = metadata.version(distribution)
+    if actual != '44.0':
+        raise RuntimeError(f'{distribution}: expected 44.0, found {actual}')
+print('OK upstream distributions 44.0')
+
+targets = (
+    'batocera_common',
+    'batocera_launch',
+    'configgen',
+    'batocera_launch.cli.main',
+    'configgen.launch',
+    'configgen.generators.libretro.libretroGenerator',
+    'batocera_launch_dolphin',
+    'batocera_launch_pcsx2',
+    'batocera_launch_rpcs3',
+    'batocera_launch.emulators.xemu',
+    'batocera_launch.emulators.xenia_edge',
+    'batocera_launch.emulators.shadps4',
+)
+
+for target in targets:
+    import_module(target)
+    print(f'OK import {target}')
+
+entry_points = {
+    entry_point.name: entry_point.value
+    for entry_point in metadata.entry_points(group='batocera_launch.emulators')
+}
+expected = 'configgen.launch:GeneratorEmulator'
+if entry_points.get('configgen') != expected:
+    raise RuntimeError(f'configgen entry point missing or unexpected: {entry_points.get("configgen")!r}')
+print(f'OK entry point configgen={expected}')
+dolphin_expected = 'batocera_launch_dolphin:Dolphin'
+if entry_points.get('dolphin') != dolphin_expected:
+    raise RuntimeError(f'dolphin entry point missing or unexpected: {entry_points.get("dolphin")!r}')
+print(f'OK entry point dolphin={dolphin_expected}')
+from batocera_launch_dolphin import controllers as dolphin_controllers
+from inspect import getsource
+if 'EMBERCADE_WII_REAL_CONNECTED' not in getsource(dolphin_controllers.generate_controller_config):
+    raise RuntimeError('Dolphin Wii real/emulated desktop policy patch is missing')
+print('OK Dolphin native real-Wiimote / gamepad fallback policy')
+pcsx2_expected = 'batocera_launch_pcsx2:Pcsx2'
+if entry_points.get('pcsx2') != pcsx2_expected:
+    raise RuntimeError(f'pcsx2 entry point missing or unexpected: {entry_points.get("pcsx2")!r}')
+print(f'OK entry point pcsx2={pcsx2_expected}')
+rpcs3_expected = 'batocera_launch_rpcs3:RPCS3'
+if entry_points.get('rpcs3') != rpcs3_expected:
+    raise RuntimeError(f'rpcs3 entry point missing or unexpected: {entry_points.get("rpcs3")!r}')
+print(f'OK entry point rpcs3={rpcs3_expected}')
+
+from batocera_launch.emulators.xemu import Xemu
+if Xemu.__name__ != 'Xemu':
+    raise RuntimeError('built-in Xemu generator is unavailable')
+print('OK built-in emulator xemu=batocera_launch.emulators.xemu:Xemu')
+
+from batocera_launch.emulators.xenia_edge import XeniaEdge
+if XeniaEdge.__name__ != 'XeniaEdge':
+    raise RuntimeError('built-in Xenia Edge generator is unavailable')
+print('OK built-in emulator xenia-edge=batocera_launch.emulators.xenia_edge:XeniaEdge')
+
+from batocera_launch.emulators.shadps4 import Shadps4
+if Shadps4.__name__ != 'Shadps4':
+    raise RuntimeError('built-in shadPS4 generator is unavailable')
+print('OK built-in emulator shadps4=batocera_launch.emulators.shadps4:Shadps4')
+PY
+
+"$launcher" --help >/dev/null
+printf 'OK CLI batocera-launch --help\n'
+
+# The independently executable API backend runs in isolated Python. Its source
+# never imports the Embercade client, nor depends on its PYTHONPATH.
+"$runtime_python" -B -I "$project_root/integration/batocera/adapter.py" \
+  --protocol 1 probe-runtime | "$runtime_python" -B -I -c \
+  'import json,sys; r=json.load(sys.stdin); assert r["python"] and len(r["imports"]) == 11 and all(v is None for v in r["imports"].values()), r'
+printf 'OK isolated Batocera API backend\n'

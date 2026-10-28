@@ -1,0 +1,105 @@
+diff --git a/python-src/batocera-launch/batocera_launch/command.py b/python-src/batocera-launch/batocera_launch/command.py
+index 733a817..faf7295 100644
+--- a/python-src/batocera-launch/batocera_launch/command.py
++++ b/python-src/batocera-launch/batocera_launch/command.py
+@@ -4,6 +4,7 @@ import asyncio
+ import logging
+ import os
+ import signal
++import shlex
+ from dataclasses import dataclass, field
+ from typing import TYPE_CHECKING, Final, cast
+ 
+@@ -52,13 +53,19 @@ class Command:
+         if not self.args:
+             raise BadCommandLineArguments
+ 
++        if os.environ.get('EMBERCADE_DRY_RUN') == '1':
++            print(f'EMBERCADE_FINAL_COMMAND={shlex.join(map(os.fspath, self.args))}')
++            return 0
++
+         if self.wait_for is not None:
+             await self.wait_for
+ 
++        prefix: list[str] = []
++        if os.environ.get('EMBERCADE_DESKTOP') != '1':
++            prefix = ['nice', '-n', '-4']
++
+         proc = await asyncio.create_subprocess_exec(
+-            'nice',
+-            '-n',
+-            '-4',
++            *prefix,
+             *self.args,
+             env=env_to_fspath(env),
+             stdout=asyncio.subprocess.PIPE,
+diff --git a/python-src/batocera-launch/batocera_launch/devices/hotkeygen.py b/python-src/batocera-launch/batocera_launch/devices/hotkeygen.py
+index ef7038d..0146ea4 100644
+--- a/python-src/batocera-launch/batocera_launch/devices/hotkeygen.py
++++ b/python-src/batocera-launch/batocera_launch/devices/hotkeygen.py
+@@ -2,6 +2,7 @@ from __future__ import annotations
+ 
+ import json
+ import logging
++import os
+ from contextlib import AbstractAsyncContextManager
+ from copy import deepcopy
+ from dataclasses import InitVar, dataclass, field
+@@ -43,6 +44,9 @@ class HotkeygenManager(AbstractAsyncContextManager['HotkeygenManager', None]):
+             del self.context['keys']['menu']
+ 
+     async def __aenter__(self) -> Self:
++        if os.environ.get('EMBERCADE_DESKTOP') == '1':
++            return self
++
+         _logger.debug('hotkeygen: updating context to %s', self.context['name'])
+ 
+         cmd = ['hotkeygen', '--new-context', self.context['name'], json.dumps(self.context['keys'])]
+@@ -61,6 +65,9 @@ class HotkeygenManager(AbstractAsyncContextManager['HotkeygenManager', None]):
+         traceback: TracebackType | None,
+         /,
+     ) -> None:
++        if os.environ.get('EMBERCADE_DESKTOP') == '1':
++            return
++
+         # reset hotkeygen context
+         _logger.debug('hotkeygen: resetting to default context')
+         await run('hotkeygen', '--default-context', capture_output=False)
+diff --git a/python-src/batocera-launch/batocera_launch/devices/video.py b/python-src/batocera-launch/batocera_launch/devices/video.py
+index 43ef39e..4b41213 100644
+--- a/python-src/batocera-launch/batocera_launch/devices/video.py
++++ b/python-src/batocera-launch/batocera_launch/devices/video.py
+@@ -2,6 +2,7 @@ from __future__ import annotations
+ 
+ import asyncio
+ import logging
++import os
+ import re
+ import subprocess
+ from contextlib import asynccontextmanager
+@@ -101,6 +102,9 @@ def is_resolution_reversed() -> bool:
+ 
+ 
+ async def list_outputs(*, timeout: float | None = None) -> list[str]:
++    if os.environ.get('EMBERCADE_DESKTOP') == '1':
++        return []
++
+     try:
+         coro = run('batocera-resolution', 'listOutputs', shell=True, text=True, check=True)
+ 
+@@ -253,6 +257,15 @@ async def get_gl_info() -> GLInfo:
+ 
+ @asynccontextmanager
+ async def prepare_resolution(limit_resolution: bool, target_mode: str, /) -> AsyncGenerator[Resolution]:
++    if os.environ.get('EMBERCADE_DESKTOP') == '1':
++        resolution = Resolution(
++            width=int(os.environ.get('EMBERCADE_DISPLAY_WIDTH', '1920')),
++            height=int(os.environ.get('EMBERCADE_DISPLAY_HEIGHT', '1080')),
++        )
++        _logger.debug('desktop resolution without mode switch: %sx%s', resolution.width, resolution.height)
++        yield resolution
++        return
++
+     original_mode = await get_current_mode()
+     current_mode = original_mode
+ 

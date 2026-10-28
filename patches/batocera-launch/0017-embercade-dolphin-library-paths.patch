@@ -1,0 +1,18 @@
+diff --git a/python-src/batocera-launch-dolphin/batocera_launch_dolphin/emulator.py b/python-src/batocera-launch-dolphin/batocera_launch_dolphin/emulator.py
+index 74f7f9c..1f5be42 100644
+--- a/python-src/batocera-launch-dolphin/batocera_launch_dolphin/emulator.py
++++ b/python-src/batocera-launch-dolphin/batocera_launch_dolphin/emulator.py
+@@ -100,10 +100,9 @@ class Dolphin(Emulator):
+             settings.add_section(section)
+
+         # Define default games path
+-        if 'ISOPaths' not in settings['General']:
+-            settings.set('General', 'ISOPath0', str(ROMS / 'wii'))
+-            settings.set('General', 'ISOPath1', str(ROMS / 'gamecube'))
+-            settings.set('General', 'ISOPaths', '2')
++        settings.set('General', 'ISOPath0', str(ROMS / 'wii'))
++        settings.set('General', 'ISOPath1', str(ROMS / 'gamecube'))
++        settings.set('General', 'ISOPaths', '2')
+
+         settings.set('General', 'AutoIncrementSlot', str(self.config.get_bool('incrementalsavestates', True)))
+         settings.set('Analytics', 'PermissionAsked', 'True')  # don't ask about statistics

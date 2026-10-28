@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+project_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
+export PYTHONPATH="$project_root/src"
+export PYTHONDONTWRITEBYTECODE=1
+
+exec /usr/bin/python -m embercade.provider_runner "$@"

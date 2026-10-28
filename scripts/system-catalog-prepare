@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -euo pipefail
+project_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
+reference_root="$(cd -- "$project_root/.." && pwd -P)"
+catalog_root="$project_root/.work/system-catalog"
+mkdir -p "$catalog_root"
+catalog_source="$(mktemp -d "$catalog_root/source-XXXXXXXX")"
+trap 'rm -r -- "$catalog_source"' EXIT
+batocera_pin="$(python -c 'import sys,tomllib; print(tomllib.load(open(sys.argv[1],"rb"))["upstream"]["batocera.linux"])' "$project_root/upstream.lock")"
+readarray -t catalog_paths < <(git -C "$reference_root/Batocera" ls-tree -r --name-only "$batocera_pin" | rg '(\.emulator\.yml$|\.core\.yml$|/es_systems.yml$|^python-src/batocera-es-system/.*\.py$|/scripts/batocera-systems$)')
+git -C "$reference_root/Batocera" archive "$batocera_pin" "${catalog_paths[@]}" | tar -x -C "$catalog_source"
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="$project_root/src" \
+  "$project_root/.work/runtime/venv/bin/python" - "$catalog_root" "$project_root/.work/runtime/share/batocera/launch/defaults" "$batocera_pin" "$catalog_source" <<'PY'
+from pathlib import Path
+from dataclasses import asdict
+import json
+import sys
+from embercade.ui_data import build_complete_catalog
+from embercade.bios_inventory import load_batocera_bios_requirements, BATOCERA_BIOS_SOURCE
+root, defaults, pin, source = Path(sys.argv[1]), Path(sys.argv[2]), sys.argv[3], Path(sys.argv[4])
+build_complete_catalog(source, defaults, root / "output")
+(root / "output" / "batocera-commit.txt").write_text(pin + "\n")
+(root / "output" / "bios-requirements.json").write_text(json.dumps({
+    "batocera_commit": pin,
+    "requirements": [asdict(r) for r in load_batocera_bios_requirements(
+        (source / BATOCERA_BIOS_SOURCE).read_text())]
+}, indent=2) + "\n")
+PY

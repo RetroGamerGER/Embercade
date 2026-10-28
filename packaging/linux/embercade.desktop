@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=@EMBERCADE_PRODUCT_LABEL@
+Exec=embercade
+Type=Application
+Categories=Game;Emulator;
+Icon=embercade
+Terminal=false
+StartupWMClass=embercade

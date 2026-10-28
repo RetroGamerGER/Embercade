@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated from Batocera 44.dev's pinned libretro-azahar feature definition. -->
+<features>
+  <emulator name="libretro">
+    <cores>
+      <core name="azahar" features="">
+        <feature name="3DS SYSTEM REGION" value="3ds_system_region" description="Set the 3DS system region. Auto-select will choose based on the game. Some games are region-locked and require matching regions.">
+          <choice name="Japan" value="Japan" />
+          <choice name="USA" value="USA" />
+          <choice name="Europe" value="Europe" />
+          <choice name="Australia" value="Australia" />
+          <choice name="China" value="China" />
+          <choice name="Korea" value="Korea" />
+          <choice name="Taiwan" value="Taiwan" />
+        </feature>
+        <feature name="3DS SYSTEM LANGUAGE" value="3ds_system_language" description="Set the system language for the emulated 3DS. This affects in-game text language when supported.">
+          <choice name="English" value="English" />
+          <choice name="Japanese" value="Japanese" />
+          <choice name="French" value="French" />
+          <choice name="Spanish" value="Spanish" />
+          <choice name="German" value="German" />
+          <choice name="Italian" value="Italian" />
+          <choice name="Dutch" value="Dutch" />
+          <choice name="Portuguese" value="Portuguese" />
+          <choice name="Russian" value="Russian" />
+          <choice name="Korean" value="Korean" />
+          <choice name="Traditional Chinese" value="Traditional Chinese" />
+          <choice name="Simplified Chinese" value="Simplified Chinese" />
+        </feature>
+      </core>
+    </cores>
+  </emulator>
+</features>

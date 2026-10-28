@@ -1,0 +1,483 @@
+--- a/es-app/src/RetroAchievements.cpp
++++ b/es-app/src/RetroAchievements.cpp
+@@ -1,4 +1,5 @@
+ #include "RetroAchievements.h"
++#include "EmbercadeRetroAchievements.h"
+ #include "HttpReq.h"
+ #include "ApiSystem.h"
+ #include "SystemConf.h"
+@@ -17,8 +18,7 @@
+ #include "EmulationStation.h"
+ 
+ #ifdef CHEEVOS_DEV_LOGIN
+-// Private test build: the account Web API key is extractable from the binary.
+-__attribute__((used)) static const char embercadeCheevosBuild[] = "EMBERCADE_RETROACHIEVEMENTS_PRIVATE_WEB_API_V1";
++#error Shared RetroAchievements Web API credentials must not be compiled into Embercade
+ #endif
+ 
+ using namespace PlatformIds;
+@@ -133,25 +133,36 @@
+ // Use empty UserAgent with doRequest.php calls
+ static HttpReqOptions getHttpOptions()
+ {
+-	HttpReqOptions options;
+-
+-#ifdef CHEEVOS_DEV_LOGIN
+-	std::string ret = Utils::String::extractString(CHEEVOS_DEV_LOGIN, "z=", "&");
+-	ret =  ret + "/" + Utils::String::replace(RESOURCE_VERSION_STRING, ",", ".");		 
+-	options.userAgent = ret;
+-#endif	
+-
+-	return options;
++    HttpReqOptions options;
++    return options;
++}
++
++static std::string webKeySetupMessage()
++{
++    return _("Add your personal Web API key in RetroAchievements settings to view achievements here. Emulator achievements do not need this key.");
++}
++
++static std::string webRequestError(HttpReq& request)
++{
++    if (request.status() == 401 || request.status() == 403)
++        return _("RetroAchievements rejected the personal Web API key. Check that it belongs to your configured account.");
++    if (request.status() == 429)
++        return _("RetroAchievements has limited requests. Please wait before trying again.");
++    return _("RetroAchievements is currently unavailable. Please try again later.");
++}
++
++static bool webApiRejected(const rapidjson::Document& doc)
++{
++    return doc.HasMember("Error") || (doc.HasMember("Success") && doc["Success"].IsBool() && !doc["Success"].GetBool());
+ }
+ 
+ std::string RetroAchievements::getApiUrl(const std::string& method, const std::string& parameters)
+ {
+-#ifdef CHEEVOS_DEV_LOGIN
+-	auto options = std::string(CHEEVOS_DEV_LOGIN);
+-	return "https://retroachievements.org/API/"+ method +".php?"+ options +"&" + parameters;
+-#else 
+-	return "https://retroachievements.org/API/" + method + ".php?" + parameters;
+-#endif
++    const auto user = SystemConf::getInstance()->get("global.retroachievements.username");
++    const auto key = EmbercadeRetroAchievements::keyFor(user);
++    if (key.empty()) return "";
++    return "https://retroachievements.org/API/" + method + ".php?z=" + HttpReq::urlEncode(user)
++        + "&y=" + HttpReq::urlEncode(key) + "&" + parameters;
+ }
+ 
+ std::string GameInfoAndUserProgress::getImageUrl(const std::string& image)
+@@ -227,13 +238,10 @@
+         return ret;
+     }
+ 
+-#ifndef CHEEVOS_DEV_LOGIN
+-    ret.Error = _("The achievement list is unavailable in this application build.");
+-	return ret;
+-#endif
+-
++    const auto url = getApiUrl("API_GetGameInfoAndUserProgress", "u=" + HttpReq::urlEncode(usrName) + "&g=" + std::to_string(gameId));
++    if (url.empty()) { ret.Error = webKeySetupMessage(); return ret; }
+ 	auto options = getHttpOptions();
+-	HttpReq httpreq(getApiUrl("API_GetGameInfoAndUserProgress", "u=" + HttpReq::urlEncode(usrName) + "&g=" + std::to_string(gameId)), &options);
++	HttpReq httpreq(url, &options);
+ 	if (httpreq.wait())
+ 	{
+ 		rapidjson::Document doc;
+@@ -243,6 +251,10 @@
+             return ret;
+         }
+ 
++        if (webApiRejected(doc)) {
++            ret.Error = _("RetroAchievements rejected the personal Web API key. Check that it belongs to your configured account.");
++            return ret;
++        }
+ 		ret.ID = jsonInt(doc, "ID");
+ 		ret.Title = jsonString(doc, "Title");
+ 		ret.ConsoleID = jsonInt(doc, "ConsoleID");
+@@ -305,7 +317,7 @@
+         std::sort(ret.Achievements.begin(), ret.Achievements.end(), sortAchievements);
+ 	}
+ 	else
+-		ret.Error = _("RetroAchievements is currently unavailable. Please try again later.");
++		ret.Error = webRequestError(httpreq);
+ 
+ 	return ret;
+ }
+@@ -316,22 +328,24 @@
+ 	if (usrName.empty())
+ 		usrName = SystemConf::getInstance()->get("global.retroachievements.username");
+ 
+-	UserSummary ret;
++	UserSummary ret{};
+ 
+ 	std::string count = std::to_string(gameCount);
+ 
+ 	auto options = getHttpOptions();
+-	HttpReq httpreq(getApiUrl("API_GetUserSummary", "u="+ HttpReq::urlEncode(usrName) +"&g="+ count +"&a="+ count), &options);
++    const auto url = getApiUrl("API_GetUserSummary", "u="+ HttpReq::urlEncode(usrName) +"&g="+ count +"&a="+ count);
++    if (url.empty()) { ret.Status = webKeySetupMessage(); return ret; }
++	HttpReq httpreq(url, &options);
+ 	if (httpreq.wait())
+ 	{
+ 		rapidjson::Document doc;
+ 		doc.Parse(httpreq.getContent().c_str());
+-		if (doc.HasParseError())
+-		{
+-			ret.Status = _("INVALID CONTENT");
+-			return ret;
+-		}
+-
++		if (doc.HasParseError() || !doc.IsObject())
++        { ret.Status = _("RetroAchievements returned an unreadable response. Please try again later."); return ret; }
++        if (webApiRejected(doc))
++        { ret.Status = _("RetroAchievements rejected the personal Web API key. Check that it belongs to your configured account."); return ret; }
++        if (jsonString(doc, "User").empty() && jsonString(doc, "Username").empty())
++        { ret.Status = _("RetroAchievements returned an unreadable response. Please try again later."); return ret; }
+ 		ret.Username = usrName;
+ 		ret.RecentlyPlayedCount = jsonInt(doc, "RecentlyPlayedCount");
+ 		ret.MemberSince = jsonString(doc, "MemberSince");
+@@ -353,10 +367,11 @@
+ 		ret.UserPic = jsonString(doc, "UserPic");
+ 		ret.Status = jsonString(doc, "Status");
+ 
+-		if (doc.HasMember("RecentlyPlayed"))
++		if (doc.HasMember("RecentlyPlayed") && doc["RecentlyPlayed"].IsArray())
+ 		{
+ 			for (auto& recent : doc["RecentlyPlayed"].GetArray())
+ 			{
++                if (!recent.IsObject()) continue;
+ 				RecentGame item;
+ 				item.GameID = jsonString(recent, "GameID");
+ 				item.ConsoleID = jsonString(recent, "ConsoleID");
+@@ -370,7 +385,7 @@
+ 			}
+ 		}
+ 
+-		if (doc.HasMember("Awarded"))
++		if (doc.HasMember("Awarded") && doc["Awarded"].IsObject())
+ 		{
+ 			const rapidjson::Value& ra = doc["Awarded"];
+ 			for (auto achivId = ra.MemberBegin(); achivId != ra.MemberEnd(); ++achivId)
+@@ -378,7 +393,8 @@
+ 				std::string gameID = achivId->name.GetString();
+ 				auto& recent = achivId->value;
+ 
+-				Award item;
++                if (!recent.IsObject()) continue;
++				Award item{};
+ 				item.NumPossibleAchievements = jsonInt(recent, "NumPossibleAchievements");
+ 				item.PossibleScore = jsonInt(recent, "PossibleScore");
+ 				item.NumAchieved = jsonInt(recent, "NumAchieved");
+@@ -390,16 +406,18 @@
+ 			}
+ 		}
+ 
+-		if (doc.HasMember("RecentAchievements"))
++		if (doc.HasMember("RecentAchievements") && doc["RecentAchievements"].IsObject())
+ 		{
+ 			const rapidjson::Value& ra = doc["RecentAchievements"];
+ 			for (auto achivId = ra.MemberBegin(); achivId != ra.MemberEnd(); ++achivId)
+ 			{
+ 				std::string gameID = achivId->name.GetString();
+ 
++                if (!achivId->value.IsObject()) continue;
+ 				for (auto itrc = achivId->value.MemberBegin(); itrc != achivId->value.MemberEnd(); ++itrc)
+ 				{
+ 					auto& recent = itrc->value;
++                    if (!recent.IsObject()) continue;
+ 					RecentAchievement item;
+ 
+ 					item.ID = jsonString(recent, "ID");
+@@ -417,7 +435,7 @@
+ 		}
+ 	}
+ 	else
+-		ret.Status = httpreq.getErrorMsg();
++		ret.Status = webRequestError(httpreq);
+ 
+ 	return ret;
+ }
+@@ -428,17 +446,21 @@
+ 	if (usrName.empty())
+ 		usrName = SystemConf::getInstance()->get("global.retroachievements.username");
+ 
+-	UserRankAndScore ret;
++	UserRankAndScore ret{};
+ 
+ 	auto options = getHttpOptions();
+ 
+-	HttpReq request(getApiUrl("API_GetUserRankAndScore", "u=" + HttpReq::urlEncode(usrName)), &options);
++    const auto url = getApiUrl("API_GetUserRankAndScore", "u=" + HttpReq::urlEncode(usrName));
++    if (url.empty()) throw std::domain_error(webKeySetupMessage());
++	HttpReq request(url, &options);
+ 	if (request.wait())
+ 	{
+ 		rapidjson::Document doc;
+ 		doc.Parse(request.getContent().c_str());
+-		if (doc.HasParseError())
+-			throw std::domain_error("Error while parsing API GetUserRankAndScore response");
++		if (doc.HasParseError() || !doc.IsObject())
++            throw std::domain_error(_("RetroAchievements returned an unreadable response. Please try again later."));
++        if (webApiRejected(doc))
++            throw std::domain_error(_("RetroAchievements rejected the personal Web API key. Check that it belongs to your configured account."));
+ 
+ 		ret.Score = jsonInt(doc, "Score");
+ 		ret.SoftcoreScore = jsonInt(doc, "SoftcoreScore");
+@@ -446,7 +468,7 @@
+ 		ret.TotalRanked = jsonInt(doc, "TotalRanked");
+ 	}
+ 	else
+-		throw std::domain_error("Error while accessing API GetUserRankAndScore :\n" + request.getErrorMsg());
++		throw std::domain_error(webRequestError(request));
+ 
+ 	return ret;
+ }
+--- a/es-app/src/guis/GuiRetroAchievementsSettings.cpp
++++ b/es-app/src/guis/GuiRetroAchievementsSettings.cpp
+@@ -4,6 +4,10 @@
+ #include "SystemConf.h"
+ #include "ApiSystem.h"
+ #include "RetroAchievements.h"
++#include "EmbercadeRetroAchievements.h"
++#include "Settings.h"
++#include "guis/GuiTextEditPopup.h"
++#include "guis/GuiTextEditPopupKeyboard.h"
+ 
+ #include "guis/GuiMsgBox.h"
+ #include "components/SwitchComponent.h"
+@@ -25,6 +29,32 @@
+ 	// retroachievements, username, password
+ 	addInputTextConfigRow(_("USERNAME"), "global.retroachievements.username", false);
+ 	addInputTextConfigRow(_("PASSWORD"), "global.retroachievements.password", true);
++
++    addInputTextRow(_("PERSONAL WEB API KEY (OPTIONAL)"),
++        EmbercadeRetroAchievements::keyFor(username).empty() ? "" : "*********", true,
++        [](Window* window, std::string title, std::string, const std::function<void(std::string)>& update) {
++            const auto user = SystemConf::getInstance()->get("global.retroachievements.username");
++            if (user.empty()) {
++                window->pushGui(new GuiMsgBox(window, _("Enter your RetroAchievements username first, then add its personal Web API key."), _("OK")));
++                return;
++            }
++            auto save = [window, user, update](const std::string& key) {
++                if (!EmbercadeRetroAchievements::save(user, key)) {
++                    window->pushGui(new GuiMsgBox(window, _("The personal Web API key could not be saved safely. Check access to Embercade's private settings and try again."), _("OK")));
++                    return;
++                }
++                update(key);
++            };
++            auto value = EmbercadeRetroAchievements::keyFor(user);
++            if (Settings::getInstance()->getBool("UseOSK"))
++                window->pushGui(new GuiTextEditPopupKeyboard(window, title, value, save, false, _("OK"), true));
++            else
++                window->pushGui(new GuiTextEditPopup(window, title, value, save, false, _("OK").c_str(), true));
++        }, [](const std::string&) {});
++    addEntry(_("WEB API KEY HELP"), true, [window] {
++        window->pushGui(new GuiMsgBox(window, _("To view achievement lists and your profile here, copy your personal Web API key from retroachievements.org/controlpanel.php. Emulator achievements work with your normal login. Paste the key in the optional field; Reset removes it."), _("OK")));
++    });
++
+ 
+ 	addGroup(_("OPTIONS"));
+ 
+--- a/es-app/src/guis/GuiSettings.cpp
++++ b/es-app/src/guis/GuiSettings.cpp
+@@ -302,8 +302,8 @@
+ 		}
+ 		else
+ 		{
+-			ed->setValue("*********");
+-			ed->setSize(font->sizeText("*********  ").x(), 0);
++			ed->setValue(newVal.empty() ? "" : "*********");
++			ed->setSize(font->sizeText(newVal.empty() ? "  " : "*********  ").x(), 0);
+ 			mMenu.updateSize();
+ 		}
+ 
+--- a/es-core/src/components/TextEditComponent.cpp
++++ b/es-core/src/components/TextEditComponent.cpp
+@@ -1,4 +1,5 @@
+ #include "components/TextEditComponent.h"
++#include "EmbercadeRetroAchievements.h"
+ 
+ #include "resources/Font.h"
+ #include "utils/StringUtil.h"
+@@ -282,7 +283,8 @@
+ 
+ void TextEditComponent::onTextChanged()
+ {
+-	std::string wrappedText = (isMultiline() ? mFont->wrapText(mText, getTextAreaSize().x()) : mText);
++	const auto display = EmbercadeRetroAchievements::displayText(mText, mPassword);
++	std::string wrappedText = (isMultiline() ? mFont->wrapText(display, getTextAreaSize().x()) : display);
+ 	mTextCache = std::unique_ptr<TextCache>(mFont->buildTextCache(wrappedText, 0, 0, (ThemeData::getMenuTheme()->Text.color & 0xFFFFFF00) | getOpacity()));
+ 	
+ 	if(mCursor > (int)mText.length())
+@@ -293,7 +295,7 @@
+ {
+ 	if(isMultiline())
+ 	{
+-		Vector2f textSize = mFont->getWrappedTextCursorOffset(mText, getTextAreaSize().x(), mCursor); 
++		Vector2f textSize = mFont->getWrappedTextCursorOffset(EmbercadeRetroAchievements::displayText(mText, mPassword), getTextAreaSize().x(), mCursor); 
+ 
+ 		if(mScrollOffset.y() + getTextAreaSize().y() < textSize.y() + mFont->getHeight()) //need to scroll down?
+ 		{
+@@ -303,7 +305,7 @@
+ 			mScrollOffset[1] = textSize.y();
+ 		}
+ 	}else{
+-		Vector2f cursorPos = mFont->sizeText(mText.substr(0, mCursor));
++		Vector2f cursorPos = mFont->sizeText(EmbercadeRetroAchievements::displayText(mText.substr(0, mCursor), mPassword));
+ 
+ 		if(mScrollOffset.x() + getTextAreaSize().x() < cursorPos.x())
+ 		{
+@@ -351,11 +353,11 @@
+ 		Vector2f cursorPos;
+ 		if(isMultiline())
+ 		{
+-			cursorPos = mFont->getWrappedTextCursorOffset(mText, getTextAreaSize().x(), mCursor);
++			cursorPos = mFont->getWrappedTextCursorOffset(EmbercadeRetroAchievements::displayText(mText, mPassword), getTextAreaSize().x(), mCursor);
+ 		}
+ 		else
+ 		{
+-			cursorPos = mFont->sizeText(mText.substr(0, mCursor));
++			cursorPos = mFont->sizeText(EmbercadeRetroAchievements::displayText(mText.substr(0, mCursor), mPassword));
+ 			cursorPos[1] = 0;
+ 		}
+ 
+--- a/es-core/src/components/TextEditComponent.h
++++ b/es-core/src/components/TextEditComponent.h
+@@ -31,6 +31,7 @@
+ 	inline const std::shared_ptr<Font>& getFont() const { return mFont; }
+ 
+ 	void setCursor(size_t pos);
++    void setPassword(bool masked) { mPassword = masked; onTextChanged(); onCursorChanged(); }
+ 
+ 	virtual std::vector<HelpPrompt> getHelpPrompts() override;
+ 
+@@ -51,6 +52,7 @@
+ 	Vector2f getTextAreaSize() const;
+ 
+ 	std::string mText;
++    bool mPassword = false;
+ 	bool mFocused;
+ 	bool mEditing;
+ 	unsigned int mCursor; // cursor position in characters
+--- a/es-core/src/guis/GuiTextEditPopup.cpp
++++ b/es-core/src/guis/GuiTextEditPopup.cpp
+@@ -6,7 +6,7 @@
+ #include "components/TextEditComponent.h"
+ 
+ GuiTextEditPopup::GuiTextEditPopup(Window* window, const std::string& title, const std::string& initValue, 
+-	const std::function<void(const std::string&)>& okCallback, bool multiLine, const char* acceptBtnText)
++	const std::function<void(const std::string&)>& okCallback, bool multiLine, const char* acceptBtnText, bool password)
+ 	: GuiComponent(window), mBackground(window, ":/frame.png"), mGrid(window, Vector2i(1, 3)), mMultiLine(multiLine)
+ {
+ 	setTag("popup");
+@@ -24,6 +24,7 @@
+ 	mTitle = std::make_shared<TextComponent>(mWindow, Utils::String::toUpper(title), theme->Title.font, theme->Title.color, ALIGN_CENTER);
+ 
+ 	mText = std::make_shared<TextEditComponent>(mWindow);
++	mText->setPassword(password);
+ 	mText->setValue(initValue);
+ 
+ 	if(!multiLine)
+--- a/es-core/src/guis/GuiTextEditPopup.h
++++ b/es-core/src/guis/GuiTextEditPopup.h
+@@ -13,7 +13,7 @@
+ {
+ public:
+ 	GuiTextEditPopup(Window* window, const std::string& title, const std::string& initValue, 
+-		const std::function<void(const std::string&)>& okCallback, bool multiLine, const char* acceptBtnText = "OK");
++		const std::function<void(const std::string&)>& okCallback, bool multiLine, const char* acceptBtnText = "OK", bool password = false);
+ 
+ 	bool input(InputConfig* config, Input input);
+ 	void onSizeChanged();
+--- a/es-core/src/guis/GuiTextEditPopupKeyboard.cpp
++++ b/es-core/src/guis/GuiTextEditPopupKeyboard.cpp
+@@ -97,7 +97,7 @@
+ };
+ 
+ GuiTextEditPopupKeyboard::GuiTextEditPopupKeyboard(Window* window, const std::string& title, const std::string& initValue,
+-	const std::function<void(const std::string&)>& okCallback, bool multiLine, const std::string acceptBtnText)
++	const std::function<void(const std::string&)>& okCallback, bool multiLine, const std::string acceptBtnText, bool password)
+ 	: GuiComponent(window), mBackground(window, ":/frame.png"), mGrid(window, Vector2i(1, 6)), mMultiLine(multiLine)
+ {
+ 	setTag("popup");
+@@ -119,6 +119,7 @@
+ 	mKeyboardGrid = std::make_shared<ComponentGrid>(mWindow, Vector2i(kbUs[0].size(), kbUs.size() / BUTTON_LAYER_SIZE));
+ 
+ 	mText = std::make_shared<TextEditComponent>(mWindow);
++	mText->setPassword(password);
+ 	mText->setValue(initValue);
+ 
+ 	if (!multiLine)
+--- a/es-core/src/guis/GuiTextEditPopupKeyboard.h
++++ b/es-core/src/guis/GuiTextEditPopupKeyboard.h
+@@ -11,7 +11,7 @@
+ {
+ public:
+ 	GuiTextEditPopupKeyboard(Window* window, const std::string& title, const std::string& initValue,
+-		const std::function<void(const std::string&)>& okCallback, bool multiLine, const std::string acceptBtnText = "OK");
++		const std::function<void(const std::string&)>& okCallback, bool multiLine, const std::string acceptBtnText = "OK", bool password = false);
+ 
+ 	bool input(InputConfig* config, Input input);
+ 	//void update(int deltatime) override;
+--- a/locale/lang/de/LC_MESSAGES/emulationstation2.po
++++ b/locale/lang/de/LC_MESSAGES/emulationstation2.po
+@@ -4072,3 +4072,27 @@
+ 
+ msgid "RetroAchievements returned an unreadable response. Please try again later."
+ msgstr "Die Antwort von RetroAchievements konnte nicht gelesen werden. Bitte versuche es später erneut."
++
++msgid "PERSONAL WEB API KEY (OPTIONAL)"
++msgstr "PERSÖNLICHER WEB-API-SCHLÜSSEL (OPTIONAL)"
++
++msgid "WEB API KEY HELP"
++msgstr "HILFE ZUM WEB-API-SCHLÜSSEL"
++
++msgid "Enter your RetroAchievements username first, then add its personal Web API key."
++msgstr "Trage zuerst deinen RetroAchievements-Benutzernamen ein und ergänze dann den persönlichen Web-API-Schlüssel dieses Kontos."
++
++msgid "The personal Web API key could not be saved safely. Check access to Embercade's private settings and try again."
++msgstr "Der persönliche Web-API-Schlüssel konnte nicht sicher gespeichert werden. Prüfe den Zugriff auf Embercades private Einstellungen und versuche es erneut."
++
++msgid "Add your personal Web API key in RetroAchievements settings to view achievements here. Emulator achievements do not need this key."
++msgstr "Trage deinen persönlichen Web-API-Schlüssel in den RetroAchievements-Einstellungen ein, um hier Erfolge anzuzeigen. Für Erfolge im Emulator ist dieser Schlüssel nicht nötig."
++
++msgid "RetroAchievements rejected the personal Web API key. Check that it belongs to your configured account."
++msgstr "RetroAchievements hat den persönlichen Web-API-Schlüssel abgelehnt. Prüfe, ob er zu deinem eingetragenen Konto gehört."
++
++msgid "RetroAchievements has limited requests. Please wait before trying again."
++msgstr "RetroAchievements hat die Anfragen begrenzt. Warte bitte, bevor du es erneut versuchst."
++
++msgid "To view achievement lists and your profile here, copy your personal Web API key from retroachievements.org/controlpanel.php. Emulator achievements work with your normal login. Paste the key in the optional field; Reset removes it."
++msgstr "Um Erfolgslisten und dein Profil hier anzuzeigen, kopiere deinen persönlichen Web-API-Schlüssel von retroachievements.org/controlpanel.php. Erfolge im Emulator funktionieren mit deiner normalen Anmeldung. Füge den Schlüssel im optionalen Feld ein; mit Zurücksetzen entfernst du ihn."
+--- a/locale/lang/en_GB/LC_MESSAGES/emulationstation2.po
++++ b/locale/lang/en_GB/LC_MESSAGES/emulationstation2.po
+@@ -4071,3 +4071,27 @@
+ 
+ msgid "RetroAchievements returned an unreadable response. Please try again later."
+ msgstr "RetroAchievements returned an unreadable response. Please try again later."
++
++msgid "PERSONAL WEB API KEY (OPTIONAL)"
++msgstr "PERSONAL WEB API KEY (OPTIONAL)"
++
++msgid "WEB API KEY HELP"
++msgstr "WEB API KEY HELP"
++
++msgid "Enter your RetroAchievements username first, then add its personal Web API key."
++msgstr "Enter your RetroAchievements username first, then add its personal Web API key."
++
++msgid "The personal Web API key could not be saved safely. Check access to Embercade's private settings and try again."
++msgstr "The personal Web API key could not be saved safely. Check access to Embercade's private settings and try again."
++
++msgid "Add your personal Web API key in RetroAchievements settings to view achievements here. Emulator achievements do not need this key."
++msgstr "Add your personal Web API key in RetroAchievements settings to view achievements here. Emulator achievements do not need this key."
++
++msgid "RetroAchievements rejected the personal Web API key. Check that it belongs to your configured account."
++msgstr "RetroAchievements rejected the personal Web API key. Check that it belongs to your configured account."
++
++msgid "RetroAchievements has limited requests. Please wait before trying again."
++msgstr "RetroAchievements has limited requests. Please wait before trying again."
++
++msgid "To view achievement lists and your profile here, copy your personal Web API key from retroachievements.org/controlpanel.php. Emulator achievements work with your normal login. Paste the key in the optional field; Reset removes it."
++msgstr "To view achievement lists and your profile here, copy your personal Web API key from retroachievements.org/controlpanel.php. Emulator achievements work with your normal login. Paste the key in the optional field; Reset removes it."

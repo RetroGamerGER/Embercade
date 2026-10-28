@@ -1,0 +1,31 @@
+--- a/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroConfig.py
++++ b/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroConfig.py
+@@ -116,7 +116,27 @@
+     gfxBackend: str,
+     /,
+ ) -> None:
+-    writeLibretroConfigToFile(retroconfig, createLibretroConfig(generator, system, controllers, metadata, guns, wheels, rom, bezel, shaderBezel, gameResolution, gfxBackend))
++    config = createLibretroConfig(generator, system, controllers, metadata, guns, wheels, rom, bezel, shaderBezel, gameResolution, gfxBackend)
++    if os.environ.get('EMBERCADE_DESKTOP') == '1' and not isLowResolution(gameResolution):
++        applyDesktopWidgetDefaults(retroconfig, system.config, config)
++    writeLibretroConfigToFile(retroconfig, config)
++
++
++def applyDesktopWidgetDefaults(retroconfig, overrides, config):
++    # Migrate only untouched upstream defaults. Saved custom widget preferences
++    # and Batocera's explicit retroarch.* overrides remain authoritative.
++    keys = ('menu_widget_scale_auto', 'menu_widget_scale_factor', 'menu_widget_scale_factor_windowed')
++    old = {key: str(retroconfig.config.get('DEFAULT', key, fallback=default)).strip('"')
++           for key, default in zip(keys, ('true', '1', '1'))}
++    try:
++        untouched = old[keys[0]].lower() == 'true' and all(float(old[key]) == 1.0 for key in keys[1:])
++    except ValueError:
++        untouched = False
++    selected = dict(zip(keys, ('false', '0.6', '0.6'))) if untouched else old
++    for key, value in selected.items():
++        if 'retroarch.' + key not in overrides:
++            config[key] = value
++
+ 
+ # Take a system, and returns a dict of retroarch.cfg compatible parameters
+ def createLibretroConfig(

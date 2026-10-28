@@ -1,0 +1,47 @@
+diff --git a/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroGenerator.py b/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroGenerator.py
+index 5265ab6..7756e7d 100755
+--- a/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroGenerator.py
++++ b/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroGenerator.py
+@@ -89,6 +89,8 @@ class LibretroGenerator(Generator):
+             else:
+                 video_shader_dir = BATOCERA_SHADERS
+             video_shader = video_shader_dir / shaderFilename
++            if not video_shader.is_file():
++                raise BatoceraException(f"Shader preset not found: {video_shader}")
+             # If the shader filename contains noBezel, activate Shader Bezel mode.
+             if "noBezel" in video_shader.name:
+                 shaderBezel = True
+diff --git a/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroConfig.py b/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroConfig.py
+index 50e8087..e726b96 100644
+--- a/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroConfig.py
++++ b/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroConfig.py
+@@ -1182,7 +1182,7 @@ def writeBezelConfig(
+     if not shaderBezel:
+         retroarchConfig['input_overlay_enable']       = "true"
+     retroarchConfig['input_overlay_scale']        = "1.0"
+-    retroarchConfig['input_overlay']              = RETROARCH_OVERLAY_CONFIG
++    retroarchConfig['input_overlay']              = f'"{RETROARCH_OVERLAY_CONFIG}"'
+     retroarchConfig['input_overlay_hide_in_menu'] = "true"
+ 
+     if "opacity" not in infos:
+diff --git a/python-src/batocera-launch/batocera_launch/paths.py b/python-src/batocera-launch/batocera_launch/paths.py
+index 361e92a..6c97c6e 100644
+--- a/python-src/batocera-launch/batocera_launch/paths.py
++++ b/python-src/batocera-launch/batocera_launch/paths.py
+@@ -33,10 +33,14 @@ ES_GUNS_ART_METADATA: Final = LAUNCH_DATA_DIR / 'gamesbuttonsdb.xml'
+ DEFAULTS_DIR: Final = LAUNCH_SHARE_DIR / 'defaults'
+ 
+ USER_SHADERS: Final = USERDATA / 'shaders'
+-BATOCERA_SHADERS: Final = BATOCERA_SHARE_DIR / 'shaders'
++BATOCERA_SHADERS: Final = Path(
++    os.environ.get('EMBERCADE_BATOCERA_SHADERS', BATOCERA_SHARE_DIR / 'shaders')
++)
+ 
+ USER_DECORATIONS: Final = USERDATA / 'decorations'
+-SYSTEM_DECORATIONS: Final = DATAINIT_DIR / 'decorations'
++SYSTEM_DECORATIONS: Final = Path(
++    os.environ.get('EMBERCADE_SYSTEM_DECORATIONS', DATAINIT_DIR / 'decorations')
++)
+ 
+ USER_SCRIPTS: Final = HOME / 'scripts'
+ SYSTEM_SCRIPTS: Final = LAUNCH_SHARE_DIR / 'scripts'

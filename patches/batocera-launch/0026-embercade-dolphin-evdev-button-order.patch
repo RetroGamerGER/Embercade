@@ -1,0 +1,82 @@
+diff --git a/python-src/batocera-launch-dolphin/batocera_launch_dolphin/controllers.py b/python-src/batocera-launch-dolphin/batocera_launch_dolphin/controllers.py
+--- a/python-src/batocera-launch-dolphin/batocera_launch_dolphin/controllers.py
++++ b/python-src/batocera-launch-dolphin/batocera_launch_dolphin/controllers.py
+@@ -4,6 +4,7 @@
+ import logging
+ import re
+ from os import environ
++from pathlib import Path
+ from typing import TYPE_CHECKING
+ 
+ from batocera_common.configparser import CaseSensitiveConfigParser
+@@ -20,6 +21,32 @@
+     from batocera_launch.devices.device import DeviceInfoMapping
+ 
+ _logger = logging.getLogger(__name__)
++_INPUT_SYSFS = Path('/sys/class/input')
++
++
++def _sdl_to_dolphin_evdev_buttons(pad: Controller) -> dict[int, int]:
++    """Translate SDL button slots to Dolphin's evdev slots for this live device."""
++    if environ.get('EMBERCADE_DESKTOP') != '1':
++        return {}
++    event_name = Path(pad.device_path).name
++    if re.fullmatch(r'event\d+', event_name) is None:
++        return {}
++    try:
++        words = (_INPUT_SYSFS / event_name / 'device/capabilities/key').read_text().split()
++        bits = 0
++        for word in words:
++            bits = (bits << 64) | int(word, 16)
++    except (OSError, ValueError):
++        return {}
++    codes = [code for code in range(bits.bit_length()) if bits & (1 << code)]
++    if len(codes) != pad.button_count or not any(code < 0x120 for code in codes):
++        return {}
++    # SDL's Linux joystick backend enumerates BTN_JOYSTICK+ first, then
++    # lower key codes. Dolphin evdev enumerates all key codes ascending.
++    sdl_codes = [code for code in codes if code >= 0x120]
++    sdl_codes.extend(code for code in codes if code < 0x120)
++    evdev_slots = {code: slot for slot, code in enumerate(codes)}
++    return {slot: evdev_slots[code] for slot, code in enumerate(sdl_codes)}
+ 
+ 
+ def generate_controller_config(
+@@ -690,6 +717,16 @@
+     for opt, val in extra_options.items():
+         f.write(f'{opt} = {val}\n')
+ 
++    evdev_buttons = _sdl_to_dolphin_evdev_buttons(pad)
++
++    def input_id(inp) -> str:
++        if inp.type == 'button':
++            try:
++                return str(evdev_buttons[int(inp.id)])
++            except (KeyError, ValueError):
++                pass
++        return inp.id
++
+     # Check for alt input mappings
+     current_mapping = _get_alt_mapping(emulator, nplayer, any_mapping)
+     # Apply replacements
+@@ -719,12 +756,17 @@
+ 
+         # Write the configuration for this key
+         if keyname is not None:
+-            _write_key(f, keyname, inp.type, inp.id, inp.value, pad.axis_count, reverse=False)
++            _write_key(f, keyname, inp.type, input_id(inp), inp.value, pad.axis_count, reverse=False)
+             if 'Triggers' in keyname and inp.type == 'axis':
+                 _write_key(f, f'{keyname}-Analog', inp.type, inp.id, inp.value, pad.axis_count, reverse=False)
+             if 'Buttons/Z' in keyname and 'pageup' in pad.inputs:
+-                gcz_ids = {'pageup': pad.inputs['pageup'].id, 'pagedown': pad.inputs['pagedown'].id}
+-                _write_key(f, keyname, inp.type, inp.id, inp.value, pad.axis_count, reverse=False, gcz_ids=gcz_ids)
++                gcz_ids = {
++                    'pageup': input_id(pad.inputs['pageup']),
++                    'pagedown': input_id(pad.inputs['pagedown']),
++                }
++                _write_key(
++                    f, keyname, inp.type, input_id(inp), inp.value, pad.axis_count, reverse=False, gcz_ids=gcz_ids
++                )
+         # Write the 2nd part
+         if inp.name in {'joystick1up', 'joystick1left', 'joystick2up', 'joystick2left'} and keyname is not None:
+             _write_key(f, any_reverse_axes[keyname], inp.type, inp.id, inp.value, pad.axis_count, reverse=True)

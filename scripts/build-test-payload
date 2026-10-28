@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+project_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
+stage_root="$project_root/.work/stage"
+dist_root="$project_root/.work/dist"
+source_commit="$(git -C "$project_root" rev-parse HEAD)"
+
+"$project_root/scripts/stage-build"
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="$project_root/src" \
+  python -m embercade.transfer_payload build \
+    --stage-root "$stage_root" \
+    --dist-root "$dist_root" \
+    --source-commit "$source_commit" \
+    --build-root "$project_root"

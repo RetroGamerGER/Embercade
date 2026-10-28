@@ -1,0 +1,294 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+project_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
+reference_root="$(cd -- "$project_root/.." && pwd -P)"
+ui_root="$project_root/.work/ui"
+batocera_source="$ui_root/batocera-source"
+share_root="$ui_root/share"
+batocera_repo="$reference_root/Batocera"
+reference_bundle="$reference_root/embercade-reference"
+runtime_root="$project_root/.work/runtime"
+shader_template="$project_root/.work/shader-mappings"
+decoration_root="$project_root/.work/decorations"
+dev_rom_manifest="${EMBERCADE_DEV_ROMS_FILE:-$project_root/.work/dev-roms.tsv}"
+libretro_test_root="$ui_root/libretro-test-roms"
+libretro_systems=(
+  3ds amiga1200 amigacd32 atari2600 atari5200 atari7800 c64 dos dreamcast gamegear gb gba gbc jaguar
+  mastersystem megacd megadrive mrboom n64 neogeo neogeocd ngpc pcengine
+  pcenginecd prboom psp psx saturn sega32x snes mame nds wiiu
+)
+disc_libretro_systems=" amigacd32 dreamcast megacd neogeocd pcenginecd saturn "
+directory_libretro_systems=" wiiu "
+
+if [[ ! -f "$dev_rom_manifest" ]]; then
+  printf 'Missing local development ROM manifest: %s\n' "$dev_rom_manifest" >&2
+  printf 'Copy config/dev-roms.example.tsv into .work and supply only your own legally obtained content paths.\n' >&2
+  exit 1
+fi
+
+declare -A dev_roms=()
+while IFS=$'\t' read -r system rom_path extra; do
+  if [[ -z "$system" || "$system" == \#* ]]; then
+    continue
+  fi
+  if [[ -z "$rom_path" || -n "$extra" || -n "${dev_roms[$system]:-}" ]]; then
+    printf 'Invalid or duplicate development ROM manifest entry for %s\n' "$system" >&2
+    exit 1
+  fi
+  dev_roms["$system"]="$rom_path"
+done < "$dev_rom_manifest"
+
+required_manifest_keys=(
+  nes-root gamecube-root wii-root xbox-root ps2-root ps3-root xbox360-root
+  "${libretro_systems[@]}"
+)
+for system in "${required_manifest_keys[@]}"; do
+  if [[ -z "${dev_roms[$system]:-}" ]]; then
+    printf 'Missing development ROM manifest key: %s\n' "$system" >&2
+    exit 1
+  fi
+done
+
+nes_rom_root="${dev_roms[nes-root]}"
+gamecube_rom_root="${dev_roms[gamecube-root]}"
+wii_rom_root="${dev_roms[wii-root]}"
+xbox_rom_root="${dev_roms[xbox-root]}"
+ps2_rom_root="${dev_roms[ps2-root]}"
+ps3_rom_root="${dev_roms[ps3-root]}"
+xbox360_rom_root="${dev_roms[xbox360-root]}"
+libretro_roms=()
+for system in "${libretro_systems[@]}"; do
+  libretro_roms+=("${dev_roms[$system]}")
+done
+
+readarray -t lock_values < <(python - "$project_root/upstream.lock" <<'PY'
+from pathlib import Path
+import sys
+import tomllib
+
+with Path(sys.argv[1]).open("rb") as stream:
+    upstream = tomllib.load(stream)["upstream"]
+print(upstream["batocera.linux"])
+print(upstream["batocera-emulationstation"])
+PY
+)
+batocera_commit="${lock_values[0]}"
+es_commit="${lock_values[1]}"
+
+if ! "$project_root/scripts/shaders-smoke" >/dev/null 2>&1; then
+  "$project_root/scripts/shaders-prepare"
+fi
+"$project_root/scripts/decorations-prepare"
+shader_root="$(PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="$project_root/src" python - "$shader_template" "$ui_root" <<'PY'
+import os,sys
+from pathlib import Path
+from embercade.shaders import prepare_host_runtime
+print(prepare_host_runtime(Path(sys.argv[1]), Path(sys.argv[2]), os.environ))
+PY
+)"
+
+required=(
+  "$batocera_repo/.git"
+  "$reference_root/Batocera-EmulationStation/.git"
+  "$runtime_root/venv/bin/python"
+  "$runtime_root/share/batocera/launch/defaults/config.yml"
+  "$reference_bundle/usr-share-emulationstation/themes/es-theme-carbon/theme.xml"
+  "$shader_root/configs/rendering-defaults.yml"
+  "$decoration_root/default_nocurve"
+  "$nes_rom_root"
+  "$gamecube_rom_root"
+  "$wii_rom_root"
+  "$xbox_rom_root"
+  "$ps2_rom_root"
+  "$ps3_rom_root"
+  "$xbox360_rom_root"
+)
+required+=("${libretro_roms[@]}")
+for path in "${required[@]}"; do
+  if [[ ! -e "$path" ]]; then
+    printf 'Missing UI data prerequisite: %s\n' "$path" >&2
+    exit 1
+  fi
+done
+
+if [[ ! -f "$batocera_source/.embercade-source-commit" ]] || \
+   [[ "$(<"$batocera_source/.embercade-source-commit")" != "$batocera_commit" ]] || \
+   [[ ! -f "$batocera_source/package/batocera/emulators/retroarch/libretro/libretro-opera/opera.libretro.core.yml" ]] || \
+   [[ ! -f "$batocera_source/package/batocera/emulators/dolphin-emu/dolphin.emulator.yml" ]] || \
+   [[ ! -f "$batocera_source/package/batocera/emulators/xemu/xemu.emulator.yml" ]] || \
+   [[ ! -f "$batocera_source/package/batocera/emulators/retroarch/libretro/libretro-snes9x/snes9x.libretro.core.yml" ]] || \
+   [[ ! -f "$batocera_source/package/batocera/emulators/retroarch/libretro/libretro-puae/puae.libretro.core.yml" ]] || \
+   [[ ! -f "$batocera_source/package/batocera/emulators/retroarch/libretro/libretro-dosbox-pure/dosbox_pure.libretro.core.yml" ]] || \
+   [[ ! -f "$batocera_source/package/batocera/emulators/retroarch/libretro/libretro-mame2003-plus/mame078plus.libretro.core.yml" ]] || \
+   [[ ! -f "$batocera_source/package/batocera/emulators/retroarch/libretro/libretro-vice/vice_x64.libretro.core.yml" ]] || \
+   [[ ! -f "$batocera_source/package/batocera/emulators/retroarch/libretro/libretro-melonds/melonds.libretro.core.yml" ]] || \
+   [[ ! -f "$batocera_source/package/batocera/emulators/retroarch/libretro/libretro-melonds-ds/melondsds.libretro.core.yml" ]] || \
+   [[ ! -f "$batocera_source/package/batocera/emulators/retroarch/libretro/libretro-ppsspp/ppsspp.libretro.core.yml" ]] || \
+   [[ ! -f "$batocera_source/package/batocera/emulators/retroarch/libretro/libretro-azahar/azahar.libretro.core.yml" ]] || \
+   [[ ! -f "$batocera_source/package/batocera/emulators/retroarch/libretro/libretro-mupen64plus-next/mupen64plus-next.libretro.core.yml" ]] || \
+   [[ ! -f "$batocera_source/package/batocera/emulators/retroarch/libretro/libretro-virtualjaguar/virtualjaguar.libretro.core.yml" ]] || \
+   [[ ! -f "$batocera_source/package/batocera/emulators/retroarch/libretro/libretro-flycast/flycast.libretro.core.yml" ]] || \
+   [[ ! -f "$batocera_source/package/batocera/emulators/retroarch/libretro/libretro-neocd/neocd.libretro.core.yml" ]] || \
+   [[ ! -f "$batocera_source/package/batocera/emulators/retroarch/libretro/libretro-beetle-saturn/beetle-saturn.libretro.core.yml" ]] || \
+   [[ ! -f "$batocera_source/package/batocera/emulators/retroarch/libretro/libretro-pcsx/pcsx_rearmed.libretro.core.yml" ]] || \
+   [[ ! -f "$batocera_source/package/batocera/emulators/retroarch/libretro/libretro-swanstation/swanstation.libretro.core.yml" ]] || \
+   [[ ! -f "$batocera_source/package/batocera/emulators/retroarch/libretro/libretro-beetle-psx/mednafen_psx.libretro.core.yml" ]] || \
+   [[ ! -f "$batocera_source/package/batocera/emulators/pcsx2/pcsx2.emulator.yml" ]] || \
+   [[ ! -f "$batocera_source/package/batocera/emulators/rpcs3/rpcs3.emulator.yml" ]] || \
+   [[ ! -f "$batocera_source/package/batocera/emulators/cemu-common/cemu.emulator.yml" ]] || \
+   [[ ! -f "$batocera_source/package/batocera/emulators/xenia-edge/xenia-edge.emulator.yml" ]]; then
+  if [[ -e "$batocera_source" ]]; then
+    if [[ "$batocera_source" != "$project_root/.work/ui/batocera-source" || -L "$batocera_source" ]]; then
+      printf 'Refusing unexpected UI data source path: %s\n' "$batocera_source" >&2
+      exit 1
+    fi
+    find "$batocera_source" -depth -mindepth 1 -delete
+  fi
+  mkdir -p "$batocera_source"
+  git -C "$batocera_repo" archive "$batocera_commit" \
+    python-src/batocera-es-system \
+    package/batocera/emulationstation/batocera-es-system \
+    package/batocera/emulationstation/batocera-emulationstation/controllers/es_input.cfg \
+    package/batocera/emulationstation/batocera-emulationstation/es_savestates.cfg \
+    package/batocera/emulators/retroarch/retroarch/libretro.emulator.yml \
+    package/batocera/emulators/retroarch/retroarch/gfxbackend.libretro.emulator.yml \
+    package/batocera/emulators/retroarch/libretro/libretro-opera/opera.libretro.core.yml \
+    package/batocera/emulators/retroarch/libretro/libretro-nestopia/nestopia.libretro.core.yml \
+    package/batocera/emulators/retroarch/libretro/libretro-fceumm/fceumm.libretro.core.yml \
+    package/batocera/emulators/retroarch/libretro/libretro-mesen/mesen.libretro.core.yml \
+    package/batocera/emulators/retroarch/libretro/libretro-stella/stella.libretro.core.yml \
+    package/batocera/emulators/retroarch/libretro/libretro-atari800/atari800.libretro.core.yml \
+    package/batocera/emulators/retroarch/libretro/libretro-prosystem/prosystem.libretro.core.yml \
+    package/batocera/emulators/retroarch/libretro/libretro-genesisplusgx/genesisplusgx.libretro.core.yml \
+    package/batocera/emulators/retroarch/libretro/libretro-gambatte/gambatte.libretro.core.yml \
+    package/batocera/emulators/retroarch/libretro/libretro-mgba/mgba.libretro.core.yml \
+    package/batocera/emulators/retroarch/libretro/libretro-mrboom/mrboom.libretro.core.yml \
+    package/batocera/emulators/retroarch/libretro/libretro-fbneo/fbneo.libretro.core.yml \
+    package/batocera/emulators/retroarch/libretro/libretro-beetle-ngp/mednafen_ngp.libretro.core.yml \
+    package/batocera/emulators/retroarch/libretro/libretro-beetle-pce/pce.libretro.core.yml \
+    package/batocera/emulators/retroarch/libretro/libretro-prboom/prboom.libretro.core.yml \
+    package/batocera/emulators/retroarch/libretro/libretro-vice/vice_x64.libretro.core.yml \
+    package/batocera/emulators/retroarch/libretro/libretro-melonds/melonds.libretro.core.yml \
+    package/batocera/emulators/retroarch/libretro/libretro-melonds-ds/melondsds.libretro.core.yml \
+    package/batocera/emulators/retroarch/libretro/libretro-ppsspp/ppsspp.libretro.core.yml \
+    package/batocera/emulators/retroarch/libretro/libretro-azahar/azahar.libretro.core.yml \
+    package/batocera/emulators/retroarch/libretro/libretro-mupen64plus-next/mupen64plus-next.libretro.core.yml \
+    package/batocera/emulators/retroarch/libretro/libretro-virtualjaguar/virtualjaguar.libretro.core.yml \
+    package/batocera/emulators/retroarch/libretro/libretro-puae/puae.libretro.core.yml \
+    package/batocera/emulators/retroarch/libretro/libretro-dosbox-pure/dosbox_pure.libretro.core.yml \
+    package/batocera/emulators/retroarch/libretro/libretro-mame2003-plus/mame078plus.libretro.core.yml \
+    package/batocera/emulators/retroarch/libretro/libretro-flycast/flycast.libretro.core.yml \
+    package/batocera/emulators/retroarch/libretro/libretro-neocd/neocd.libretro.core.yml \
+    package/batocera/emulators/retroarch/libretro/libretro-pcsx/pcsx_rearmed.libretro.core.yml \
+    package/batocera/emulators/retroarch/libretro/libretro-swanstation/swanstation.libretro.core.yml \
+    package/batocera/emulators/retroarch/libretro/libretro-beetle-psx/mednafen_psx.libretro.core.yml \
+    package/batocera/emulators/retroarch/libretro/libretro-beetle-saturn/beetle-saturn.libretro.core.yml \
+    package/batocera/emulators/retroarch/libretro/libretro-picodrive/picodrive.libretro.core.yml \
+    package/batocera/emulators/retroarch/libretro/libretro-snes9x/snes9x.libretro.core.yml \
+    package/batocera/emulators/dolphin-emu/dolphin.emulator.yml \
+    package/batocera/emulators/dolphin-emu/gfxbackend.dolphin.emulator.yml \
+    package/batocera/emulators/xemu/xemu.emulator.yml \
+    package/batocera/emulators/pcsx2/pcsx2.emulator.yml \
+    package/batocera/emulators/rpcs3/rpcs3.emulator.yml \
+    package/batocera/emulators/cemu-common/cemu.emulator.yml \
+    package/batocera/emulators/xenia-edge/xenia-edge.emulator.yml \
+    | tar -x -C "$batocera_source"
+  printf '%s\n' "$batocera_commit" > "$batocera_source/.embercade-source-commit"
+fi
+
+mkdir -p "$share_root/emulationstation" "$share_root/batocera"
+libretro_ui_args=(
+  --libretro-launch-command "$project_root/scripts/launch-libretro-test"
+)
+for index in "${!libretro_systems[@]}"; do
+  system="${libretro_systems[$index]}"
+  rom="${libretro_roms[$index]}"
+  if [[ "$disc_libretro_systems" == *" $system "* ]]; then
+    # Keep CUE/GDI relative track references intact and expose the existing
+    # collection read-only through dev-run instead of copying disc content.
+    system_root="${rom%/*}"
+  elif [[ "$directory_libretro_systems" == *" $system "* ]]; then
+    # Preserve Cemu's code/content/meta sibling layout while exposing only one
+    # selected game to the isolated frontend.
+    game_root="${rom%/code/*}"
+    system_root="$libretro_test_root/$system"
+    mkdir -p "$system_root"
+    ln -sfn -- "$game_root" "$system_root/${game_root##*/}"
+  else
+    system_root="$libretro_test_root/$system"
+    mkdir -p "$system_root"
+    ln -sfn -- "$rom" "$system_root/${rom##*/}"
+  fi
+  libretro_ui_args+=(--libretro-system "$system=$system_root")
+done
+PYTHONDONTWRITEBYTECODE=1 \
+PYTHONPATH="$project_root/src" \
+  "$runtime_root/venv/bin/python" -m embercade ui-build \
+    --batocera-source "$batocera_source" \
+    --defaults "$runtime_root/share/batocera/launch/defaults" \
+    --output "$share_root/emulationstation" \
+    --rom-path "$nes_rom_root" \
+    --launch-command "$project_root/scripts/launch-nes-test" \
+    --gamecube-rom-path "$gamecube_rom_root" \
+    --gamecube-launch-command "$project_root/scripts/launch-gamecube-test" \
+    --wii-rom-path "$wii_rom_root" \
+    --wii-launch-command "$project_root/scripts/launch-wii-test" \
+    --xbox-rom-path "$xbox_rom_root" \
+    --xbox-launch-command "$project_root/scripts/launch-xbox-test" \
+    --ps2-rom-path "$ps2_rom_root" \
+    --ps2-launch-command "$project_root/scripts/launch-ps2-test" \
+    --ps3-rom-path "$ps3_rom_root" \
+    --ps3-launch-command "$project_root/scripts/launch-ps3-test" \
+    --external-system "xbox360=$xbox360_rom_root" \
+    --external-launch-command "$project_root/scripts/launch-system-test" \
+    "${libretro_ui_args[@]}"
+
+es_repo="$reference_root/Batocera-EmulationStation"
+es_assets="$ui_root/es-assets"
+if [[ ! -f "$es_assets/.embercade-source-commit" ]] || \
+   [[ "$(<"$es_assets/.embercade-source-commit")" != "$es_commit" ]]; then
+  if [[ -e "$es_assets" ]]; then
+    if [[ "$es_assets" != "$project_root/.work/ui/es-assets" || -L "$es_assets" ]]; then
+      printf 'Refusing unexpected ES asset path: %s\n' "$es_assets" >&2
+      exit 1
+    fi
+    find "$es_assets" -depth -mindepth 1 -delete
+  fi
+  mkdir -p "$es_assets"
+  git -C "$es_repo" archive "$es_commit" resources locale | tar -x -C "$es_assets"
+  printf '%s\n' "$es_commit" > "$es_assets/.embercade-source-commit"
+fi
+
+ln -sfn -- "$es_assets/resources" "$share_root/emulationstation/resources"
+mkdir -p "$share_root/emulationstation/themes" "$share_root/emulationstation/locale"
+ln -sfn -- \
+  "$reference_bundle/usr-share-emulationstation/themes/es-theme-carbon" \
+  "$share_root/emulationstation/themes/es-theme-carbon"
+for language in de en_GB; do
+  locale_dir="$share_root/emulationstation/locale/$language/LC_MESSAGES"
+  mkdir -p "$locale_dir"
+  msgfmt \
+    "$es_assets/locale/lang/$language/LC_MESSAGES/emulationstation2.po" \
+    -o "$locale_dir/emulationstation2.mo"
+done
+
+ln -sfn -- \
+  "$batocera_source/package/batocera/emulationstation/batocera-emulationstation/controllers/es_input.cfg" \
+  "$share_root/emulationstation/es_input.cfg"
+ln -sfn -- \
+  "$batocera_source/package/batocera/emulationstation/batocera-emulationstation/es_savestates.cfg" \
+  "$share_root/emulationstation/es_savestates.cfg"
+ln -sfn -- "$shader_root" "$share_root/batocera/shaders"
+mkdir -p "$share_root/batocera/datainit"
+ln -sfn -- \
+  "$decoration_root" \
+  "$share_root/batocera/datainit/decorations"
+
+es_binary="$ui_root/es-source/emulationstation"
+if [[ ! -x "$es_binary" ]] || \
+   [[ "$project_root/scripts/ui-build" -nt "$es_binary" ]] || \
+   [[ "$project_root/patches/emulationstation/0001-embercade-desktop-policy.patch" -nt "$es_binary" ]]; then
+  "$project_root/scripts/ui-build"
+fi
+printf 'Prepared pinned Batocera UI data: %s\n' "$share_root"

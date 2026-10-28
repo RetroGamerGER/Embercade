@@ -1,0 +1,72 @@
+Original embedded font names and rights notices (name-table IDs 0, 1, 3, 13, 14).
+
+resources/emulationstation/resources/DroidSansFallbackFull.ttf
+name ID 0: Digitized data copyright Google Corporation © 2006
+name ID 1: Droid Sans Fallback
+name ID 3: Ascender - Droid Sans Fallback
+name ID 13: Licensed under the Apache License, Version 2.0
+name ID 14: http://www.apache.org/licenses/LICENSE-2.0
+
+resources/emulationstation/resources/PyeojinGothic-Medium.ttf
+name ID 0: Copyright © 2025 Suh Ji-hwan
+name ID 0: Copyright © 2025 서지환
+name ID 1: Pyeojin Gothic Medium
+name ID 3: Pyeojin Gothic Medium:Version 1.309
+name ID 13: This Font Software is licensed under the SIL Open Font License, Version 1.1. This license is available with a FAQ at: http://scripts.sil.org/OFL
+name ID 14: http://scripts.sil.org/OFL
+
+resources/emulationstation/resources/Rubik-Regular.ttf
+name ID 0: Copyright 2015 The Rubik Project Authors
+name ID 1: Rubik
+name ID 3: 2.000;UKWN;Rubik-Regular
+name ID 13: This Font Software is licensed under the SIL Open Font License, Version 1.1. This license is available with a FAQ at: http://scripts.sil.org/OFL
+name ID 14: http://scripts.sil.org/OFL
+
+resources/emulationstation/resources/Vazirmatn-Regular.ttf
+name ID 0: Copyright 2015 The Vazirmatn Project Authors (https://github.com/rastikerdar/vazirmatn)
+name ID 1: Vazirmatn
+name ID 3: 33.003;    ;Vazirmatn-Regular
+name ID 13: This Font Software is licensed under the SIL Open Font License, Version 1.1. This license is available with a FAQ at: https://scripts.sil.org/OFL
+name ID 14: https://scripts.sil.org/OFL
+
+resources/emulationstation/resources/fontawesome-webfont.ttf
+name ID 0: Copyright Dave Gandy 2015. All rights reserved.
+name ID 1: FontAwesome
+name ID 3: pyrs: FontAwesome: 2012
+name ID 14: http://fontawesome.io/license/
+
+resources/emulationstation/resources/opensans_hebrew_condensed_light.ttf
+name ID 0: Digitized data copyright (c) 2011, Google Corporation. Copyright (c) 2012, 2013 Yanek Iontef (yanek@netvision.net.il)
+name ID 1: Open Sans Hebrew Condensed Light
+name ID 3: 2.001;UKWN;OpenSansHebrewCondensed-Light
+name ID 13: Licensed under the Apache License, Version 2.0
+name ID 14: http://www.apache.org/licenses/LICENSE-2.0
+
+resources/emulationstation/resources/opensans_hebrew_condensed_regular.ttf
+name ID 0: copyright missing
+name ID 1: Open Sans Hebrew Condensed
+name ID 3: 2.001;UKWN;OpenSansHebrewCondensed-Regular
+
+resources/emulationstation/resources/ubuntu_condensed.ttf
+name ID 0: Copyright 2011 Canonical Ltd.  Licensed under the Ubuntu Font Licence 1.0
+name ID 1: Ubuntu Condensed
+name ID 3: Ubuntu Condensed Regular Version 0.83
+
+resources/emulationstation/themes/es-theme-carbon/art/fonts/Cabin-Bold.ttf
+name ID 0: Copyright 2018 The Cabin Project Authors (https://github.com/impallari/Cabin)
+name ID 1: Cabin
+name ID 3: 3.001;IMPA;Cabin-Bold
+name ID 13: This Font Software is licensed under the SIL Open Font License, Version 1.1. This license is available with a FAQ at: https://scripts.sil.org/OFL
+name ID 14: https://scripts.sil.org/OFL
+
+resources/emulationstation/themes/es-theme-carbon/art/fonts/Cabin-Regular.ttf
+name ID 0: Copyright 2018 The Cabin Project Authors (https://github.com/impallari/Cabin)
+name ID 1: Cabin
+name ID 3: 3.001;IMPA;Cabin-Regular
+name ID 13: This Font Software is licensed under the SIL Open Font License, Version 1.1. This license is available with a FAQ at: https://scripts.sil.org/OFL
+name ID 14: https://scripts.sil.org/OFL
+
+resources/emulationstation/themes/es-theme-carbon/art/fonts/players.ttf
+name ID 0: RVGM
+name ID 1: rvgm
+name ID 3: rvgm

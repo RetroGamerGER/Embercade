@@ -1,0 +1,8 @@
+# Unified-diff files require a leading context marker on otherwise blank lines.
+patches/batocera-launch/*.patch whitespace=-blank-at-eol
+patches/emulationstation/*.patch whitespace=-blank-at-eol,-space-before-tab
+## Official Creative Commons copies retain their original final blank lines.
+LICENSES/prepared/CC-BY-NC-*.txt whitespace=-blank-at-eof
+LICENSES/CC-BY-NC-*.txt whitespace=-blank-at-eof
+# Preserve original upstream notice/header bytes, including CRLF and spacing.
+LICENSES/third-party/** -text whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab

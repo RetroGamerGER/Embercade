@@ -1,0 +1,27 @@
+diff --git a/python-src/batocera-launch/batocera_launch/config/config.py b/python-src/batocera-launch/batocera_launch/config/config.py
+--- a/python-src/batocera-launch/batocera_launch/config/config.py
++++ b/python-src/batocera-launch/batocera_launch/config/config.py
+@@ -1,6 +1,7 @@
+ from __future__ import annotations
+ 
+ import logging
++import os
+ from collections import ChainMap
+ from dataclasses import dataclass
+ from typing import TYPE_CHECKING, Any, ClassVar, Final, Literal, Self, cast, overload
+@@ -163,8 +164,12 @@
+                 if not rendering_defaults.exists():
+                     rendering_defaults = BATOCERA_SHADERS / 'configs' / shader_set / 'rendering-defaults.yml'
+ 
+-            render_data = load_defaults(
+-                self.system, rendering_defaults, rendering_defaults.with_name('rendering-defaults-arch.yml')
+-            )
++            if not rendering_defaults.is_file() and os.environ.get('EMBERCADE_DESKTOP') == '1':
++                # A missing optional host preset never cancels a game launch.
++                render_data = {'shader': 'embercade/unavailable'}
++            else:
++                render_data = load_defaults(
++                    self.system, rendering_defaults, rendering_defaults.with_name('rendering-defaults-arch.yml')
++                )
+ 
+         return Config(render_data)

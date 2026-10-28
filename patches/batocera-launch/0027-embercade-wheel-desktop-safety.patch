@@ -1,0 +1,28 @@
+diff --git a/python-src/batocera-launch/batocera_launch/devices/wheels.py b/python-src/batocera-launch/batocera_launch/devices/wheels.py
+--- a/python-src/batocera-launch/batocera_launch/devices/wheels.py
++++ b/python-src/batocera-launch/batocera_launch/devices/wheels.py
+@@ -201,7 +201,9 @@ async def configure_wheels(
+             )
+ 
+             # try to write range directly in physical wheel if the driver supports it
+-            if (range_path := _find_range_path(device.sysfs_path)) is not None:
++            # A desktop user session must not change a host-wide wheel range.
++            # The physical axis remains usable without appliance calibration.
++            if os.environ.get('EMBERCADE_DESKTOP') != '1' and (range_path := _find_range_path(device.sysfs_path)) is not None:
+                 saved_ranges.append((range_path, str(ra)))
+                 range_path.write_text(str(wanted_ra))
+                 _logger.info('wheel range set to %s through %s', wanted_ra, range_path)
+@@ -209,7 +211,12 @@ async def configure_wheels(
+                 ra = wanted_ra
+ 
+             # no need new device in some cases
+-            if wanted_ra < ra or wanted_deadzone > 0:
++            if os.environ.get('EMBERCADE_DESKTOP') == '1' and (wanted_ra < ra or wanted_deadzone > 0):
++                _logger.warning(
++                    'Desktop wheel calibration unavailable; using raw steering/pedal axes (requested range=%s, deadzone=%s)',
++                    wanted_ra, wanted_deadzone,
++                )
++            if os.environ.get('EMBERCADE_DESKTOP') != '1' and (wanted_ra < ra or wanted_deadzone > 0):
+                 reconfigure_result = await _reconfigure_angle_rotation(
+                     controller, ra, wanted_ra, wanted_deadzone, wanted_midzone
+                 )

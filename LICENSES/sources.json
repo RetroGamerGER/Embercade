@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "sources": [
+    {
+      "file": "PolyForm-Noncommercial-1.0.0.txt",
+      "source_copy": "prepared/PolyForm-Noncommercial-1.0.0.txt",
+      "sha256": "c0ea4a896d2c8c394b29f9427589996db826cd501c512279ff0ed3ef48fabbe5",
+      "bytes": 4563
+    },
+    {
+      "file": "CC-BY-NC-SA-4.0.txt",
+      "source_copy": "prepared/CC-BY-NC-SA-4.0.txt",
+      "sha256": "e66c269d4819aaab34b49ef5220c4ddab6756f21bb5180761a4eb8561f2b7bbd",
+      "bytes": 20850
+    },
+    {
+      "file": "CC-BY-NC-ND-4.0.txt",
+      "source_copy": "prepared/CC-BY-NC-ND-4.0.txt",
+      "sha256": "38762e3777f4ec00a6f769062a7c3f704fb78ce08303ecff88558da4c49cf9ea",
+      "bytes": 19127
+    },
+    {
+      "file": "LGPL-3.0-only.txt",
+      "source_url": "https://www.gnu.org/licenses/lgpl-3.0.txt",
+      "sha256": "e3a994d82e644b03a792a930f574002658412f62407f5fee083f2555c5f23118",
+      "bytes": 7652,
+      "retrieved": "2026-10-27"
+    },
+    {
+      "file": "GPL-3.0-only.txt",
+      "source_url": "https://raw.githubusercontent.com/spdx/license-list-data/v3.27.0/text/GPL-3.0-only.txt",
+      "sha256": "fb981668c18a279e285fc4d83fba1e836cc84dd4daa73c9697d3cfd2d8aca6e0",
+      "bytes": 34674,
+      "retrieved": "2026-10-27"
+    },
+    {
+      "file": "MIT.txt",
+      "source_copy": "prepared/EmulationStation-MIT.txt",
+      "change": "Own copyright line for original Embercade contributions only; upstream original retained unchanged",
+      "sha256": "dde54663986fbbc88754841ca74b6ef5185d94c24aa253db126c05257703c888",
+      "bytes": 1067
+    }
+  ]
+}

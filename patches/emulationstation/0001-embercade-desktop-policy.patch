@@ -1,0 +1,184 @@
+--- a/es-app/src/guis/GuiMenu.cpp
++++ b/es-app/src/guis/GuiMenu.cpp
+@@ -62,6 +62,7 @@
+ #include "TextToSpeech.h"
+ #include "Paths.h"
+ #include <set> 
++#include <cstdlib>
+ 
+ #if !WIN32
+ #include <vector>
+@@ -128,6 +129,12 @@
+ #define fake_gettext_resolution_max_1K  _("maximum 1920x1080")
+ #define fake_gettext_resolution_max_640 _("maximum 640x480")
+ 
++static bool embercadePolicyEnabled(const char* capability)
++{
++	const char* value = std::getenv(capability);
++	return value != nullptr && value[0] == '1' && value[1] == '\0';
++}
++
+ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(window, _("MAIN MENU").c_str())
+ {
+ 	// MAIN MENU
+@@ -210,7 +217,8 @@
+ 			ApiSystem::getInstance()->isScriptingSupported(ApiSystem::UPGRADE))
+ 			addEntry(_("UPDATES & DOWNLOADS"), true, [this] { openUpdatesSettings(); }, "iconUpdates");
+ 
+-		addEntry(_("SYSTEM SETTINGS").c_str(), true, [this] { openSystemSettings(); }, "iconSystem");
++		if (!embercadePolicyEnabled("EMBERCADE_HIDE_SYSTEM_SETTINGS"))
++			addEntry(_("SYSTEM SETTINGS").c_str(), true, [this] { openSystemSettings(); }, "iconSystem");
+ 	}
+ 	else
+ 	{
+@@ -272 +280,5 @@
+-	std::string label;
++#ifdef EMBERCADE_FRONTEND_PRODUCT_LABEL
++	// Themes style this footer, but do not own the product identity.
++	std::string label = EMBERCADE_FRONTEND_PRODUCT_LABEL;
++#else
++	std::string label;
+@@ -283,0 +296 @@
++#endif
+@@ -4718,43 +4731,54 @@
+ 	if (quickAccessMenu)
+ 		s->addGroup(_("QUIT"));
+ 
+-	s->addEntry(_("RESTART SYSTEM"), false, [window] {
+-		window->pushGui(new GuiMsgBox(window, _("REALLY RESTART?"), 
+-			_("YES"), [] { Utils::Platform::quitES(Utils::Platform::QuitMode::REBOOT); },
+-			_("NO"), nullptr));
+-	}, "iconRestart");
+-
+-	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::SUSPEND))
++	if (embercadePolicyEnabled("EMBERCADE_EXIT_ONLY"))
+ 	{
+-		s->addEntry(_("SUSPEND SYSTEM"), false, [window, s] {
+-			window->pushGui(new GuiMsgBox(window, _("REALLY SUSPEND ?"),
+-				_("YES"), [s] { s->close(); ApiSystem::getInstance()->suspend(); },
++		s->addEntry(_("QUIT EMBERCADE"), false, [window] {
++			window->pushGui(new GuiMsgBox(window, _("REALLY QUIT?"),
++				_("YES"), [] { Utils::Platform::quitES(Utils::Platform::QuitMode::QUIT); },
+ 				_("NO"), nullptr));
+-		}, "iconFastShutdown");
++		}, "iconQuit");
+ 	}
+-
+-	s->addEntry(_("SHUTDOWN SYSTEM"), false, [window] {
+-		window->pushGui(new GuiMsgBox(window, _("REALLY SHUTDOWN?"), 
+-			_("YES"), [] { Utils::Platform::quitES(Utils::Platform::QuitMode::SHUTDOWN); },
+-			_("NO"), nullptr));
+-	}, "iconShutdown");
+-
+-	s->addWithDescription(_("FAST SHUTDOWN SYSTEM"),_("Shutdown without saving metadata."), nullptr, [window] {
+-		window->pushGui(new GuiMsgBox(window, _("REALLY SHUTDOWN WITHOUT SAVING METADATA?"), 
+-			_("YES"), [] { Utils::Platform::quitES(Utils::Platform::QuitMode::FAST_SHUTDOWN); },
+-			_("NO"), nullptr));
+-	}, "iconFastShutdown");
++	else
++	{
++		s->addEntry(_("RESTART SYSTEM"), false, [window] {
++			window->pushGui(new GuiMsgBox(window, _("REALLY RESTART?"), 
++				_("YES"), [] { Utils::Platform::quitES(Utils::Platform::QuitMode::REBOOT); },
++				_("NO"), nullptr));
++		}, "iconRestart");
++
++		if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::SUSPEND))
++		{
++			s->addEntry(_("SUSPEND SYSTEM"), false, [window, s] {
++				window->pushGui(new GuiMsgBox(window, _("REALLY SUSPEND ?"),
++					_("YES"), [s] { s->close(); ApiSystem::getInstance()->suspend(); },
++					_("NO"), nullptr));
++			}, "iconFastShutdown");
++		}
++
++		s->addEntry(_("SHUTDOWN SYSTEM"), false, [window] {
++			window->pushGui(new GuiMsgBox(window, _("REALLY SHUTDOWN?"), 
++				_("YES"), [] { Utils::Platform::quitES(Utils::Platform::QuitMode::SHUTDOWN); },
++				_("NO"), nullptr));
++		}, "iconShutdown");
++
++		s->addWithDescription(_("FAST SHUTDOWN SYSTEM"),_("Shutdown without saving metadata."), nullptr, [window] {
++			window->pushGui(new GuiMsgBox(window, _("REALLY SHUTDOWN WITHOUT SAVING METADATA?"), 
++				_("YES"), [] { Utils::Platform::quitES(Utils::Platform::QuitMode::FAST_SHUTDOWN); },
++				_("NO"), nullptr));
++		}, "iconFastShutdown");
+ 
+ #ifdef WIN32
+-	if (Settings::getInstance()->getBool("ShowExit"))
+-	{
+-		s->addEntry(_("QUIT EMULATIONSTATION"), false, [window] {
+-			window->pushGui(new GuiMsgBox(window, _("REALLY QUIT?"), 
+-				_("YES"), [] { Utils::Platform::quitES(Utils::Platform::QuitMode::QUIT); },
+-				_("NO"), nullptr));
+-		}, "iconQuit");
+-	}
++		if (Settings::getInstance()->getBool("ShowExit"))
++		{
++			s->addEntry(_("QUIT EMULATIONSTATION"), false, [window] {
++				window->pushGui(new GuiMsgBox(window, _("REALLY QUIT?"), 
++					_("YES"), [] { Utils::Platform::quitES(Utils::Platform::QuitMode::QUIT); },
++					_("NO"), nullptr));
++			}, "iconQuit");
++		}
+ #endif
++	}
+ 
+ 	if (quickAccessMenu && animate)
+ 		s->getMenu().animateTo(Vector2f((Renderer::getScreenWidth() - s->getMenu().getSize().x()) / 2, (Renderer::getScreenHeight() - s->getMenu().getSize().y()) / 2));
+--- a/es-core/src/Splash.cpp
++++ b/es-core/src/Splash.cpp
+@@ -8,0 +9 @@
++#include <cstdlib>
+@@ -20 +21,5 @@
+-	bool useOldSplashLayout = OLD_SPLASH_LAYOUT;
++	// Product startup/reload branding is not part of an interchangeable theme.
++	const char* desktopPolicy = std::getenv("EMBERCADE_DESKTOP_POLICY");
++	const bool productSplash = fullScreenBackGround && desktopPolicy != nullptr
++		&& std::string(desktopPolicy) == "1";
++	bool useOldSplashLayout = productSplash ? false : OLD_SPLASH_LAYOUT;
+@@ -28 +33,2 @@
+-	std::map<std::string, ThemeSet> themeSets = ThemeData::getThemeSets();
++	std::map<std::string, ThemeSet> themeSets = productSplash
++		? std::map<std::string, ThemeSet>() : ThemeData::getThemeSets();
+@@ -37 +43 @@
+-	if (Utils::FileSystem::exists(themeFilePath))
++	if (!productSplash && Utils::FileSystem::exists(themeFilePath))
+--- a/es-app/src/guis/GuiSystemInformation.cpp
++++ b/es-app/src/guis/GuiSystemInformation.cpp
+@@ -19 +19,5 @@
++#ifdef EMBERCADE_FRONTEND_PRODUCT_LABEL
++	addWithLabel(_("VERSION"), std::make_shared<TextComponent>(window, EMBERCADE_FRONTEND_PRODUCT_LABEL, font, color));
++#else
+ 	addWithLabel(_("VERSION"), std::make_shared<TextComponent>(window, ApiSystem::getInstance()->getVersion(), font, color));
++#endif
+--- a/es-core/CMakeLists.txt
++++ b/es-core/CMakeLists.txt
+@@ -295,2 +295,6 @@
+ add_library(es-core STATIC ${CORE_SOURCES} ${CORE_HEADERS})
+ target_link_libraries(es-core ${COMMON_LIBRARIES})
++if(EMBERCADE_FRONTEND_PRODUCT_LABEL)
++    target_compile_definitions(es-core PRIVATE
++        "EMBERCADE_FRONTEND_PRODUCT_LABEL=\"${EMBERCADE_FRONTEND_PRODUCT_LABEL}\"")
++endif()
+--- a/es-core/src/renderers/Renderer.cpp
++++ b/es-core/src/renderers/Renderer.cpp
+@@ -242,6 +242,11 @@
+ 			return false;
+ 		}
+ 
++#ifdef EMBERCADE_FRONTEND_PRODUCT_LABEL
++		// Preserve the SDL window identity established at creation; brand its title only.
++		SDL_SetWindowTitle(sdlWindow, EMBERCADE_FRONTEND_PRODUCT_LABEL);
++#endif
++
+ 		if (Settings::getInstance()->getBool("Windowed"))
+ 			SDL_SetWindowMinimumSize(sdlWindow, 320, 200);
+ 
+--- a/es-app/CMakeLists.txt
++++ b/es-app/CMakeLists.txt
+@@ -268,0 +269,4 @@
++if(EMBERCADE_FRONTEND_PRODUCT_LABEL)
++    target_compile_definitions(emulationstation PRIVATE
++        "EMBERCADE_FRONTEND_PRODUCT_LABEL=\"${EMBERCADE_FRONTEND_PRODUCT_LABEL}\"")
++endif()

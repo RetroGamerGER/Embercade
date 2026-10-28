@@ -1,0 +1,25 @@
+diff --git a/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroConfig.py b/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroConfig.py
+--- a/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroConfig.py
++++ b/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroConfig.py
+@@ -1,7 +1,8 @@
+ from __future__ import annotations
+ 
+ import json
+ import logging
++import os
+ import subprocess
+ from pathlib import Path
+ from typing import TYPE_CHECKING, Any, NotRequired, TypedDict, cast
+@@ -234,6 +235,11 @@
+     retroarchConfig['builtin_imageviewer_enable'] = 'false'
+ 
+     # Input configuration
+-    retroarchConfig['input_joypad_driver'] = 'udev'
++    # Embercade passes SDL device indices as player indices. On desktop Linux,
++    # udev may enumerate the same devices in a different order (notably USB +
++    # Bluetooth), so RetroArch must use the matching SDL2 joypad index space.
++    retroarchConfig['input_joypad_driver'] = (
++        'sdl2' if os.environ.get('EMBERCADE_DESKTOP') == '1' else 'udev'
++    )
+     retroarchConfig['input_driver'] = 'udev'                    # driver for mouse/keyboard. udev required for guns.
+     retroarchConfig['input_max_users'] = "16"                   # Allow up to 16 players

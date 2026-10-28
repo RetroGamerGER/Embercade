@@ -1,0 +1,29 @@
+diff --git a/python-src/batocera-launch-dolphin/batocera_launch_dolphin/emulator.py b/python-src/batocera-launch-dolphin/batocera_launch_dolphin/emulator.py
+--- a/python-src/batocera-launch-dolphin/batocera_launch_dolphin/emulator.py
++++ b/python-src/batocera-launch-dolphin/batocera_launch_dolphin/emulator.py
+@@ -27,4 +27,18 @@
+ _GAMECUBE_LANGUAGES: Final = {'en_US': 0, 'de_DE': 1, 'fr_FR': 2, 'es_ES': 3, 'it_IT': 4, 'nl_NL': 5}
+ 
+ 
++def _desktop_exit_binding(pad, hotkey, start) -> str:
++    """Use the same SDL-to-evdev button slots as Dolphin's pad configuration."""
++    evdev_buttons = controllers._sdl_to_dolphin_evdev_buttons(pad)
++
++    def button_id(inp) -> str:
++        try:
++            button = int(inp.id)
++        except ValueError:
++            return inp.id
++        return str(evdev_buttons.get(button, button))
++
++    return f'`Button {button_id(hotkey)}` & `Button {button_id(start)}`'
++
++
+ def _gamecube_lang_from_environment() -> int:
+@@ -306,5 +320,5 @@
+             start = pad.inputs.get('start')
+             if hotkey is not None and start is not None and hotkey.type == start.type == 'button':
+                 hotkey_device = f'evdev/0/{pad.real_name.strip()}'
+-                exit_binding = f'`Button {hotkey.id}` & `Button {start.id}`'
++                exit_binding = _desktop_exit_binding(pad, hotkey, start)
+         hotkeys.set('Hotkeys', 'Device', hotkey_device)

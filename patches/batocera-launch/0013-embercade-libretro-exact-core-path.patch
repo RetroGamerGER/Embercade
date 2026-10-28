@@ -1,0 +1,55 @@
+--- a/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroPaths.py
++++ b/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroPaths.py
+@@ -14,3 +14,12 @@
+ RETROARCH_ROOT_INIT: Final = CONF_INIT / 'retroarch'
+ RETROARCH_CORES: Final = Path(os.environ.get('EMBERCADE_LIBRETRO_CORES', '/usr/lib/libretro'))
+ RETROARCH_SHARE: Final = Path(os.environ.get('EMBERCADE_LIBRETRO_SHARE', '/usr/share/libretro'))
++
++
++def retroarch_core_path(core_name: str) -> Path:
++    """Use Embercade's exact host-core resolution for the requested core only."""
++    override = os.environ.get('EMBERCADE_LIBRETRO_CORE')
++    override_name = os.environ.get('EMBERCADE_LIBRETRO_CORE_NAME')
++    if override and override_name == core_name:
++        return Path(override)
++    return RETROARCH_CORES / f'{core_name}_libretro.so'
+--- a/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroGenerator.py
++++ b/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroGenerator.py
+@@ -27,9 +27,9 @@
+ from .libretroPaths import (
+     RETROARCH_BIN,
+     RETROARCH_CONFIG,
+-    RETROARCH_CORES,
+     RETROARCH_CUSTOM,
+     RETROARCH_SHARE,
++    retroarch_core_path,
+ )
+ 
+ if TYPE_CHECKING:
+@@ -128,7 +128,7 @@
+             shutil.copyfile(RETROARCH_CUSTOM, remapconfigDir / "common.rmp")
+ 
+         # Retroarch core on the filesystem
+-        retroarchCore = RETROARCH_CORES / f"{system.config.core}_libretro.so"
++        retroarchCore = retroarch_core_path(system.config.core)
+ 
+         # Desktop distributions can package executable cores separately from optional core metadata.
+         # A direct RetroArch -L launch requires the shared library, not the .info file.
+@@ -263,7 +263,7 @@
+             else:
+                 rom = Path('/userdata/roms/quake2/baseq2/pak0.pak')
+             # set the updated core name
+-            retroarchCore = RETROARCH_CORES / f"{system.config.core}_libretro.so"
++            retroarchCore = retroarch_core_path(system.config.core)
+             commandArray = [RETROARCH_BIN, "-L", retroarchCore, "--config", system.config['configfile']]
+         # doom3
+         elif system.name == 'doom3':
+@@ -272,7 +272,7 @@
+             # creating the new 'rom_path' variable by combining the directory path and the first line
+             rom = rom.parent / first_line
+             _logger.debug("New rom path: %s", rom)
+-            retroarchCore = RETROARCH_CORES / f"{system.config.core}_libretro.so"
++            retroarchCore = retroarch_core_path(system.config.core)
+             commandArray = [RETROARCH_BIN, "-L", retroarchCore, "--config", system.config['configfile']]
+         # super mario wars - verify assets from Content Downloader
+         elif system.name == 'superbroswar':

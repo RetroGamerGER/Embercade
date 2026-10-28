@@ -1,0 +1,50 @@
+diff --git a/python-src/batocera-launch-dolphin/batocera_launch_dolphin/emulator.py b/python-src/batocera-launch-dolphin/batocera_launch_dolphin/emulator.py
+index 26d6456..7a606c1 100644
+--- a/python-src/batocera-launch-dolphin/batocera_launch_dolphin/emulator.py
++++ b/python-src/batocera-launch-dolphin/batocera_launch_dolphin/emulator.py
+@@ -7,7 +7,7 @@ from typing import Final
+ 
+ from batocera_common.configparser import CaseSensitiveConfigParser
+ from batocera_common.dataclasses import cached_dataclass, cached_property
+-from batocera_common.paths import CACHE, CONFIGS, SAVES
++from batocera_common.paths import CACHE, CONFIGS, ROMS, SAVES
+ from batocera_common.vulkan import get_vulkan_info
+ from batocera_launch import Command, Emulator, HotkeysContext
+ 
+@@ -101,8 +101,8 @@ class Dolphin(Emulator):
+ 
+         # Define default games path
+         if 'ISOPaths' not in settings['General']:
+-            settings.set('General', 'ISOPath0', '/userdata/roms/wii')
+-            settings.set('General', 'ISOPath1', '/userdata/roms/gamecube')
++            settings.set('General', 'ISOPath0', str(ROMS / 'wii'))
++            settings.set('General', 'ISOPath1', str(ROMS / 'gamecube'))
+             settings.set('General', 'ISOPaths', '2')
+ 
+         settings.set('General', 'AutoIncrementSlot', str(self.config.get_bool('incrementalsavestates', True)))
+@@ -363,15 +363,19 @@ class Dolphin(Emulator):
+             rac_config.write(fp)
+ 
+         # Update SYSCONF
+-        try:
+-            sysconf.update(self.config, DOLPHIN_SYSCONF, self.resolution)
+-        except Exception:
+-            _logger.debug("couldn't update SYSCONF", exc_info=True)  # don't fail in case of SYSCONF update
++        if DOLPHIN_SYSCONF.is_file():
++            try:
++                sysconf.update(self.config, DOLPHIN_SYSCONF, self.resolution)
++            except Exception:
++                _logger.debug("couldn't update SYSCONF", exc_info=True)  # don't fail in case of SYSCONF update
++        else:
++            _logger.debug("SYSCONF is not present yet; Dolphin will create it on first run")
+ 
+         # Check what version we've got
+-        if Path('/usr/bin/dolphin-emu').is_file():
++        dolphin_bin = Path(environ.get('EMBERCADE_DOLPHIN_BIN', '/usr/bin/dolphin-emu'))
++        if dolphin_bin.is_file():
+             # use the -b 'batch' option for nicer exit
+-            args: list[str | Path] = ['dolphin-emu', '-b', '-e', self.rom]
++            args: list[str | Path] = [dolphin_bin, '-b', '-e', self.rom]
+         else:
+             args = ['dolphin-emu-nogui', '-e', self.rom]
+ 

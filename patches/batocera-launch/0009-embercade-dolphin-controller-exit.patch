@@ -1,0 +1,30 @@
+diff --git a/python-src/batocera-launch-dolphin/batocera_launch_dolphin/emulator.py b/python-src/batocera-launch-dolphin/batocera_launch_dolphin/emulator.py
+index 7a606c1..74f7f9c 100644
+--- a/python-src/batocera-launch-dolphin/batocera_launch_dolphin/emulator.py
++++ b/python-src/batocera-launch-dolphin/batocera_launch_dolphin/emulator.py
+@@ -298,13 +298,23 @@ class Dolphin(Emulator):
+         ## Hotkeys.ini - overwrite to avoid issues
+         hotkeys = CaseSensitiveConfigParser(interpolation=None)
+         hotkeys.add_section('Hotkeys')
+-        hotkeys.set('Hotkeys', 'Device', 'XInput2/0/Virtual core pointer')
++        hotkey_device = 'XInput2/0/Virtual core pointer'
++        exit_binding = '@(Shift+F11)'
++        if environ.get('EMBERCADE_DESKTOP') == '1' and self.controllers:
++            pad = self.controllers[0]
++            hotkey_name = 'hotkey' if environ.get('EMBERCADE_EXIT_HOTKEY') == 'guide-start' else 'select'
++            hotkey = pad.inputs.get(hotkey_name)
++            start = pad.inputs.get('start')
++            if hotkey is not None and start is not None and hotkey.type == start.type == 'button':
++                hotkey_device = f'evdev/0/{pad.real_name.strip()}'
++                exit_binding = f'`Button {hotkey.id}` & `Button {start.id}`'
++        hotkeys.set('Hotkeys', 'Device', hotkey_device)
+         hotkeys.set('Hotkeys', 'General/Open', '@(Ctrl+O)')
+         hotkeys.set('Hotkeys', 'General/Toggle Pause', 'F10')
+         hotkeys.set('Hotkeys', 'General/Stop', 'Escape')
+         hotkeys.set('Hotkeys', 'General/Toggle Fullscreen', '@(Alt+Return)')
+         hotkeys.set('Hotkeys', 'General/Take Screenshot', 'F9')
+-        hotkeys.set('Hotkeys', 'General/Exit', '@(Shift+F11)')
++        hotkeys.set('Hotkeys', 'General/Exit', exit_binding)
+         hotkeys.set('Hotkeys', 'Emulation Speed/Disable Emulation Speed Limit', 'Tab')
+         hotkeys.set('Hotkeys', 'Stepping/Step Into', 'F11')
+         hotkeys.set('Hotkeys', 'Stepping/Step Over', '@(Shift+F10)')

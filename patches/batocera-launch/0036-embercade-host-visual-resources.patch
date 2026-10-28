@@ -1,0 +1,61 @@
+diff --git a/package/batocera/core/batocera-configgen/configgen/configgen/Emulator.py b/package/batocera/core/batocera-configgen/configgen/configgen/Emulator.py
+--- a/package/batocera/core/batocera-configgen/configgen/configgen/Emulator.py
++++ b/package/batocera/core/batocera-configgen/configgen/configgen/Emulator.py
+@@ -1,6 +1,7 @@
+ from __future__ import annotations
+ 
+ import logging
++import os
+ import xml.etree.ElementTree as ET
+ from dataclasses import InitVar, dataclass, field
+ from typing import TYPE_CHECKING, Any
+@@ -189,9 +189,14 @@
+                 if not rendering_defaults.exists():
+                     rendering_defaults = BATOCERA_SHADERS / 'configs' / shader_set / 'rendering-defaults.yml'
+ 
+-            render_data = load_defaults(
+-                args.system, rendering_defaults, rendering_defaults.with_name('rendering-defaults-arch.yml')
+-            ) or {}
++            if not rendering_defaults.is_file() and os.environ.get('EMBERCADE_DESKTOP') == '1':
++                # Preserve the saved choice when a host package/preset disappears.
++                # The regular generator displays the unavailable-effect notice.
++                render_data = {'shader': 'embercade/unavailable'}
++            else:
++                render_data = load_defaults(
++                    args.system, rendering_defaults, rendering_defaults.with_name('rendering-defaults-arch.yml')
++                ) or {}
+ 
+         # es only allow to update systemSettings and gameSettings in fact for the moment
+ 
+diff --git a/package/batocera/core/batocera-configgen/configgen/configgen/utils/bezels.py b/package/batocera/core/batocera-configgen/configgen/configgen/utils/bezels.py
+--- a/package/batocera/core/batocera-configgen/configgen/configgen/utils/bezels.py
++++ b/package/batocera/core/batocera-configgen/configgen/configgen/utils/bezels.py
+@@ -1,6 +1,7 @@
+ from __future__ import annotations
+ 
+ import json
+ import logging
++import os
+ import shutil
+ import struct
+@@ -38,6 +38,8 @@
+ 
+ 
+ def getBezelInfos(rom: str | Path, bezel: str, systemName: str, emulator: str) -> BezelInfos | None:
++    if os.environ.get('EMBERCADE_DESKTOP') == '1' and bezel == 'consoles':
++        bezel = 'default_unglazed'  # RetroBat replacement; never use captured legacy art.
+     # by order choose :
+     # rom name in the system subfolder of the user directory (gb/mario.png)
+     # rom name in the system subfolder of the system directory (gb/mario.png)
+diff --git a/python-src/batocera-launch/batocera_launch/emulator.py b/python-src/batocera-launch/batocera_launch/emulator.py
+--- a/python-src/batocera-launch/batocera_launch/emulator.py
++++ b/python-src/batocera-launch/batocera_launch/emulator.py
+@@ -305,6 +305,8 @@
+         # mamezip files are for MAME-specific advanced artwork (bezels with overlays and backdrops, animated LEDs, etc)
+ 
+         bezel = self.config.get_str('bezel', 'none')
++        if os.environ.get('EMBERCADE_DESKTOP') == '1' and bezel == 'consoles':
++            bezel = 'default_unglazed'  # Preserve saved ID, use only RetroBat artwork.
+ 
+         if not bezel or bezel == 'none':
+             return None

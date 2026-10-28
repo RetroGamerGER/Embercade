@@ -1,0 +1,121 @@
+--- a/python-src/batocera-launch-rpcs3/batocera_launch_rpcs3/emulator.py
++++ b/python-src/batocera-launch-rpcs3/batocera_launch_rpcs3/emulator.py
+@@ -7,6 +7,7 @@
+ import shutil
+ from collections.abc import Mapping
+ from dataclasses import dataclass, field
++from os import environ
+ from pathlib import Path
+ from typing import TYPE_CHECKING, Any, Final, Self, cast
+ 
+@@ -455,6 +456,9 @@
+ @dataclass(slots=True)
+ class RPCS3Command(Command):
+     async def run(self) -> int:
++        if environ.get('EMBERCADE_DESKTOP') == '1':
++            return await Command.run(self)
++
+         original_overcommit: str | None = None
+ 
+         try:
+@@ -479,6 +483,9 @@
+ 
+     async def __aenter__(self) -> Self:
+         # Start downloading the compatibility database ASAP in the background
++        if environ.get('EMBERCADE_DESKTOP') == '1':
++            return await super().__aenter__()
++
+         self.compatibility_database_task = asyncio.create_task(
+             _fetch_compatibility_database(self.config_dir / 'GuiConfigs' / 'config_database.dat')
+         )
+@@ -504,17 +511,24 @@
+         /,
+     ) -> bool | None:
+         # Cancel the task if the context manager exits
+-        self.compatibility_database_task.cancel()
+-        try:
+-            # await the task and suppress the CancelledError to ensure aiohttp cleanup happens
+-            await self.compatibility_database_task
+-        except asyncio.CancelledError:
+-            pass
++        if environ.get('EMBERCADE_DESKTOP') != '1':
++            self.compatibility_database_task.cancel()
++            try:
++                # await the task and suppress the CancelledError to ensure aiohttp cleanup happens
++                await self.compatibility_database_task
++            except asyncio.CancelledError:
++                pass
+ 
+         return await super().__aexit__(exc_type, exc_value, traceback)
+ 
+     @cached_property
+     def hotkeygen_context(self) -> HotkeysContext:
++        if environ.get('EMBERCADE_DESKTOP') == '1':
++            return {
++                'name': 'rpcs3',
++                'keys': {'menu': ['KEY_LEFTSHIFT', 'KEY_F10'], 'pause': ['KEY_LEFTCTRL', 'KEY_P']},
++            }
++
+         return {
+             'name': 'rpcs3',
+             'keys': {
+@@ -534,6 +548,8 @@
+ 
+     @property
+     def needs_overlayfs(self) -> bool:
++        if environ.get('EMBERCADE_DESKTOP') == '1':
++            return False
+         return True
+ 
+     @property
+@@ -954,8 +970,10 @@
+ 
+         # copy icon files to config
+         icon_target = self.config_dir / 'Icons'
+-        icon_target.parent.mkdir(parents=True, exist_ok=True)
+-        shutil.copytree('/usr/share/rpcs3/Icons/', icon_target, dirs_exist_ok=True, copy_function=shutil.copy2)
++        icon_source = Path(environ.get('EMBERCADE_RPCS3_ICONS', '/usr/share/rpcs3/Icons'))
++        if icon_source.is_dir():
++            icon_target.parent.mkdir(parents=True, exist_ok=True)
++            shutil.copytree(icon_source, icon_target, dirs_exist_ok=True, copy_function=shutil.copy2)
+ 
+         # determine the rom name
+         rom_name: Path | None = None
+@@ -986,22 +1004,29 @@
+         elif not configure_emulator(self.rom):
+             rom_name = self.rom / 'PS3_GAME' / 'USRDIR' / 'EBOOT.BIN'
+ 
+-        args: list[Path | str] = [_BIN_PATH, rom_name] if rom_name else [_BIN_PATH]
++        rpcs3_bin = Path(environ.get('EMBERCADE_RPCS3_BIN', _BIN_PATH))
++        args: list[Path | str] = [rpcs3_bin, rom_name] if rom_name else [rpcs3_bin]
+ 
+         if not self.config.get_bool('rpcs3_gui') and rom_name:
+             args.append('--no-gui')
+ 
+         # firmware not installed and available : instead of starting the game, install it
+         if _get_firmware_version(self.config_dir) is None and (BIOS / 'PS3UPDAT.PUP').exists():
+-            args = [_BIN_PATH, '--installfw', BIOS / 'PS3UPDAT.PUP']
++            args = [rpcs3_bin, '--installfw', BIOS / 'PS3UPDAT.PUP']
+ 
++        command_environment: dict[str, str | Path] = {
++            'XDG_CONFIG_HOME': CONFIGS,
++            'XDG_CACHE_HOME': CACHE,
++            'LC_ALL': 'C',
++        }
++        if environ.get('EMBERCADE_DESKTOP') == '1':
++            command_environment.update(
++                XDG_DATA_HOME=environ['EMBERCADE_USERDATA'],
++                XDG_STATE_HOME=environ['EMBERCADE_LOGS'],
++            )
+         return RPCS3Command(
+             args,
+-            {
+-                'XDG_CONFIG_HOME': CONFIGS,
+-                'XDG_CACHE_HOME': CACHE,
+-                'LC_ALL': 'C',
+-            },
++            command_environment,
+             # Wait for the compatibility database update to finish (or fail) before running the command
+-            self.compatibility_database_task,
++            None if environ.get('EMBERCADE_DESKTOP') == '1' else self.compatibility_database_task,
+         )

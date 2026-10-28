@@ -1,0 +1,4 @@
+[upstream]
+"batocera.linux" = "9d2f7fc7d2436ba3bdccf64c8009dd73fa291f48"
+"batocera-emulationstation" = "1750dded8c0fdff70630026f756a69fcad0bb995"
+architecture = "batocera-launch-44"

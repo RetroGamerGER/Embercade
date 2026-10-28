@@ -1,0 +1,25 @@
+--- a/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroOptions.py
++++ b/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroOptions.py
+@@ -1,6 +1,7 @@
+ from __future__ import annotations
+ 
+ from typing import TYPE_CHECKING, Any
++from os import environ
+ 
+ from batocera_common.configparser import CaseSensitiveConfigParser
+ 
+@@ -167,8 +168,12 @@
+ def _vice_x64_options(
+     coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
+ ) -> None:
+-    # Activate Jiffydos
+-    _set(coreSettings, 'vice_jiffydos',          'enabled')
++    # The desktop core includes stock ROMs, but optional JiffyDOS needs
++    # external ROMs. Do not break drive 8 on a fresh installation.
++    if environ.get('EMBERCADE_DESKTOP') == '1':
++        _set_from_system(coreSettings, 'vice_jiffydos', system, default='disabled')
++    else:
++        _set(coreSettings, 'vice_jiffydos', 'enabled')
+     # Enable Automatic Load Warp
+     _set(coreSettings, 'vice_autoloadwarp',      'enabled')
+     # Disable Datasette Hotkeys

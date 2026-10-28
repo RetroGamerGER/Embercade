@@ -1,0 +1,108 @@
+diff --git a/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroControllers.py b/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroControllers.py
+--- a/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroControllers.py
++++ b/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroControllers.py
+@@ -26,2 +26,18 @@
+ hatstoname = {'1': 'up', '2': 'right', '4': 'down', '8': 'left'}
+ 
++def _sdl_reservation_id(controller: Controller) -> str | None:
++    # SDL GUID bytes 4:6 and 8:10 encode the USB vendor and product IDs,
++    # including for Bluetooth pads. RetroArch can reserve by this stable pair.
++    try:
++        guid = bytes.fromhex(controller.guid)
++    except ValueError:
++        return None
++    if len(guid) != 16:
++        return None
++    vendor = int.from_bytes(guid[4:6], 'little')
++    product = int.from_bytes(guid[8:10], 'little')
++    if not vendor or not product:
++        return None
++    return f'{vendor:04x}:{product:04x}'
++
++
+@@ -74,2 +90,13 @@
+         writeControllerConfig(retroconfig, controller, controller.player_number, system, lightgun, mouseIndex)
++    if os.environ.get('EMBERCADE_DESKTOP') == '1':
++        reservations = [
++            _sdl_reservation_id(controller) if controller.type == 'joystick' else None
++            for controller in controllers
++        ]
++        for controller, reservation in zip(controllers, reservations):
++            # Identical models cannot be disambiguated by VID:PID. Preserve
++            # their launch order instead of assigning both to one player.
++            if reservation and reservations.count(reservation) == 1:
++                retroconfig.save(f'input_player{controller.player_number}_device_reservation_type', '2')
++                retroconfig.save(f'input_player{controller.player_number}_reserved_device', f'"{reservation}"')
+     writeHotKeyConfig(retroconfig, controllers)
+@@ -100,2 +127,4 @@
+-                retroconfig.save('input_enable_hotkey_btn', controllers[0].inputs[hotkey_name].id)
+-                retroconfig.save('input_exit_emulator_btn', controllers[0].inputs['start'].id)
++                # The SDL2 joypad driver exposes SDL_GameController buttons, not
++                # the physical button IDs stored in EmulationStation's mapping.
++                retroconfig.save('input_enable_hotkey_btn', '5' if hotkey_name == 'hotkey' else '4')
++                retroconfig.save('input_exit_emulator_btn', '6')
+@@ -199,4 +228,41 @@
+     if not lightgun:
+         # dont touch to it when there are connected lightguns
+         config[f'input_player{controller.player_number}_mouse_index'] = mouseIndex
++
++    if os.environ.get('EMBERCADE_DESKTOP') == '1' and controller.type == 'joystick':
++        # The desktop SDL2 driver uses SDL_GameController's normalized button
++        # and axis numbers. Translate logical ES inputs, not physical IDs: the
++        # SDL_GAMECONTROLLERCONFIG generated from this same controller below
++        # retains each user's frontend button mapping on USB and Bluetooth.
++        prefix = f'input_player{controller.player_number}_'
++        sdl_buttons = {
++            'a': 1, 'b': 0, 'x': 3, 'y': 2,
++            'pageup': 9, 'pagedown': 10, 'l3': 7, 'r3': 8,
++            'start': 6, 'select': 4,
++        }
++        sdl_axes = {'l2': 4, 'r2': 5}
++        for es_name, ra_name in retroarchbtns.items():
++            if es_name not in controller.inputs:
++                continue
++            for suffix in ('btn', 'axis', 'key'):
++                config.pop(f'{prefix}{ra_name}_{suffix}', None)
++            if es_name in sdl_buttons:
++                config[f'{prefix}{ra_name}_btn'] = str(sdl_buttons[es_name])
++            elif es_name in sdl_axes:
++                config[f'{prefix}{ra_name}_axis'] = f'+{sdl_axes[es_name]}'
++
++        for es_name, ra_name in retroarchdirs.items():
++            if es_name in controller.inputs:
++                for suffix in ('btn', 'axis', 'key'):
++                    config.pop(f'{prefix}{ra_name}_{suffix}', None)
++                config[f'{prefix}{ra_name}_btn'] = str({
++                    'up': 11, 'down': 12, 'left': 13, 'right': 14
++                }[es_name])
++
++        for es_name, ra_name in retroarchjoysticks.items():
++            if es_name in controller.inputs:
++                axis = {'joystick1left': 0, 'joystick1up': 1,
++                        'joystick2left': 2, 'joystick2up': 3}[es_name]
++                config[f'{prefix}{ra_name}_minus_axis'] = f'-{axis}'
++                config[f'{prefix}{ra_name}_plus_axis'] = f'+{axis}'
+     return config
+diff --git a/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroGenerator.py b/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroGenerator.py
+--- a/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroGenerator.py
++++ b/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroGenerator.py
+@@ -20,5 +20,6 @@
+     mkdir_if_not_exists,
+ )
++from ...controller import generate_sdl_game_controller_config
+ from ...exceptions import BatoceraException, MissingCore
+ from ...settings.unixSettings import UnixSettings
+ from ...utils import videoMode as videoMode
+@@ -398,6 +399,11 @@
+             # a link would work, but on fat32, we need to copy
+             commandArray.extend(["-e", state_slot])
+ 
+-        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":CONFIGS})
++        environment: dict[str, str | Path] = {"XDG_CONFIG_HOME": CONFIGS}
++        if os.environ.get('EMBERCADE_DESKTOP') == '1' and playersControllers:
++            # Feed SDL the same per-player mapping used by ES and configgen.
++            # The host's RetroArch autoconfig collection is not required.
++            environment['SDL_GAMECONTROLLERCONFIG'] = generate_sdl_game_controller_config(playersControllers)
++        return Command.Command(array=commandArray, env=environment)
+ 
+ def getGFXBackend(system: Emulator) -> str:

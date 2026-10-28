@@ -1,0 +1,48 @@
+diff --git a/es-app/src/FileData.cpp b/es-app/src/FileData.cpp
+--- a/es-app/src/FileData.cpp
++++ b/es-app/src/FileData.cpp
+@@ -1,4 +1,6 @@
+ #include "FileData.h"
++#include "EmbercadeLaunchNotice.h"
++#include <cstdlib>
+ 
+ #include "utils/FileSystemUtil.h"
+ #include "utils/StringUtil.h"
+@@ -691,6 +693,7 @@
+ bool FileData::launchGame(Window* window, LaunchGameOptions options)
+ {
+ 	LOG(LogInfo) << "Attempting to launch game...";
++	EmbercadeLaunchNotice::clear(std::getenv("EMBERCADE_LAUNCH_NOTICE_PATH"));
+ 
+ 	FileData* gameToUpdate = getSourceFileData();
+ 	if (gameToUpdate == nullptr)
+@@ -798,6 +801,16 @@
+ 
+ 	if (exitCode >= 200 && exitCode <= 300)
+ 		window->pushGui(new GuiMsgBox(window, _("AN ERROR OCCURRED") + ":\r\n" + getMessageFromExitCode(exitCode), _("OK"), nullptr, GuiMsgBoxIcon::ICON_ERROR));
++
++    auto notice = EmbercadeLaunchNotice::consume(std::getenv("EMBERCADE_LAUNCH_NOTICE_PATH"));
++    if (notice == EmbercadeLaunchNotice::Reason::ShaderIncompatible)
++        window->pushGui(new GuiMsgBox(window,
++            _("The selected visual effect is not compatible with this game's graphics settings. The game was started without it. Choose automatic graphics settings or another effect."),
++            _("OK"), nullptr, GuiMsgBoxIcon::ICON_WARNING));
++    else if (notice == EmbercadeLaunchNotice::Reason::ShaderUnavailable)
++        window->pushGui(new GuiMsgBox(window,
++            _("The selected visual effect is no longer available. The game was started without it. Choose another effect."),
++            _("OK"), nullptr, GuiMsgBoxIcon::ICON_WARNING));
+ 
+ 	return exitCode == 0;
+ }
+diff --git a/locale/lang/de/LC_MESSAGES/emulationstation2.po b/locale/lang/de/LC_MESSAGES/emulationstation2.po
+--- a/locale/lang/de/LC_MESSAGES/emulationstation2.po
++++ b/locale/lang/de/LC_MESSAGES/emulationstation2.po
+@@ -4054,3 +4054,9 @@
+ msgid_plural "%d seconds ago"
+ msgstr[0] "%d Sekunde her"
+ msgstr[1] "%d Sekunden her"
++
++msgid "The selected visual effect is not compatible with this game's graphics settings. The game was started without it. Choose automatic graphics settings or another effect."
++msgstr "Der gewählte Effekt passt nicht zu den Grafikeinstellungen dieses Spiels. Das Spiel wurde ohne diesen Effekt gestartet. Wähle die automatische Grafikauswahl oder einen anderen Effekt."
++
++msgid "The selected visual effect is no longer available. The game was started without it. Choose another effect."
++msgstr "Der gewählte Effekt ist nicht mehr verfügbar. Das Spiel wurde ohne diesen Effekt gestartet. Wähle einen anderen Effekt."

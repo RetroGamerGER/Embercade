@@ -1,0 +1,57 @@
+diff --git a/python-src/batocera-launch/batocera_launch/emulators/ppsspp.py b/python-src/batocera-launch/batocera_launch/emulators/ppsspp.py
+--- a/python-src/batocera-launch/batocera_launch/emulators/ppsspp.py
++++ b/python-src/batocera-launch/batocera_launch/emulators/ppsspp.py
+@@ -1,6 +1,7 @@
+ from __future__ import annotations
+ 
+ import logging
++from os import environ
+ from typing import TYPE_CHECKING, Final
+ 
+ from batocera_common.configparser import CaseSensitiveConfigParser
+@@ -239,7 +240,10 @@
+             ini_config.add_section('Graphics')
+ 
+         # Graphics Backend
+-        gfxbackend = self.config.get_str('gfxbackend', 'OPENGL')
++        default_backend = 'VULKAN' if environ.get('EMBERCADE_DESKTOP') == '1' else 'OPENGL'
++        gfxbackend = self.config.get_str('gfxbackend', default_backend)
++        if environ.get('EMBERCADE_DESKTOP') == '1' and gfxbackend in ('', 'auto', 'default'):
++            gfxbackend = default_backend
+         ini_config.set('Graphics', 'GraphicsBackend', gfxbackend)
+         # If Vulkan
+         if gfxbackend == 'VULKAN':
+diff --git a/python-src/batocera-launch/batocera_launch/emulators/azahar.py b/python-src/batocera-launch/batocera_launch/emulators/azahar.py
+--- a/python-src/batocera-launch/batocera_launch/emulators/azahar.py
++++ b/python-src/batocera-launch/batocera_launch/emulators/azahar.py
+@@ -1,6 +1,7 @@
+ from __future__ import annotations
+ 
+ import logging
++from os import environ
+ from typing import TYPE_CHECKING, Final
+ 
+ from batocera_common.configparser import CaseSensitiveRawConfigParser
+@@ -266,11 +267,19 @@
+             self.config.get_bool('azahar_async_presentation', False, return_values=('true', 'false')),
+         )
+         azahar_config.set('Renderer', r'async_presentation\default', 'false')
+-        # Software, OpenGL (default) or Vulkan
+-        azahar_config.set('Renderer', 'graphics_api', self.config.get_str('azahar_graphics_api', '1'))
++        # Software, OpenGL or Vulkan. Retain explicit choices; prefer Vulkan
++        # only for the desktop route and fall back when the host lacks it.
++        default_api = '2' if environ.get('EMBERCADE_DESKTOP') == '1' else '1'
++        graphics_api = self.config.get_str('azahar_graphics_api', default_api)
++        if environ.get('EMBERCADE_DESKTOP') == '1' and graphics_api in ('', 'auto', 'default'):
++            graphics_api = default_api
++        vulkan_info = await get_vulkan_info() if graphics_api == '2' else None
++        if graphics_api == '2' and not vulkan_info and environ.get('EMBERCADE_DESKTOP') == '1':
++            graphics_api = '1'
++        azahar_config.set('Renderer', 'graphics_api', graphics_api)
+         azahar_config.set('Renderer', r'graphics_api\default', 'false')
+         # Set Vulkan as necessary
+-        if self.config.get_str('azahar_graphics_api') == '2' and (vulkan_info := await get_vulkan_info()):
++        if graphics_api == '2' and vulkan_info:
+             _logger.debug('Vulkan driver is available on the system.')
+             if discrete_gpu := vulkan_info.active_discrete_gpu:
+                 _logger.debug('A discrete GPU is available on the system. We will use that for performance')

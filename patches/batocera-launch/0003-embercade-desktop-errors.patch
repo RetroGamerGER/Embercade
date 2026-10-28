@@ -1,0 +1,30 @@
+diff --git a/python-src/batocera-launch/batocera_launch/launch.py b/python-src/batocera-launch/batocera_launch/launch.py
+index e9b2728..b1f54a6 100644
+--- a/python-src/batocera-launch/batocera_launch/launch.py
++++ b/python-src/batocera-launch/batocera_launch/launch.py
+@@ -1,6 +1,7 @@
+ from __future__ import annotations
+ 
+ import logging
++import os
+ import signal
+ import time
+ from pathlib import Path
+@@ -50,6 +51,7 @@ def launch(args: Arguments, profiler: Profiler, /) -> None:
+         else:
+             exit_code = uvloop.run(_run(args, profiler))
+     except* Exception as group:
++        exit_code = 1
+         _logger.exception('batocera-launch exception')
+ 
+         batocera_exceptions = group.subgroup(BaseBatoceraException)
+@@ -61,7 +63,8 @@ def launch(args: Arguments, profiler: Profiler, /) -> None:
+ 
+             if first_batocera_exception is not None:
+                 exit_code = first_batocera_exception.exit_code
+-                Path('/tmp/launch_error.log').write_text(first_batocera_exception.args[0])
++                error_path = Path(os.environ.get('EMBERCADE_LAUNCH_ERROR_PATH', '/tmp/launch_error.log'))
++                error_path.write_text(first_batocera_exception.args[0])
+             else:
+                 exit_code = base_batocera_exceptions[0].exit_code
+ 

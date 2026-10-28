@@ -1,0 +1,34 @@
+diff --git a/python-src/batocera-launch/batocera_launch/emulators/xenia_edge.py b/python-src/batocera-launch/batocera_launch/emulators/xenia_edge.py
+index 12373ae..53829bf 100644
+--- a/python-src/batocera-launch/batocera_launch/emulators/xenia_edge.py
++++ b/python-src/batocera-launch/batocera_launch/emulators/xenia_edge.py
+@@ -84,6 +84,16 @@ class XeniaEdge(Emulator):
+         guest_refresh = self.config.get_str('xenia_edge_guest_refresh_rate', '60hz')
+         vsync_enabled = self.config.get_bool('xenia_edge_vsync', True)
+ 
++        storage_root = Path(
++            os.environ.get('EMBERCADE_XENIA_EDGE_STORAGE_ROOT') or self.config_dir
++        )
++        content_root = Path(
++            os.environ.get('EMBERCADE_XENIA_EDGE_CONTENT_ROOT') or _XBOX360_SAVES
++        )
++        cache_root = Path(
++            os.environ.get('EMBERCADE_XENIA_EDGE_CACHE_ROOT') or xenia_cache
++        )
++
+         config.update(
+             APU={'apu': self.config.get_str('xenia_edge_apu', 'alsa')},
+             CPU={
+@@ -137,9 +147,9 @@ class XeniaEdge(Emulator):
+             Linux={'use_gamemode': False, 'use_mangohud': False},
+             Memory={'protect_zero': False},
+             Storage={
+-                'storage_root': str(self.config_dir),
+-                'content_root': str(_XBOX360_SAVES),
+-                'cache_root': str(xenia_cache),
++                'storage_root': str(storage_root),
++                'content_root': str(content_root),
++                'cache_root': str(cache_root),
+                 'mount_scratch': True,
+                 'mount_cache': self.config.get_bool('xenia_edge_cache', True),
+             },

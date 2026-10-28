@@ -1,0 +1,12 @@
+diff --git a/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroConfig.py b/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroConfig.py
+--- a/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroConfig.py
++++ b/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroConfig.py
+@@ -564,5 +564,8 @@
+         if renderConfig['shader'] is not None and renderConfig['shader'] != "none":
+             retroarchConfig['video_shader_enable'] = 'true'
+             retroarchConfig['video_smooth']        = 'false'     # seems to be necessary for weaker SBCs
++        elif os.environ.get('EMBERCADE_DESKTOP') == '1':
++            # Explicit None must clear a previously enabled effect as well.
++            retroarchConfig['video_shader_enable'] = 'false'
+     else:
+         retroarchConfig['video_shader_enable'] = 'false'

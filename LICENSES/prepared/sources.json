@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "status": "PREPARED_REFERENCE_TEXTS_NOT_AN_EFFECTIVE_PROJECT_GRANT",
+  "sources": [
+    {
+      "file": "PolyForm-Noncommercial-1.0.0.txt",
+      "source_url": "https://raw.githubusercontent.com/polyformproject/polyform-licenses/1.0.0/PolyForm-Noncommercial-1.0.0.md",
+      "sha256": "c0ea4a896d2c8c394b29f9427589996db826cd501c512279ff0ed3ef48fabbe5",
+      "bytes": 4563,
+      "retrieved": "2026-10-27",
+      "purpose": "proposed independent own software only",
+      "applied_to_embercade_paths": []
+    },
+    {
+      "file": "CC-BY-NC-SA-4.0.txt",
+      "source_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.txt",
+      "sha256": "e66c269d4819aaab34b49ef5220c4ddab6756f21bb5180761a4eb8561f2b7bbd",
+      "bytes": 20850,
+      "retrieved": "2026-10-27",
+      "purpose": "proposed own prose and cleared own artwork only",
+      "applied_to_embercade_paths": []
+    },
+    {
+      "file": "CC-BY-NC-ND-4.0.txt",
+      "source_url": "https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode.txt",
+      "sha256": "38762e3777f4ec00a6f769062a7c3f704fb78ce08303ecff88558da4c49cf9ea",
+      "bytes": 19127,
+      "retrieved": "2026-10-27",
+      "purpose": "reference for covered third-party artwork, not a pack-wide grant",
+      "applied_to_embercade_paths": []
+    },
+    {
+      "file": "Batocera-COPYING.txt",
+      "source_url": "https://raw.githubusercontent.com/batocera-linux/batocera.linux/9d2f7fc7d2436ba3bdccf64c8009dd73fa291f48/COPYING",
+      "sha256": "9755181e27175cb3510b4da8629caa406fb355a19aa8e7d55f06bf8ab33323c4",
+      "bytes": 18767,
+      "retrieved": "2026-10-27",
+      "purpose": "unchanged pinned upstream repository notice, not a fetched-artwork grant",
+      "applied_to_embercade_paths": []
+    },
+    {
+      "file": "EmulationStation-MIT.txt",
+      "source_url": "https://raw.githubusercontent.com/batocera-linux/batocera-emulationstation/1750dded8c0fdff70630026f756a69fcad0bb995/LICENSE.md",
+      "sha256": "cf64d57831c30e1a7b496b441532ee102153d86ee7a258e2e6ec6a41f8188285",
+      "bytes": 1057,
+      "retrieved": "2026-10-27",
+      "purpose": "unchanged pinned frontend copyright and permission notice",
+      "applied_to_embercade_paths": []
+    }
+  ]
+}

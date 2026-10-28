@@ -1,0 +1,49 @@
+diff --git a/package/batocera/core/batocera-configgen/configgen/configgen/utils/bezels.py b/package/batocera/core/batocera-configgen/configgen/configgen/utils/bezels.py
+--- a/package/batocera/core/batocera-configgen/configgen/configgen/utils/bezels.py
++++ b/package/batocera/core/batocera-configgen/configgen/configgen/utils/bezels.py
+@@ -40,6 +40,8 @@
+ def getBezelInfos(rom: str | Path, bezel: str, systemName: str, emulator: str) -> BezelInfos | None:
+     if os.environ.get('EMBERCADE_DESKTOP') == '1' and bezel == 'consoles':
+         bezel = 'default_unglazed'  # RetroBat replacement; never use captured legacy art.
++    if os.environ.get('EMBERCADE_DESKTOP') == '1' and (SYSTEM_DECORATIONS / bezel / '.embercade-unavailable').is_file():
++        return None
+     # by order choose :
+     # rom name in the system subfolder of the user directory (gb/mario.png)
+     # rom name in the system subfolder of the system directory (gb/mario.png)
+@@ -129,6 +131,12 @@
+                                                 bezel_game = True
+                                                 if not overlay_png_file.exists():
+                                                     return None
++    if (os.environ.get('EMBERCADE_DESKTOP') == '1'
++            and (SYSTEM_DECORATIONS / 'embercade-collection.json').is_file()
++            and overlay_png_file.is_relative_to(SYSTEM_DECORATIONS)
++            and not overlay_info_file.is_file()):
++        _logger.warning('No RetroBat layout for the selected image; starting without decoration')
++        return None
+     _logger.debug("Original bezel file used: %s", overlay_png_file)
+     return { "png": overlay_png_file, "info": overlay_info_file, "layout": overlay_layout_file, "mamezip": overlay_mamezip_file, "specific_to_game": bezel_game }
+ 
+diff --git a/python-src/batocera-launch/batocera_launch/emulator.py b/python-src/batocera-launch/batocera_launch/emulator.py
+--- a/python-src/batocera-launch/batocera_launch/emulator.py
++++ b/python-src/batocera-launch/batocera_launch/emulator.py
+@@ -310,6 +310,8 @@
+ 
+         if not bezel or bezel == 'none':
+             return None
++        if os.environ.get('EMBERCADE_DESKTOP') == '1' and (SYSTEM_DECORATIONS / bezel / '.embercade-unavailable').is_file():
++            return None
+ 
+         game_id = self.rom.stem
+ 
+@@ -329,6 +331,11 @@
+                 yield root / bezel / 'default.png', True, None
+ 
+         for png, bezel_game, override in candidates():
++            if (os.environ.get('EMBERCADE_DESKTOP') == '1'
++                    and (SYSTEM_DECORATIONS / 'embercade-collection.json').is_file()
++                    and png.is_relative_to(SYSTEM_DECORATIONS)
++                    and not png.with_suffix('.info').is_file()):
++                continue
+             if png.exists():
+                 _logger.debug('Original bezel file used: %s', png)
+                 return BezelFiles(

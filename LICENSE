@@ -1,0 +1,48 @@
+Embercade 1.0 — component licenses
+Copyright (c) 2026 Embercade contributors, for their original contributions.
+
+Embercade is a collection of separately licensed components. No single license
+replaces the licenses of the complete AppImage or its third-party contents.
+
+1. Independent Embercade client software
+The original Embercade implementation in the exact paths listed in
+LICENSES/scope.json is licensed under PolyForm Noncommercial License 1.0.0.
+The explicitly listed independent maintenance/regression tools use the same
+license. The unchanged full text is LICENSES/PolyForm-Noncommercial-1.0.0.txt.
+This grant covers the independent client implementation, not copied third-party
+material, imported configuration data, generated upstream descriptors, backend
+libraries or material a contributor has no authority to license.
+Required Notice: Copyright (c) 2026 Embercade contributors.
+
+2. Upstream integration contributions
+Original Embercade contributions in integration/batocera, the Batocera and
+EmulationStation patch directories, and the explicitly mapped integration tests,
+smoke script and build/install scripts are available under the MIT license in
+LICENSES/MIT.txt.
+This is a GPL/LGPL-compatible grant for OWN contributions. Foreign patch
+context, derived upstream material and dependencies retain their original
+GPL, LGPL, MIT or other applicable terms. It is not a relicensing of Batocera,
+Configgen or EmulationStation. See docs/BATOCERA_COMPONENT_LICENSES.md.
+
+3. Own documentation and artwork
+Original Embercade prose is licensed under CC BY-NC-SA 4.0; the full text is
+LICENSES/CC-BY-NC-SA-4.0.txt. Original third-party notices, quotations, legal
+texts, code and foreign images retain their own terms. The listed Embercade
+branding now has an owner-confirmed Canva AI origin; CC BY-NC-SA 4.0 applies
+only to rights actually held, without claiming exclusive AI copyright or new
+rights in unprotected material. See docs/BRANDING_ORIGIN.md. Foreign material
+and trademark rights are excluded; no trademark registration is implied.
+
+4. Third-party resources and software
+All retain their original terms. The RetroBat decoration collection is
+identified and attributed separately, including its individual exceptions.
+Libretro shaders are supplied by the external libretro-shaders-slang host
+package. Carbon, bundled libraries, Python dependencies and the AppImage
+runtime are not relicensed by Embercade. Keep their original notices.
+
+See LICENSES/scope.json, docs/LICENSING_1_0.md and THIRD_PARTY_NOTICES.md for the
+actual scope. No unspecified file obtains a PolyForm or CC grant by default.
+The source-available/noncommercial project goal adds no restriction to the
+commercial rights granted by GPL, LGPL, MIT or other upstream licenses.
+Publication approval, provider access and source-delivery compliance are
+separate from these grants. Existing private images are not public releases.

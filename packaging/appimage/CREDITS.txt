@@ -1,0 +1,24 @@
+Embercade acknowledgements and component scope
+
+Embercade contributors: original independent client, PolyForm Noncommercial
+1.0.0; original prose, CC BY-NC-SA 4.0; compatible backend/integration additions,
+MIT. Foreign code, data, art and notices retain their original terms.
+
+Batocera Linux team and contributors: LGPLv3 default for own code, with explicit
+GPL Configgen and per-file/project exceptions. EmulationStation: copyright
+Alec Lofquist (2014), MIT, plus separately licensed embedded dependencies.
+Carbon: Fabrice Caruso, Eric Hettervik/Rookervik, Nils Bonenberger and maioni;
+original CC BY-NC-SA notice/legal text and foreign component terms retained.
+RetroBat team and original decoration authors: official collection, published
+project CC BY-NC-SA 4.0 basis and preserved individual notices/credits.
+Libretro contributors: actual shaders supplied by the external official host
+package under individual original terms; only mappings are in this image.
+
+Original component notices remain under usr/share/embercade/licenses and their
+resource trees. The scoped root notice, full standard texts, GPL/LGPL distinction
+and source-access limits are under licenses/embercade. AppImage runtime/static
+library notices remain under packaging-notices, with source/hash records.
+
+This owner test candidate is private. It neither clears personal API-key public
+use nor claims ownership of unconfirmed supplied branding. It is not a public
+release or a single-license noncommercial relicensing of the mixed payload.

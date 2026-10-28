@@ -1,0 +1,16 @@
+[freeimage]
+version = "3.18.0"
+source_url = "https://downloads.sourceforge.net/freeimage/FreeImage3180.zip"
+source_sha256 = "f41379682f9ada94ea7b34fe86bf9ee00935a3147be41b6569c9605a53e438fd"
+license_gpl2_sha256 = "d51615a1a47f1ddbb027920d60d3fc30a00e1284c795a47857883e641349fadf"
+license_gpl3_sha256 = "084be110e3e8757d8e6945cda1fbc7e5073bbe688dc19b92c0d8440155d8e282"
+license_fipl_sha256 = "0bb9a3123297c73ae6e19c70459fb0e58f313f67ca63176fd43f8e77668b8243"
+
+[sdl2_mixer]
+version = "2.8.2"
+source_url = "https://github.com/libsdl-org/SDL_mixer/releases/download/release-2.8.2/SDL2_mixer-2.8.2.tar.gz"
+source_sha256 = "938dff531d00ace2296557a6599abe6f34599e2f34f0a4a08a397e2ccac8b8f7"
+license_sha256 = "7826eca0a0f7e591f38dd844e207a200aac81a59b20d8a30c3af8c6282af13e6"
+dr_flac_license_source_sha256 = "4c4ecf25e31e0766871db99e31c1867524bf5aa5cd1b5e442177ffbeb6c0c183"
+minimp3_license_source_sha256 = "976078e4a0e02c80bf0e06d76a9d3ee10b5923d0343d3d71bbbf1b7178079195"
+stb_vorbis_license_source_sha256 = "5e259f31d2096b4cac09da3cea3b79f0e9ebbcae2902929154128a4c4868a66c"

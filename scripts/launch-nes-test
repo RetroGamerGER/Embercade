@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+project_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
+xdg_root="${EMBERCADE_TEST_XDG_ROOT:-$project_root/.work/launch-xdg}"
+
+export EMBERCADE_PROJECT_ROOT="$project_root"
+export EMBERCADE_CONFIG_HOME="$xdg_root/config/embercade"
+export EMBERCADE_DATA_HOME="$xdg_root/data/embercade"
+export EMBERCADE_CACHE_HOME="$xdg_root/cache/embercade"
+export EMBERCADE_STATE_HOME="$xdg_root/state/embercade"
+export EMBERCADE_RUNTIME_HOME="$xdg_root/runtime/embercade"
+export PYTHONPATH="$project_root/src"
+export PYTHONDONTWRITEBYTECODE=1
+
+exec python -m embercade launch --system nes "$@"

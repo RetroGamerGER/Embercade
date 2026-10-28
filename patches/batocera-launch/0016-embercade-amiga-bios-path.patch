@@ -1,0 +1,21 @@
+diff --git a/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroConfig.py b/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroConfig.py
+--- a/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroConfig.py
++++ b/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroConfig.py
+@@ -7,7 +7,7 @@ from pathlib import Path
+ from typing import TYPE_CHECKING, Any, NotRequired, TypedDict, cast
+ 
+ from ... import controllersConfig
+-from ...batoceraPaths import CONFIGS, DEFAULTS_DIR, ES_GAMES_METADATA, SAVES, mkdir_if_not_exists
++from ...batoceraPaths import BIOS, CONFIGS, DEFAULTS_DIR, ES_GAMES_METADATA, SAVES, mkdir_if_not_exists
+ from ...controller import Controller
+ from ...settings.unixSettings import UnixSettings
+ from ...utils import bezels as bezelsUtil, esSettings, metadata as metadataUtils, videoMode, vulkan
+@@ -279,7 +279,7 @@ def createLibretroConfig(
+ 
+     ## AMIGA BIOS files are in /userdata/bios/amiga
+     if system.config.core == 'puae' or system.config.core == 'uae4arm':
+-        retroarchConfig['system_directory'] = '"/userdata/bios/amiga/"'
++        retroarchConfig['system_directory'] = f'"{BIOS / "amiga"}"'
+ 
+     ## AMIGA OCS-ECS/AGA/CD32
+     if system.config.core == 'puae':

@@ -1,0 +1,166 @@
+--- a/es-core/src/components/TextEditComponent.cpp
++++ b/es-core/src/components/TextEditComponent.cpp
+@@ -1,4 +1,6 @@
+ #include "components/TextEditComponent.h"
++#include <cstring>
++#include <SDL_clipboard.h>
+ #include "EmbercadeRetroAchievements.h"
+ 
+ #include "resources/Font.h"
+@@ -64,6 +66,29 @@
+ std::string TextEditComponent::getValue() const
+ {
+ 	return mText;
++}
++
++bool TextEditComponent::pasteFromClipboard()
++{
++    // Read only on an explicit paste action; never log or export clipboard data.
++    if (!SDL_HasClipboardText()) return false;
++    char* raw = SDL_GetClipboardText();
++    if (!raw) return false;
++    const auto length = strnlen(raw, 16385);
++    if (!length || length > 16384) { SDL_free(raw); return false; }
++    std::string text(raw, length);
++    SDL_free(raw);
++    for (unsigned char c : text)
++        if (c == 127 || (c < 32 && !(isMultiline() && (c == '\n' || c == '\r' || c == '\t'))))
++            return false;
++    if (mText.size() + text.size() > (mPassword ? 2048u : 16384u)) return false;
++    mText.insert(mCursor, text);
++    mCursor += static_cast<unsigned int>(text.size());
++    mCursorRepeatDir = 0;
++    mBlinkTime = 0;
++    onTextChanged();
++    onCursorChanged();
++    return true;
+ }
+ 
+ void TextEditComponent::textInput(const char* text)
+@@ -174,6 +199,13 @@
+ 
+ 	if(mEditing)
+ 	{
++        if (config->getDeviceId() == DEVICE_KEYBOARD
++            && ((input.id == SDLK_v && (SDL_GetModState() & KMOD_CTRL))
++                || (input.id == SDLK_INSERT && (SDL_GetModState() & KMOD_SHIFT))))
++        {
++            pasteFromClipboard();
++            return true;
++        }
+ 		if(config->getDeviceId() == DEVICE_KEYBOARD && input.id == SDLK_RETURN)
+ 		{
+ 			if(isMultiline())
+--- a/es-core/src/components/TextEditComponent.h
++++ b/es-core/src/components/TextEditComponent.h
+@@ -31,6 +31,7 @@
+ 	inline const std::shared_ptr<Font>& getFont() const { return mFont; }
+ 
+ 	void setCursor(size_t pos);
++    bool pasteFromClipboard();
+     void setPassword(bool masked) { mPassword = masked; onTextChanged(); onCursorChanged(); }
+ 
+ 	virtual std::vector<HelpPrompt> getHelpPrompts() override;
+--- a/es-core/src/guis/GuiTextEditPopup.cpp
++++ b/es-core/src/guis/GuiTextEditPopup.cpp
+@@ -1,4 +1,6 @@
+ #include "guis/GuiTextEditPopup.h"
++#include "guis/GuiMsgBox.h"
++#include "Window.h"
+ 
+ #include "components/ButtonComponent.h"
+ #include "components/MenuComponent.h"
+@@ -31,6 +33,11 @@
+ 		mText->setCursor(initValue.size());
+ 
+ 	std::vector< std::shared_ptr<ButtonComponent> > buttons;
++    if (password)
++        buttons.push_back(std::make_shared<ButtonComponent>(mWindow, _("PASTE"), _("PASTE"), [this] {
++            if (!mText->pasteFromClipboard())
++                mWindow->pushGui(new GuiMsgBox(mWindow, _("The clipboard has no usable text. Copy the full key again and try Paste."), _("OK")));
++        }));
+ 	buttons.push_back(std::make_shared<ButtonComponent>(mWindow, acceptBtnText, acceptBtnText, [this, okCallback] { okCallback(mText->getValue()); delete this; }));
+ 	buttons.push_back(std::make_shared<ButtonComponent>(mWindow, _("RESET"), _("RESET"), [this, okCallback] { okCallback(""); delete this; }));
+ 	buttons.push_back(std::make_shared<ButtonComponent>(mWindow, _("CANCEL"), _("DISCARD CHANGES"), [this] { delete this; })); 
+--- a/es-core/src/guis/GuiTextEditPopupKeyboard.cpp
++++ b/es-core/src/guis/GuiTextEditPopupKeyboard.cpp
+@@ -1,4 +1,6 @@
+ #include "guis/GuiTextEditPopupKeyboard.h"
++#include "guis/GuiMsgBox.h"
++#include "Window.h"
+ #include "components/MenuComponent.h"
+ #include "utils/StringUtil.h"
+ #include "Log.h"
+@@ -98,7 +100,7 @@
+ 
+ GuiTextEditPopupKeyboard::GuiTextEditPopupKeyboard(Window* window, const std::string& title, const std::string& initValue,
+ 	const std::function<void(const std::string&)>& okCallback, bool multiLine, const std::string acceptBtnText, bool password)
+-	: GuiComponent(window), mBackground(window, ":/frame.png"), mGrid(window, Vector2i(1, 6)), mMultiLine(multiLine)
++	: GuiComponent(window), mBackground(window, ":/frame.png"), mGrid(window, Vector2i(password ? 2 : 1, 6)), mMultiLine(multiLine)
+ {
+ 	setTag("popup");
+ 
+@@ -126,10 +128,17 @@
+ 		mText->setCursor(initValue.size());
+ 
+ 	// Header
+-	mGrid.setEntry(mTitle, Vector2i(0, 0), false, true);
++	mGrid.setEntry(mTitle, Vector2i(0, 0), false, true, Vector2i(password ? 2 : 1, 1));
+ 
+ 	// Text edit add
+ 	mGrid.setEntry(mText, Vector2i(0, 1), true, false, Vector2i(1, 1), GridFlags::BORDER_TOP);
++    if (password) {
++        mPasteButton = std::make_shared<ButtonComponent>(mWindow, _("PASTE"), _("PASTE"), [this] {
++            if (!mText->pasteFromClipboard())
++                mWindow->pushGui(new GuiMsgBox(mWindow, _("The clipboard has no usable text. Copy the full key again and try Paste."), _("OK")));
++        });
++        mGrid.setEntry(mPasteButton, Vector2i(1, 1), true, false);
++    }
+ 
+ 	std::vector< std::vector< std::shared_ptr<ButtonComponent> > > buttonList;
+ 
+@@ -318,7 +327,9 @@
+ 
+ 	mBackground.fitTo(mSize, Vector3f::Zero(), Vector2f(-32, -32));
+ 
+-	mText->setSize(mSize.x() - (2 * OSK_PADDINGX), mText->getSize().y());
++    const float pasteWidth = mPasteButton ? mPasteButton->getSize().x() + OSK_PADDINGX : 0;
++    if (mPasteButton) mGrid.setColWidthPerc(1, pasteWidth / mSize.x());
++	mText->setSize(mSize.x() - (2 * OSK_PADDINGX) - pasteWidth, mText->getSize().y());
+ 
+ 	// update grid
+ 	mGrid.setRowHeight(0, mTitle->getFont()->getHeight() + OSK_PADDINGY);
+--- a/es-core/src/guis/GuiTextEditPopupKeyboard.h
++++ b/es-core/src/guis/GuiTextEditPopupKeyboard.h
+@@ -47,6 +47,7 @@
+ 	std::shared_ptr<TextComponent> mTitle;
+ 	std::shared_ptr<TextEditComponent> mText;
+ 	std::shared_ptr<ComponentGrid> mKeyboardGrid;
++    std::shared_ptr<ButtonComponent> mPasteButton;
+ 	
+ 	std::function<void(const std::string&)> mOkCallback;
+ 
+--- a/locale/lang/de/LC_MESSAGES/emulationstation2.po
++++ b/locale/lang/de/LC_MESSAGES/emulationstation2.po
+@@ -4096,3 +4096,9 @@
+ 
+ msgid "To view achievement lists and your profile here, copy your personal Web API key from retroachievements.org/controlpanel.php. Emulator achievements work with your normal login. Paste the key in the optional field; Reset removes it."
+ msgstr "Um Erfolgslisten und dein Profil hier anzuzeigen, kopiere deinen persönlichen Web-API-Schlüssel von retroachievements.org/controlpanel.php. Erfolge im Emulator funktionieren mit deiner normalen Anmeldung. Füge den Schlüssel im optionalen Feld ein; mit Zurücksetzen entfernst du ihn."
++
++msgid "PASTE"
++msgstr "EINFÜGEN"
++
++msgid "The clipboard has no usable text. Copy the full key again and try Paste."
++msgstr "Die Zwischenablage enthält keinen nutzbaren Text. Kopiere den vollständigen Schlüssel erneut und wähle Einfügen."
+--- a/locale/lang/en_GB/LC_MESSAGES/emulationstation2.po
++++ b/locale/lang/en_GB/LC_MESSAGES/emulationstation2.po
+@@ -4095,3 +4095,9 @@
+ 
+ msgid "To view achievement lists and your profile here, copy your personal Web API key from retroachievements.org/controlpanel.php. Emulator achievements work with your normal login. Paste the key in the optional field; Reset removes it."
+ msgstr "To view achievement lists and your profile here, copy your personal Web API key from retroachievements.org/controlpanel.php. Emulator achievements work with your normal login. Paste the key in the optional field; Reset removes it."
++
++msgid "PASTE"
++msgstr "PASTE"
++
++msgid "The clipboard has no usable text. Copy the full key again and try Paste."
++msgstr "The clipboard has no usable text. Copy the full key again and try Paste."

@@ -1,0 +1,37 @@
+diff --git a/python-src/batocera-launch/batocera_launch/devices/evmapy.py b/python-src/batocera-launch/batocera_launch/devices/evmapy.py
+index 575cd1e..1d18b8a 100644
+--- a/python-src/batocera-launch/batocera_launch/devices/evmapy.py
++++ b/python-src/batocera-launch/batocera_launch/devices/evmapy.py
+@@ -4,6 +4,7 @@ import asyncio
+ import contextlib
+ import json
+ import logging
++import os
+ from collections import defaultdict
+ from contextlib import AbstractAsyncContextManager
+ from dataclasses import InitVar, dataclass, field
+@@ -132,6 +133,10 @@ class EvmapyManager(AbstractAsyncContextManager['EvmapyManager', None]):
+ 
+     @contextlib.asynccontextmanager
+     async def monitor_controllers(self) -> AsyncGenerator[None]:
++        if os.environ.get('EMBERCADE_DESKTOP') == '1':
++            yield
++            return
++
+         task = await create_ready_task(self._monitor_controllers_loop)
+         try:
+             yield
+diff --git a/python-src/batocera-launch/batocera_launch/emulator.py b/python-src/batocera-launch/batocera_launch/emulator.py
+index 06b9e82..d4d9d62 100644
+--- a/python-src/batocera-launch/batocera_launch/emulator.py
++++ b/python-src/batocera-launch/batocera_launch/emulator.py
+@@ -652,6 +652,9 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
+             command.prepend_args('mangohud')
+ 
+     def prepare_gun_help(self) -> None:
++        if os.environ.get('EMBERCADE_DESKTOP') == '1':
++            return
++
+         try:
+             generate_gun_help(
+                 self.config.use_guns,

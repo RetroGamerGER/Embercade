@@ -1,0 +1,13 @@
+diff --git a/python-src/batocera-launch/batocera_launch/emulator.py b/python-src/batocera-launch/batocera_launch/emulator.py
+--- a/python-src/batocera-launch/batocera_launch/emulator.py
++++ b/python-src/batocera-launch/batocera_launch/emulator.py
+@@ -348,4 +348,9 @@
+     async def prepare_bezel(self) -> Path | None:
++        if os.environ.get('EMBERCADE_DESKTOP') == '1' and self.name in {'pcsx2', 'xemu', 'dolphin'}:
++            # Embercade supervises a compositor-specific, launch-scoped helper.
++            # Keep bezel_files/SystemConfig authoritative; skip appliance image
++            # generation and its display-global overlay for these providers.
++            return None
+         if self.handles_bezels:
+             _logger.debug('skipping bezels for emulator %s', self.name)
+             return None

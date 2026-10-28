@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -euo pipefail
+project_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="$project_root/src" python - "$project_root" <<'PYTHON'
+from pathlib import Path
+import json,sys
+from embercade.shaders import load_catalog
+project=Path(sys.argv[1]);root=project/'.work/shader-mappings'
+assert (root/'configs/rendering-defaults.yml').is_file(), 'Shader mappings not prepared'
+assert (root/'embercade-metadata/catalog.toml').read_bytes()==(project/'resources/shaders/catalog.toml').read_bytes(), 'Shader mappings are stale'
+assert json.loads((root/'embercade-metadata/provider.json').read_text())['mode']=='host-package'
+assert not any(root.rglob('*.slang')), 'Full shader source must not be embedded'
+assert not any(root.rglob('*.png')), 'Host texture must not be copied'
+print(f'Validated {len(load_catalog(root/"embercade-metadata/catalog.toml"))} host shader mappings; effects remain optional.')
+PYTHON

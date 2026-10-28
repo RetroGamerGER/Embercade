@@ -1,0 +1,212 @@
+[catalog]
+format = 1
+backend = "slang"
+
+[[preset]]
+id = "newpixie"
+label = "NewPixie"
+upstream = "crt/newpixie-crt"
+scanlines = true
+license = "MIT OR Unlicense for code and Mattias Gustavsson's original frame texture"
+attribution = "Mattias Gustavsson; Slang adaptation by hunterk"
+
+[[preset]]
+id = "crt-easymode"
+label = "CRT EasyMode"
+upstream = "crt/crt-easymode"
+scanlines = true
+license = "GPL, version not stated in the shader header"
+attribution = "EasyMode"
+
+[[preset]]
+id = "crt-lottes"
+label = "CRT Lottes"
+upstream = "crt/crt-lottes"
+scanlines = true
+license = "Public domain"
+attribution = "Timothy Lottes"
+
+[[preset]]
+id = "crt-lottes-fast"
+label = "CRT Lottes Fast"
+upstream = "crt/crt-lottes-fast"
+scanlines = true
+license = "Unlicense / public domain dedication"
+attribution = "Timothy Lottes; RetroArch adaptation by hunterk"
+
+[[preset]]
+id = "zfast-crt"
+label = "ZFast CRT"
+upstream = "crt/zfast-crt"
+scanlines = true
+license = "GPL-2.0-or-later in the shared implementation; pass header incomplete"
+attribution = "Greg Hogan (SoltanGris42) and contributors"
+
+[[preset]]
+id = "mega-bezel"
+label = "Mega Bezel"
+upstream = "bezel/Mega_Bezel/Presets/Base_CRT_Presets/MBZ__3__STD__GDV"
+scanlines = true
+disable_external_bezel = true
+license = "GPL-3.0 for the base Mega Bezel package and included components per upstream README"
+attribution = "HyperspaceMadness and Mega Bezel contributors"
+
+[[preset]]
+id = "sharp-bilinear"
+label = "Sharp Bilinear"
+upstream = "pixel-art-scaling/sharp-bilinear-simple"
+scanlines = false
+license = "Public domain"
+attribution = "rsn8887 and Libretro contributors"
+
+[[preset]]
+id = "lcd-grid"
+label = "LCD Grid"
+upstream = "handheld/lcd-grid-v2"
+scanlines = false
+license = "No explicit license found in the selected preset or shader file"
+attribution = "cgwg and Libretro contributors"
+
+[[preset]]
+id = "psp-color"
+label = "PSP Color"
+upstream = "handheld/color-mod/psp-color"
+scanlines = false
+license = "Main color pass and Pokefan531 LUT textures are public domain; legacy LUT helper grant remains separately documented"
+attribution = "hunterk; modifications by Pokefan531"
+
+[[preset]]
+id = "gba-color"
+label = "GBA Color"
+upstream = "handheld/color-mod/gba-color"
+scanlines = false
+license = "Main color pass and Pokefan531 LUT textures are public domain; legacy LUT helper grant remains separately documented"
+attribution = "hunterk; modifications by Pokefan531"
+
+[[preset]]
+id = "gbc-color"
+label = "GBC Color"
+upstream = "handheld/color-mod/gbc-color"
+scanlines = false
+license = "Main color pass and Pokefan531 LUT textures are public domain; legacy LUT helper grant remains separately documented"
+attribution = "hunterk; modifications by Pokefan531"
+
+[[preset]]
+id = "advanced-aa"
+label = "Advanced AA"
+upstream = "anti-aliasing/advanced-aa"
+scanlines = false
+license = "GPL-2.0-or-later for Advanced AA; MIT for the referenced bicubic passes"
+attribution = "guest(r), Hyllian and contributors"
+
+[[preset]]
+id = "bevel"
+label = "Bevel"
+upstream = "handheld/bevel"
+scanlines = false
+license = "GPL-2.0-or-later"
+attribution = "Hyllian/Jararaca"
+
+[[preset]]
+id = "simpletex"
+label = "Simpletex"
+upstream = "handheld/simpletex_lcd"
+scanlines = false
+license = "GPL-2.0-or-later for code; paper CC-BY-SA-3.0 (Stephen Gilbert, adapted by jdgleaver)"
+attribution = "Greg Hogan (SoltanGris42), jdgleaver and contributors"
+
+[[preset]]
+id = "crt-royale"
+label = "CRT Royale"
+upstream = "crt/crt-royale"
+scanlines = true
+license = "Original component notices in the official host package; not relicensed by Embercade"
+attribution = "Libretro shader authors and port contributors; see the selected preset and its dependencies"
+
+[[preset]]
+id = "crt-geom"
+label = "CRT Geom"
+upstream = "crt/crt-geom"
+scanlines = true
+license = "Original component notices in the official host package; not relicensed by Embercade"
+attribution = "Libretro shader authors and port contributors; see the selected preset and its dependencies"
+
+[[preset]]
+id = "scalefx"
+label = "ScaleFX"
+upstream = "edge-smoothing/scalefx/scalefx"
+scanlines = false
+license = "Original component notices in the official host package; not relicensed by Embercade"
+attribution = "Libretro shader authors and port contributors; see the selected preset and its dependencies"
+
+[[preset]]
+id = "scalefx-aa"
+label = "ScaleFX AA"
+upstream = "edge-smoothing/scalefx/scalefx+rAA"
+scanlines = false
+license = "Original component notices in the official host package; not relicensed by Embercade"
+attribution = "Libretro shader authors and port contributors; see the selected preset and its dependencies"
+
+[[preset]]
+id = "scalefx-hybrid"
+label = "ScaleFX Hybrid"
+upstream = "edge-smoothing/scalefx/scalefx-hybrid"
+scanlines = false
+license = "Original component notices in the official host package; not relicensed by Embercade"
+attribution = "Libretro shader authors and port contributors; see the selected preset and its dependencies"
+
+[[preset]]
+id = "ntsc-svideo"
+label = "NTSC S-Video"
+upstream = "ntsc/ntsc-256px-svideo"
+scanlines = true
+license = "Original component notices in the official host package; not relicensed by Embercade"
+attribution = "Libretro shader authors and port contributors; see the selected preset and its dependencies"
+
+[[preset]]
+id = "ntsc-vcr"
+label = "NTSC VCR"
+upstream = "vhs/ntsc-vcr"
+scanlines = true
+license = "Original component notices in the official host package; not relicensed by Embercade"
+attribution = "Libretro shader authors and port contributors; see the selected preset and its dependencies"
+
+[[preset]]
+id = "tvout"
+label = "TV Out"
+upstream = "crt/tvout-tweaks"
+scanlines = true
+license = "Original component notices in the official host package; not relicensed by Embercade"
+attribution = "Libretro shader authors and port contributors; see the selected preset and its dependencies"
+
+[[preset]]
+id = "gameboy"
+label = "Game Boy LCD"
+upstream = "handheld/gameboy"
+scanlines = false
+license = "Original component notices in the official host package; not relicensed by Embercade"
+attribution = "Libretro shader authors and port contributors; see the selected preset and its dependencies"
+
+[[preset]]
+id = "lcd-gba-color"
+label = "GBA LCD and Color"
+upstream = "presets/handheld-plus-color-mod/lcd-grid-v2-gba-color"
+scanlines = false
+license = "Original component notices in the official host package; not relicensed by Embercade"
+attribution = "Libretro shader authors and port contributors; see the selected preset and its dependencies"
+
+[[preset]]
+id = "lcd-gbc-color"
+label = "GBC LCD and Color"
+upstream = "presets/handheld-plus-color-mod/lcd-grid-v2-gbc-color"
+scanlines = false
+license = "Original component notices in the official host package; not relicensed by Embercade"
+attribution = "Libretro shader authors and port contributors; see the selected preset and its dependencies"
+
+[[preset]]
+id = "flatten-glow"
+label = "Flatten Glow"
+upstream = "blurs/kawase_glow"
+scanlines = false
+license = "Original component notices in the official host package; not relicensed by Embercade"
+attribution = "Libretro shader authors and port contributors; see the selected preset and its dependencies"

@@ -1,0 +1,127 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+project_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
+reference_root="$(cd -- "$project_root/.." && pwd -P)"
+runtime_root="$project_root/.work/runtime"
+source_root="$runtime_root/src"
+venv="$runtime_root/venv"
+lock_file="$project_root/runtime/requirements.lock"
+upstream_lock="$project_root/upstream.lock"
+batocera_repo="$reference_root/Batocera"
+patch_root="$project_root/patches/batocera-launch"
+
+export PYTHONNOUSERSITE=1
+unset PYTHONPATH || true
+
+if [[ "$runtime_root" != "$project_root/.work/runtime" || -L "$runtime_root" ]]; then
+  printf 'Refusing unexpected runtime path: %s\n' "$runtime_root" >&2
+  exit 1
+fi
+if [[ ! -d "$batocera_repo/.git" ]]; then
+  printf 'Missing read-only Batocera reference repository: %s\n' "$batocera_repo" >&2
+  exit 1
+fi
+if [[ ! -f "$lock_file" || ! -f "$upstream_lock" ]]; then
+  printf 'Missing Embercade runtime or upstream lock file.\n' >&2
+  exit 1
+fi
+
+readarray -t lock_values < <(python - "$upstream_lock" <<'PY'
+from pathlib import Path
+import sys
+import tomllib
+
+with Path(sys.argv[1]).open('rb') as stream:
+    upstream = tomllib.load(stream)['upstream']
+print(upstream['batocera.linux'])
+print(upstream['architecture'])
+PY
+)
+batocera_commit="${lock_values[0]}"
+architecture="${lock_values[1]}"
+
+if [[ "$architecture" != "batocera-launch-44" ]]; then
+  printf 'Unsupported architecture in upstream.lock: %s\n' "$architecture" >&2
+  exit 1
+fi
+if [[ "$(git -C "$batocera_repo" cat-file -t "$batocera_commit" 2>/dev/null || true)" != commit ]]; then
+  printf 'Pinned Batocera commit is missing: %s\n' "$batocera_commit" >&2
+  exit 1
+fi
+
+host_version="$(python -c 'import platform; print(platform.python_version())')"
+host_series="$(python -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')"
+if [[ "$host_series" != "3.14" ]]; then
+  printf 'Embercade compatibility runtime requires CPython 3.14.x; found %s.\n' "$host_version" >&2
+  exit 1
+fi
+
+mkdir -p "$runtime_root"
+find "$runtime_root" -depth -mindepth 1 -delete
+mkdir -p "$source_root" "$runtime_root/home" "$runtime_root/pip-cache"
+
+git -C "$batocera_repo" archive "$batocera_commit" \
+  COPYING \
+  python-src/python-batocera-common \
+  python-src/batocera-launch \
+  python-src/batocera-launch-dolphin \
+  python-src/batocera-launch-pcsx2 \
+  python-src/batocera-launch-rpcs3 \
+  package/batocera/core/batocera-configgen/configgen \
+  package/batocera/emulationstation/batocera-emulationstation/controllers/es_input.cfg \
+  | tar -x -C "$source_root"
+
+for patch_file in "$patch_root"/*.patch; do
+  patch --directory "$source_root" --strip=1 --forward < "$patch_file"
+done
+
+install -Dm644 \
+  "$source_root/python-src/batocera-launch/resources/defaults/config.yml" \
+  "$runtime_root/share/batocera/launch/defaults/config.yml"
+install -Dm644 \
+  "$source_root/python-src/batocera-launch/resources/defaults/config-x86_64.yml" \
+  "$runtime_root/share/batocera/launch/defaults/config-arch.yml"
+install -Dm644 \
+  "$source_root/python-src/batocera-launch/resources/data/gamesbuttonsdb.xml" \
+  "$runtime_root/share/batocera/launch/data/gamesbuttonsdb.xml"
+install -Dm644 \
+  "$project_root/resources/runtime/gamesdb.xml" \
+  "$runtime_root/share/emulationstation/resources/gamesdb.xml"
+install -Dm644 \
+  "$source_root/package/batocera/emulationstation/batocera-emulationstation/controllers/es_input.cfg" \
+  "$runtime_root/share/emulationstation/es_input.cfg"
+install -Dm644 \
+  "$project_root/resources/runtime/rendering-defaults.yml" \
+  "$runtime_root/share/batocera/shaders/configs/rendering-defaults.yml"
+mkdir -p "$runtime_root/share/libretro/assets" "$runtime_root/share/libretro/info"
+
+python -m venv "$venv"
+
+export HOME="$runtime_root/home"
+export PIP_CACHE_DIR="$runtime_root/pip-cache"
+export PIP_DISABLE_PIP_VERSION_CHECK=1
+export PIP_NO_INPUT=1
+
+"$venv/bin/python" -m pip install --requirement "$lock_file"
+"$venv/bin/python" -m pip install \
+  --no-deps \
+  --no-build-isolation \
+  --ignore-requires-python \
+  "$source_root/python-src/python-batocera-common" \
+  "$source_root/python-src/batocera-launch" \
+  "$source_root/python-src/batocera-launch-dolphin" \
+  "$source_root/python-src/batocera-launch-pcsx2" \
+  "$source_root/python-src/batocera-launch-rpcs3" \
+  "$source_root/package/batocera/core/batocera-configgen/configgen"
+
+cat > "$runtime_root/runtime-info.txt" <<EOF
+mode=embercade-dev-compatibility
+host-python=$host_version
+upstream-python-requires===3.14.5
+batocera-commit=$batocera_commit
+architecture=$architecture
+EOF
+
+"$project_root/scripts/runtime-smoke"
+printf 'Prepared Embercade compatibility runtime: %s\n' "$runtime_root"

@@ -1,0 +1,16 @@
+diff --git a/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroGenerator.py b/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroGenerator.py
+index ce2d119..e7d3d21 100644
+--- a/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroGenerator.py
++++ b/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroGenerator.py
+@@ -104,6 +104,11 @@ class LibretroGenerator(Generator):
+                 libretroRetroarchCustom.generateRetroarchCustom()
+             #  Write controllers configuration files
+             retroconfig = UnixSettings(RETROARCH_CUSTOM, separator=' ')
++            # Configgen owns the central core-options file.  Do not let stale
++            # per-core or per-game .opt files override the generated system
++            # mappings in the isolated desktop profile.
++            retroconfig.save('global_core_options', '"true"')
++            retroconfig.save('game_specific_options', '"false"')
+
+             if 'lightgun_map' in system.config:
+                 lightgun = system.config.get_bool('lightgun_map')

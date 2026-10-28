@@ -1,0 +1,43 @@
+diff --git a/python-src/batocera-launch/batocera_launch/emulators/xenia_edge.py b/python-src/batocera-launch/batocera_launch/emulators/xenia_edge.py
+index ff9fb72..12373ae 100644
+--- a/python-src/batocera-launch/batocera_launch/emulators/xenia_edge.py
++++ b/python-src/batocera-launch/batocera_launch/emulators/xenia_edge.py
+@@ -3,5 +3,6 @@
+ import logging
++import os
+ from pathlib import Path
+ from typing import Any, Final
+-
+-import toml
++
++import tomlkit as toml
+@@ -74,6 +75,6 @@ class XeniaEdge(Emulator):
+         config: dict[str, dict[str, Any]] = {}
+         if toml_file.is_file():
+             try:
+-                config = toml.load(toml_file)
++                config = toml.loads(toml_file.read_text())
+             except Exception:
+                 _logger.exception('Failed to parse Xenia config TOML')
+@@ -157,8 +158,18 @@ class XeniaEdge(Emulator):
+         )
+-
++        log_file = Path(
++            os.environ.get('EMBERCADE_XENIA_EDGE_LOG', self.config_dir / 'xenia.log')
++        )
++        config.setdefault('Logging', {})['log_file'] = str(log_file)
++
+         with toml_file.open('w') as f:
+             toml.dump(config, f)
+-
+-        args: list[str | Path] = [_XENIA_EDGE_BIN]
++
++        # Embercade resolves a native executable or user-supplied AppImage
++        # before entering the pinned Batocera plugin.  Batocera retains its
++        # appliance default when the desktop override is absent.
++        args: list[str | Path] = [
++            Path(os.environ.get('EMBERCADE_XENIA_EDGE_BIN', _XENIA_EDGE_BIN)),
++            f'--log_file={log_file}',
++        ]
+         if not configure_emulator(rom):
+             args.append(rom)

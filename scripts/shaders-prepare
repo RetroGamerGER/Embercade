@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -euo pipefail
+project_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
+output="$project_root/.work/shader-mappings"
+if [[ -L "$output" ]]; then
+  printf 'Refusing symlinked shader mapping output.\n' >&2
+  exit 1
+fi
+prepared="$(mktemp -d "$project_root/.work/shader-mappings-build.XXXXXX")"
+trap 'find "$prepared" -depth -delete' EXIT
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="$project_root/src" python -m embercade.shaders host-template \
+  --destination "$prepared/tree" --catalog "$project_root/resources/shaders/catalog.toml"
+cp -- "$project_root/resources/shaders/README.md" "$prepared/tree/embercade-metadata/README.md"
+cp -- "$project_root/runtime/shaders.lock" "$prepared/tree/embercade-metadata/shaders.lock"
+if [[ -d "$output" ]]; then
+  # Only this generated output is disposable. Preserve full .work/shaders and Gold.
+  find "$output" -depth -mindepth 1 -delete
+else
+  mkdir "$output"
+fi
+cp -a "$prepared/tree/." "$output/"
+"$project_root/scripts/shaders-smoke"

@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+project_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
+reference_root="$(cd -- "$project_root/.." && pwd -P)"
+stage_root="$project_root/.work/stage"
+
+# Runtime and frontend preparation are build-time operations only.  A healthy
+# pinned result is reused; normal staged launches never invoke either builder.
+if ! "$project_root/scripts/runtime-smoke" >/dev/null 2>&1; then
+  "$project_root/scripts/runtime-prepare"
+fi
+"$project_root/scripts/system-catalog-prepare"
+"$project_root/scripts/decorations-prepare"
+if ! "$project_root/scripts/frontend-libs-smoke" >/dev/null 2>&1; then
+  "$project_root/scripts/frontend-libs-prepare"
+fi
+if ! "$project_root/scripts/shaders-smoke" >/dev/null 2>&1; then
+  "$project_root/scripts/shaders-prepare"
+fi
+# Always validate the current authorization input and configure the incremental
+# frontend build. A credential rotation/mode change must not reuse an old binary.
+"$project_root/scripts/ui-build" "$@"
+
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="$project_root/src" \
+  python -m embercade.staging \
+    --project-root "$project_root" \
+    --reference-root "$reference_root" \
+    --stage-root "$stage_root" "$@"

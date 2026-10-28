@@ -1,0 +1,20 @@
+RetroBat decoration collection
+Source: https://github.com/RetroBat-Official/retrobat-bezels
+Pinned commit: 5ce1f6ed32eb9f3df8ae14483afc4d1e3ef35d65
+
+Embercade's owner adopts CC BY-NC-SA 4.0 for distribution of this RetroBat
+collection. The original authors' credits and individual notices, including
+any CC BY-NC-ND notices, are retained unchanged with their original scope.
+This notice records the project's distribution decision, not a new statement
+from an individual upstream artist or a change to their original terms.
+
+The collection is based on Batocera decorations and distributed by RetroBat.
+Original README, layouts, system/game mappings and image pixels are retained.
+Embercade materializes filename-only link stubs as Linux symlinks and adds
+directory/legacy-selection aliases. Its collection receipt records these
+technical adaptations and any missing upstream targets. No image is redrawn,
+resized, converted or substituted with the previous captured bezel collection.
+
+License: https://creativecommons.org/licenses/by-nc-sa/4.0/
+The full CC BY-NC-SA 4.0 text accompanies this notice. Original file-level
+exceptions/credits remain part of the collection, not a blanket new grant.

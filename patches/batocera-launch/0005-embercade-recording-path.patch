@@ -1,0 +1,21 @@
+diff --git a/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroRetroarchCustom.py b/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroRetroarchCustom.py
+index 94e4cca..bdb53c1 100644
+--- a/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroRetroarchCustom.py
++++ b/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroRetroarchCustom.py
+@@ -4,6 +4,7 @@ from ...batoceraPaths import (
+     BIOS,
+     CHEATS,
+     CONFIGS,
++    RECORDINGS,
+     SAVES,
+     SCREENSHOTS,
+     USER_SHADERS,
+@@ -97,7 +98,7 @@ def generateRetroarchCustomPathes(retroarchSettings: UnixSettings) -> None:
+     retroarchSettings.save('core_options_path',             f'"{RETROARCH_CORE_CUSTOM}"')
+     retroarchSettings.save('assets_directory',              f'"{RETROARCH_SHARE / "assets"}"')
+     retroarchSettings.save('screenshot_directory',          f'"{SCREENSHOTS}"')
+-    retroarchSettings.save('recording_output_directory',    f'"{SCREENSHOTS}"')
++    retroarchSettings.save('recording_output_directory',    f'"{RECORDINGS}"')
+     retroarchSettings.save('savestate_directory',           f'"{SAVES}"')
+     retroarchSettings.save('savefile_directory',            f'"{SAVES}"')
+     retroarchSettings.save('extraction_directory',          f'"{CONFIGS / "retroarch" / "extractions"}"')

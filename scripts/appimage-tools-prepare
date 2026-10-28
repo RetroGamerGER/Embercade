@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+project_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
+exec env PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="$project_root/src" \
+  python -B -m embercade.appimage --project-root "$project_root" --prepare-tools --tools-only "$@"

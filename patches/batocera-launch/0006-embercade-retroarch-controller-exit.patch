@@ -1,0 +1,26 @@
+diff --git a/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroControllers.py b/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroControllers.py
+--- a/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroControllers.py
++++ b/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroControllers.py
+@@ -1,5 +1,6 @@
+ from __future__ import annotations
+ 
++import os
+ from typing import TYPE_CHECKING, Literal
+ 
+ from ...controllersConfig import getAssociatedMouse, getDevicesInformation
+@@ -90,6 +91,15 @@ def writeHotKeyConfig(retroconfig: UnixSettings, controllers: Controllers, /) -
+     if controllers and 'hotkey' in controllers[0].inputs and controllers[0].inputs['hotkey'].type == 'button':
+         retroconfig.save('input_enable_hotkey_btn', controllers[0].inputs['hotkey'].id)
+ 
++        # The Batocera appliance normally translates controller hotkeys through
++        # a system service. Embercade's central preset chooses Back or Guide.
++        if os.environ.get('EMBERCADE_DESKTOP') == '1':
++            hotkey_name = 'hotkey' if os.environ.get('EMBERCADE_EXIT_HOTKEY') == 'guide-start' else 'select'
++            if (hotkey_name in controllers[0].inputs and controllers[0].inputs[hotkey_name].type == 'button'
++                    and 'start' in controllers[0].inputs and controllers[0].inputs['start'].type == 'button'):
++                retroconfig.save('input_enable_hotkey_btn', controllers[0].inputs[hotkey_name].id)
++                retroconfig.save('input_exit_emulator_btn', controllers[0].inputs['start'].id)
++
+ # Write a configuration for a specified controller
+ def writeControllerConfig(
+     retroconfig: UnixSettings,

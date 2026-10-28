@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+project_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
+stage_root="$project_root/.work/stage"
+
+if ! PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="$project_root/src" \
+  python -c 'from pathlib import Path; from embercade.installer import verify_payload; import sys; verify_payload(Path(sys.argv[1]))' \
+  "$stage_root" >/dev/null 2>&1; then
+  for argument in "$@"; do
+    if [[ "$argument" == --dry-run ]]; then
+      echo "No verified Production Stage is available. Build it first with ./scripts/stage-build; dry-run did not write anything." >&2
+      exit 2
+    fi
+  done
+  echo "Preparing verified Embercade production payload..."
+  "$project_root/scripts/stage-build"
+fi
+
+exec "$stage_root/bin/embercade" install --payload "$stage_root" "$@"

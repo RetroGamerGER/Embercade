@@ -1,0 +1,40 @@
+diff --git a/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroConfig.py b/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroConfig.py
+--- a/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroConfig.py
++++ b/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroConfig.py
+@@ -219,6 +219,6 @@ def createLibretroConfig(
+ 
+     mkdir_if_not_exists(RETROARCH_CONFIG / 'cache')
+-    retroarchConfig['cache_directory'] = RETROARCH_CONFIG / 'cache'
++    retroarchConfig['cache_directory'] = f'"{RETROARCH_CONFIG / "cache"}"'
+ 
+     # require for core informations
+     retroarchConfig['libretro_directory'] = RETROARCH_CORES
+@@ -224,7 +224,7 @@ def createLibretroConfig(
+ 
+     # require for core informations
+-    retroarchConfig['libretro_directory'] = RETROARCH_CORES
+-    retroarchConfig['libretro_info_path'] = RETROARCH_SHARE / 'info'
++    retroarchConfig['libretro_directory'] = f'"{RETROARCH_CORES}"'
++    retroarchConfig['libretro_info_path'] = f'"{RETROARCH_SHARE / "info"}"'
+ 
+     retroarchConfig['video_fullscreen'] = 'true'                # Fullscreen is required at least on x86* and odroidn2
+ 
+@@ -231,7 +231,7 @@ def createLibretroConfig(
+     retroarchConfig['sort_savefiles_enable'] = 'false'     # ensure we don't save system.name + core
+     retroarchConfig['sort_savestates_enable'] = 'false'    # ensure we don't save system.name + core
+-    retroarchConfig['savestate_directory'] = SAVES / system.name
+-    retroarchConfig['savefile_directory'] = SAVES / system.name
++    retroarchConfig['savestate_directory'] = f'"{SAVES / system.name}"'
++    retroarchConfig['savefile_directory'] = f'"{SAVES / system.name}"'
+ 
+     # Forced values (so that if the config is not correct, fix it)
+     if system.config.core == 'tgbdual':
+@@ -733,7 +733,7 @@ def createLibretroConfig(
+     retroarchConfig['width']  = gameResolution["width"]  # default value
+     retroarchConfig['height'] = gameResolution["height"] # default value
+     # force the assets directory while it was wrong in some beta versions
+-    retroarchConfig['assets_directory'] = RETROARCH_SHARE / 'assets'
++    retroarchConfig['assets_directory'] = f'"{RETROARCH_SHARE / "assets"}"'
+ 
+     # Adaptation for small resolution (GPICase)
+     if isLowResolution(gameResolution):

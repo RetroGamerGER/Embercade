@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+project_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
+library_root="$project_root/.work/frontend-libs"
+library="$library_root/lib/libfreeimage.so.3"
+mixer="$library_root/lib/libSDL2_mixer-2.0.so.0"
+
+required=(
+  "$library"
+  "$library_root/licenses/freeimage/license-gplv2.txt"
+  "$library_root/licenses/freeimage/license-gplv3.txt"
+  "$library_root/licenses/freeimage/license-fi.txt"
+  "$library_root/licenses/freeimage/NOTICE.txt"
+  "$mixer"
+  "$library_root/include/SDL2/SDL_mixer.h"
+  "$library_root/licenses/sdl2_mixer/LICENSE.txt"
+  "$library_root/licenses/sdl2_mixer/NOTICE.txt"
+  "$library_root/licenses/sdl2_mixer/codecs/dr_flac.h"
+  "$library_root/licenses/sdl2_mixer/codecs/minimp3.h"
+  "$library_root/licenses/sdl2_mixer/codecs/stb_vorbis.h"
+)
+for path in "${required[@]}"; do
+  if [[ ! -f "$path" ]]; then
+    printf 'Missing prepared frontend runtime file: %s\n' "$path" >&2
+    exit 1
+  fi
+done
+if [[ "$(readlink "$library")" != "libfreeimage-3.18.0.so" ]]; then
+  printf 'Unexpected FreeImage SONAME link: %s\n' "$library" >&2
+  exit 1
+fi
+if ! readelf -d "$library" | grep -q 'Library soname: \[libfreeimage.so.3\]'; then
+  printf 'Prepared FreeImage library has the wrong SONAME.\n' >&2
+  exit 1
+fi
+needed="$(readelf -d "$library" | sed -n 's/.*Shared library: \[\(.*\)\]/\1/p' | sort)"
+expected=$'libc.so.6\nlibgcc_s.so.1\nlibstdc++.so.6'
+if [[ "$needed" != "$expected" ]]; then
+  printf 'Prepared FreeImage library has unexpected dependencies:\n%s\n' "$needed" >&2
+  exit 1
+fi
+if ldd "$library" | grep -q 'not found'; then
+  printf 'Prepared FreeImage library has unresolved dependencies.\n' >&2
+  exit 1
+fi
+if [[ "$(readlink "$mixer")" != "libSDL2_mixer-2.0.so.0.800.2" ]]; then
+  printf 'Unexpected SDL2_mixer SONAME link: %s\n' "$mixer" >&2
+  exit 1
+fi
+if ! readelf -d "$mixer" | grep -q 'Library soname: \[libSDL2_mixer-2.0.so.0\]'; then
+  printf 'Prepared SDL2_mixer library has the wrong SONAME.\n' >&2
+  exit 1
+fi
+mixer_needed="$(readelf -d "$mixer" | sed -n 's/.*Shared library: \[\(.*\)\]/\1/p' | sort)"
+mixer_expected=$'libSDL2-2.0.so.0\nlibc.so.6'
+if [[ "$mixer_needed" != "$mixer_expected" ]]; then
+  printf 'Prepared SDL2_mixer library has unexpected dependencies:\n%s\n' "$mixer_needed" >&2
+  exit 1
+fi
+for candidate in "$library" "$mixer"; do
+  if readelf -n "$candidate" | grep -Eq 'x86 ISA needed:.*x86-64-v[234]|x86 ISA used:.*x86-64-v[234]'; then
+    printf 'Prepared frontend library is not generic x86-64: %s\n' "$candidate" >&2
+    exit 1
+  fi
+  if ldd "$candidate" | grep -q 'not found'; then
+    printf 'Prepared frontend library has unresolved dependencies: %s\n' "$candidate" >&2
+    exit 1
+  fi
+done
+printf 'OK frontend libraries FreeImage 3.18.0 and SDL2_mixer 2.8.2 generic x86-64\n'

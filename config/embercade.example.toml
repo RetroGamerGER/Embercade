@@ -1,0 +1,61 @@
+# Copy to $XDG_CONFIG_HOME/embercade/embercade.toml when needed.
+# Omitted executable entries are resolved through PATH.
+
+[paths]
+# Existing collections are always used in place and remain read-only.
+# Tilde expansion is supported; environment-variable interpolation is not.
+# roms = "/path/to/roms"
+# bios = "/path/to/bios"
+
+[controller]
+# Tested presets: back-start (SteamOS/handheld) or guide-start (desktop).
+exit_hotkey = "back-start"
+
+[executables]
+# retroarch = "/opt/retroarch/bin/retroarch"
+# dolphin = "dolphin-emu"
+# pcsx2 = "pcsx2-qt"
+# rpcs3 = "rpcs3"
+# xemu = "xemu"
+
+# User-supplied external providers remain outside Embercade and are never
+# copied into releases.  Provider values are: native, explicit, appimage.
+# Uncomment and replace the example path when enabling this provider.
+# [emulators.xenia-edge]
+# provider = "appimage"
+# executable = "/path/to/Xenia Edge.AppImage"
+
+# Optional fallback; it is a distinct provider and is not presented as Edge.
+# [emulators.xenia-canary]
+# provider = "appimage"
+# executable = "/path/to/Xenia Canary.AppImage"
+
+[libretro]
+# Optional discovery paths. When omitted, Embercade reads RetroArch's user and
+# system configuration, then uses standard distribution fallbacks.
+# cores = "/usr/lib/libretro"
+# info = "/usr/share/libretro/info"
+# share = "/usr/share/libretro"
+
+# Existing official PPSSPP assets are exposed read-only as
+# system_directory/PPSSPP; they are never copied into RetroArch's host profile.
+# Default: $XDG_DATA_HOME/embercade/resources/PPSSPP (complete assets/ contents).
+# Explicit override below; production mounts it read-only even outside BIOS_ROOT.
+# ppsspp_assets = "/path/to/ppsspp/assets"
+
+# Exact per-core overrides take precedence over every discovered directory.
+# [libretro.core_overrides]
+# nestopia = "/opt/libretro/nestopia_libretro.so"
+
+[pcsx2]
+# Existing firmware is read in place; Embercade never copies it.
+# bios = "/path/to/existing/PS2/bios"
+# resources = "/usr/share/pcsx2/resources"
+
+[rpcs3]
+# Existing installed firmware is copied once into Embercade's isolated .work/XDG tree.
+# firmware_source = "/path/to/existing/rpcs3/profile"
+# icons = "/usr/share/rpcs3/Icons"
+
+# EMBERCADE_ROMS_ROOT and EMBERCADE_BIOS_ROOT remain supported as explicit
+# process-level overrides for development and isolated launch environments.

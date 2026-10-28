@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+project_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
+dev_root="$project_root/.work/dev"
+
+if [[ "$dev_root" != "$project_root/.work/dev" || -L "$dev_root" ]]; then
+  printf 'Refusing to clean unexpected development path: %s\n' "$dev_root" >&2
+  exit 1
+fi
+
+if [[ -d "$dev_root" ]]; then
+  find "$dev_root" -depth -mindepth 1 -delete
+  rmdir -- "$dev_root"
+fi
+printf 'Removed isolated development runtime: %s\n' "$dev_root"
+

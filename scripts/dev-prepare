@@ -1,0 +1,182 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+project_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
+reference_root="$(cd -- "$project_root/.." && pwd -P)"
+dev_root="$project_root/.work/dev"
+launch_root="$project_root/.work/e2e-xdg"
+ui_root="$project_root/.work/ui"
+defaults="$project_root/resources/defaults"
+es_test="$reference_root/Batocera-EmulationStation-desktop-test"
+
+"$project_root/scripts/ui-prepare" >/dev/null
+
+required=(
+  "$ui_root/es-source/emulationstation"
+  "$es_test/deps/usr/lib/libSDL2_mixer.so"
+  "$ui_root/share/emulationstation/es_systems.cfg"
+  "$ui_root/share/emulationstation/es_features.cfg"
+  "$ui_root/share/emulationstation/es_input.cfg"
+  "$ui_root/share/emulationstation/es_savestates.cfg"
+  "$ui_root/share/emulationstation/resources"
+  "$ui_root/share/emulationstation/themes/es-theme-carbon"
+  "$project_root/.work/runtime/share/emulationstation/es_input.cfg"
+)
+
+for path in "${required[@]}"; do
+  if [[ ! -e "$path" ]]; then
+    printf 'Missing read-only desktop-test prerequisite: %s\n' "$path" >&2
+    exit 1
+  fi
+done
+
+mkdir -p \
+  "$dev_root/home" \
+  "$dev_root/system-share" \
+  "$dev_root/tmp" \
+  "$dev_root/tmp/.X11-unix" \
+  "$dev_root/usr-share" \
+  "$dev_root/userdata/music" \
+  "$dev_root/userdata/saves" \
+  "$dev_root/userdata/screenshots" \
+  "$dev_root/userdata/system/configs/emulationstation" \
+  "$dev_root/userdata/system/logs" \
+  "$dev_root/userdata/themes" \
+  "$launch_root"
+
+copy_default() {
+  local source="$1"
+  local destination="$2"
+  if [[ ! -e "$destination" ]]; then
+    cp -- "$source" "$destination"
+  fi
+}
+
+central_batocera_conf="$launch_root/config/embercade/batocera.conf"
+mkdir -p "$(dirname -- "$central_batocera_conf")"
+copy_default "$defaults/batocera.conf" "$central_batocera_conf"
+
+ensure_default_setting() {
+  local key="$1"
+  local value="$2"
+  if ! grep -q -E "^${key}=" "$central_batocera_conf"; then
+    printf '%s=%s\n' "$key" "$value" >> "$central_batocera_conf"
+  fi
+}
+ensure_default_setting gamecube.emulator dolphin
+ensure_default_setting gamecube.core dolphin
+ensure_default_setting gamecube.bezel none
+ensure_default_setting gamecube.hud none
+ensure_default_setting gamecube.hud_support false
+ensure_default_setting wii.emulator dolphin
+ensure_default_setting wii.core dolphin
+ensure_default_setting wii.emulatedwiimotes auto
+ensure_default_setting wii.bezel none
+ensure_default_setting wii.hud none
+ensure_default_setting wii.hud_support false
+ensure_default_setting xbox.emulator xemu
+ensure_default_setting xbox.core xemu
+ensure_default_setting xbox.bezel none
+ensure_default_setting xbox.hud none
+ensure_default_setting xbox.hud_support false
+ensure_default_setting ps2.emulator pcsx2
+ensure_default_setting ps2.core pcsx2
+ensure_default_setting ps2.bezel none
+ensure_default_setting ps2.hud none
+ensure_default_setting ps2.hud_support false
+ensure_default_setting ps3.emulator rpcs3
+ensure_default_setting ps3.core rpcs3
+ensure_default_setting ps3.bezel none
+ensure_default_setting ps3.hud none
+ensure_default_setting ps3.hud_support false
+ensure_default_setting amigacd32.bezel consoles
+ensure_default_setting amiga1200.bezel consoles
+ensure_default_setting dos.bezel consoles
+ensure_default_setting mame.bezel consoles
+ensure_default_setting dreamcast.bezel consoles
+ensure_default_setting megacd.bezel consoles
+ensure_default_setting neogeocd.bezel consoles
+ensure_default_setting pcenginecd.bezel consoles
+ensure_default_setting saturn.bezel consoles
+ensure_default_setting c64.bezel consoles
+ensure_default_setting nds.bezel consoles
+ensure_default_setting nds.core melondsds
+ensure_default_setting nds.melondsds_render_mode software
+ensure_default_setting nds.melondsds_touchmode joystick
+ensure_default_setting psp.emulator libretro
+ensure_default_setting psp.core ppsspp
+ensure_default_setting psp.gfxbackend vulkan
+ensure_default_setting psp.ppsspp_resolution 960x544
+ensure_default_setting psp.bezel consoles
+ensure_default_setting 3ds.emulator libretro
+ensure_default_setting 3ds.core azahar
+ensure_default_setting 3ds.gfxbackend glcore
+ensure_default_setting 3ds.3ds_internal_resolution 1
+ensure_default_setting 3ds.3ds_screen_layout default
+ensure_default_setting 3ds.bezel consoles
+ensure_default_setting n64.emulator libretro
+ensure_default_setting n64.core mupen64plus-next
+ensure_default_setting n64.gfxbackend glcore
+ensure_default_setting n64.bezel consoles
+ensure_default_setting jaguar.emulator libretro
+ensure_default_setting jaguar.core virtualjaguar
+ensure_default_setting jaguar.bezel consoles
+ensure_default_setting wiiu.emulator libretro
+ensure_default_setting wiiu.core cemu
+ensure_default_setting wiiu.gfxbackend vulkan
+ensure_default_setting wiiu.bezel none
+ensure_default_setting xbox360.emulator xenia-edge
+ensure_default_setting xbox360.core xenia-edge
+ensure_default_setting xbox360.bezel none
+ensure_default_setting xbox360.hud none
+ensure_default_setting xbox360.hud_support false
+
+# Migrate the former split frontend config once. From then on, the frontend and
+# launcher share the same XDG-owned Batocera configuration.
+frontend_batocera_conf="$dev_root/userdata/system/batocera.conf"
+if [[ -f "$frontend_batocera_conf" && ! -L "$frontend_batocera_conf" ]]; then
+  cp -- "$frontend_batocera_conf" "$central_batocera_conf"
+fi
+ln -sfn -- "$central_batocera_conf" "$frontend_batocera_conf"
+
+copy_default "$defaults/es_settings.cfg" "$dev_root/userdata/system/configs/emulationstation/es_settings.cfg"
+
+if PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="$project_root/src" \
+  python -m embercade controller-info --device-path-only >/dev/null 2>&1; then
+  PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="$project_root/src" \
+    python -m embercade controller-prepare \
+      --database "$project_root/.work/runtime/share/emulationstation/es_input.cfg" \
+      --output "$dev_root/userdata/system/configs/emulationstation/es_input.cfg" \
+      --output "$launch_root/config/embercade/emulators/emulationstation/es_input.cfg"
+else
+  printf 'No SDL2 controller connected; preparing keyboard-capable frontend only.\n' >&2
+fi
+
+# Absolute links resolve through the read-only project mount created by dev-run.
+for ui_entry in \
+  es_systems.cfg es_features.cfg es_input.cfg es_savestates.cfg resources themes locale; do
+  ln -sfn -- \
+    "$ui_root/share/emulationstation/$ui_entry" \
+    "$dev_root/system-share/$ui_entry"
+done
+
+# /usr/share is assembled as a symlink farm so the sandbox can add the
+# otherwise absent emulationstation directory without modifying host /usr.
+for shared_path in /usr/share/*; do
+  shared_name="${shared_path##*/}"
+  shared_link="$dev_root/usr-share/$shared_name"
+  expected_target="/host-usr-share/$shared_name"
+  if [[ "$shared_name" != "emulationstation" && "$shared_name" != "batocera" ]]; then
+    if [[ -L "$shared_link" && "$(readlink -- "$shared_link")" != "$expected_target" ]]; then
+      ln -sfn -- "$expected_target" "$shared_link"
+    elif [[ ! -e "$shared_link" && ! -L "$shared_link" ]]; then
+      ln -s -- "$expected_target" "$shared_link"
+    fi
+  fi
+done
+if [[ ! -e "$dev_root/usr-share/emulationstation" ]]; then
+  ln -s -- "$dev_root/system-share" "$dev_root/usr-share/emulationstation"
+fi
+ln -sfn -- "$ui_root/share/batocera" "$dev_root/usr-share/batocera"
+
+printf 'Prepared isolated development runtime: %s\n' "$dev_root"

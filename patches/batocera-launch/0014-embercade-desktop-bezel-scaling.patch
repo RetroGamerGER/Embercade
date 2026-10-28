@@ -1,0 +1,54 @@
+diff --git a/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroConfig.py b/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroConfig.py
+index e726b96..235778d 100644
+--- a/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroConfig.py
++++ b/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroConfig.py
+@@ -1220,10 +1220,14 @@ def writeBezelConfig(
+             bezel_stretch = True
+         if bezel_game is True:
+-            output_png_file = Path("/tmp/bezel_per_game.png")
++            adapted_dir = RETROARCH_OVERLAY_CONFIG.parent / "overlays"
++            adapted_dir.mkdir(parents=True, exist_ok=True)
++            output_png_file = adapted_dir / "bezel_per_game.png"
+             create_new_bezel_file = True
+         else:
+             # The logic to cache system bezels is not always true anymore now that we have tattoos
+-            output_png_file = Path("/tmp") / f"{overlay_png_file.stem}_adapted.png"
++            adapted_dir = RETROARCH_OVERLAY_CONFIG.parent / "overlays"
++            adapted_dir.mkdir(parents=True, exist_ok=True)
++            output_png_file = adapted_dir / f"{overlay_png_file.stem}_adapted.png"
+             if system.config.get('bezel.tattoo', '0') != "0" or system.config.get('bezel.qrcode', '0') != "0":
+                 create_new_bezel_file = True
+             else:
+@@ -1239,6 +1243,6 @@ def writeBezelConfig(
+                     create_new_bezel_file = True
+             if create_new_bezel_file:
+-                fadapted = [ f for f in Path("/tmp").iterdir() if f.name.endswith('_adapted.png') ]
++                fadapted = [ f for f in adapted_dir.iterdir() if f.name.endswith('_adapted.png') ]
+                 fadapted.sort(key=lambda x: x.stat().st_mtime)
+-                # Keep only last 10 generated bezels to save space on tmpfs /tmp
++                # Keep only the last 10 generated bezels in isolated config storage
+                 if len(fadapted) >= 10:
+@@ -1266,12 +1270,17 @@ def writeBezelConfig(
+             retroarchConfig['video_message_pos_x']    = infos["messagex"] * wratio
+             retroarchConfig['video_message_pos_y']    = infos["messagey"] * hratio
+         else:
+-            xoffset = gameResolution["width"]  - infos["width"]
+-            yoffset = gameResolution["height"] - infos["height"]
+-            retroarchConfig['custom_viewport_x']      = infos["left"] + xoffset/2
+-            retroarchConfig['custom_viewport_y']      = infos["top"] + yoffset/2
+-            retroarchConfig['custom_viewport_width']  = infos["width"]  - infos["left"] - infos["right"]
+-            retroarchConfig['custom_viewport_height'] = infos["height"] - infos["top"]  - infos["bottom"]
++            # ImageOps.pad scales the bezel while preserving its aspect ratio.
++            # Apply that same scale and centering to the RetroArch viewport.
++            scale = min(wratio, hratio)
++            scaled_width = infos["width"] * scale
++            scaled_height = infos["height"] * scale
++            xoffset = (gameResolution["width"] - scaled_width) / 2
++            yoffset = (gameResolution["height"] - scaled_height) / 2
++            retroarchConfig['custom_viewport_x']      = round(infos["left"] * scale + xoffset)
++            retroarchConfig['custom_viewport_y']      = round(infos["top"] * scale + yoffset)
++            retroarchConfig['custom_viewport_width']  = round((infos["width"] - infos["left"] - infos["right"]) * scale)
++            retroarchConfig['custom_viewport_height'] = round((infos["height"] - infos["top"] - infos["bottom"]) * scale)
+             retroarchConfig['video_message_pos_x']    = infos["messagex"] + xoffset/2
+             retroarchConfig['video_message_pos_y']    = infos["messagey"] + yoffset/2
+ 

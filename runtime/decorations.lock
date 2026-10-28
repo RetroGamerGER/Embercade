@@ -1,0 +1,8 @@
+[retrobat]
+repository = "https://github.com/RetroBat-Official/retrobat-bezels"
+commit = "5ce1f6ed32eb9f3df8ae14483afc4d1e3ef35d65"
+source_url = "https://codeload.github.com/RetroBat-Official/retrobat-bezels/tar.gz/5ce1f6ed32eb9f3df8ae14483afc4d1e3ef35d65"
+source_sha256 = "083ef02bd71ed8b4f9fd3fd6e884a2d4efa73138daa9cfb8e78e15c661dbd54e"
+fallback = "default_unglazed"
+legacy_selection = "consoles"
+distribution_decision = "CC-BY-NC-SA-4.0; original individual notices retained"

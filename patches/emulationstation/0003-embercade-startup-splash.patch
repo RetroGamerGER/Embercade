@@ -1,0 +1,36 @@
+--- a/es-app/src/main.cpp
++++ b/es-app/src/main.cpp
+@@ -0,0 +1 @@
++#include "EmbercadeStartupSplash.h"
+@@ -587,0 +589,2 @@
++	const char* embercadePolicy = std::getenv("EMBERCADE_DESKTOP_POLICY");
++	const bool embercadeSplash = splashScreen && embercadePolicy && std::string(embercadePolicy) == "1";
+@@ -590,0 +594,3 @@
++	const Embercade::StartupSplashDeadline splashDeadline(SDL_GetTicks());
++	if (embercadeSplash)
++		LOG(LogInfo) << "Embercade startup splash: first presented; minimum_ms=2750";
+@@ -663,0 +670,24 @@
++	if (embercadeSplash)
++	{
++		LOG(LogInfo) << "Embercade startup splash: frontend loaded; remaining_ms="
++			<< splashDeadline.remaining(SDL_GetTicks(), errorMsg != nullptr);
++		while (const auto remaining = splashDeadline.remaining(SDL_GetTicks(), errorMsg != nullptr))
++		{
++			// Keep the already presented frame, without clearing/recreating the window.
++			// Pump the desktop event queue while only the unconsumed minimum remains.
++			SDL_PumpEvents();
++			SDL_Event quitEvent;
++			if (SDL_PeepEvents(&quitEvent, 1, SDL_GETEVENT, SDL_QUIT, SDL_QUIT) > 0)
++			{
++				window.closeSplashScreen();
++				Renderer::deinit();
++				return 1;
++			}
++			SDL_Delay(remaining < 8 ? remaining : 8);
++		}
++		LOG(LogInfo) << "Embercade startup splash: handoff; visible_ms="
++			<< splashDeadline.elapsed(SDL_GetTicks()) << "; no additional delay";
++		std::cout << "EMBERCADE_STARTUP_SPLASH visible_ms="
++			<< splashDeadline.elapsed(SDL_GetTicks()) << std::endl;
++	}
++

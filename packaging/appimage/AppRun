@@ -1,0 +1,29 @@
+#!/bin/sh
+set -eu
+
+# Detect this image's root, independently of cwd and any inherited APPDIR.
+self=$(readlink -f -- "$0")
+APPDIR=$(CDPATH= cd -- "$(dirname -- "$self")" && pwd -P)
+export APPDIR
+export EMBERCADE_APPIMAGE=1
+
+# The AppImage runtime's portable mode redirects HOME/XDG before AppRun. It
+# would change Embercade's established external state contract, so refuse it.
+if [ -n "${APPIMAGE:-}" ]; then
+    for sidecar in "$APPIMAGE.home" "$APPIMAGE.config"; do
+        if [ -e "$sidecar" ] || [ -L "$sidecar" ]; then
+            printf '%s\n' 'Embercade uses external XDG state. AppImage .home/.config portable sidecars are unsupported.' >&2
+            exit 2
+        fi
+    done
+fi
+
+# The golden Production venv deliberately uses the compatible host interpreter.
+# Check its ABI before imports can fail, without writing Python cache files.
+if ! /usr/bin/python -I -B -c 'import sys; sys.exit(sys.implementation.name != "cpython" or sys.version_info[:2] != (3, 14))' >/dev/null 2>&1; then
+    printf '%s\n' 'Embercade requires compatible host CPython 3.14 at /usr/bin/python. This private AppImage preserves the existing host runtime contract.' >&2
+    exit 2
+fi
+
+# The classic entry point owns first run, configuration and every launch path.
+exec "$APPDIR/usr/bin/embercade" "$@"

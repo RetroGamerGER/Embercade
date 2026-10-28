@@ -1,0 +1,179 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+project_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
+reference_root="$(cd -- "$project_root/.." && pwd -P)"
+output_root="$project_root/.work/frontend-libs"
+lock_file="$project_root/runtime/frontend-libs.lock"
+deps_root="$reference_root/Batocera-EmulationStation-desktop-test/deps/usr"
+cmake_bin="$deps_root/bin/cmake"
+
+if [[ "$output_root" != "$project_root/.work/frontend-libs" || -L "$output_root" ]]; then
+  printf 'Refusing unexpected frontend library path: %s\n' "$output_root" >&2
+  exit 1
+fi
+
+readarray -t lock_values < <(python - "$lock_file" <<'PY'
+from pathlib import Path
+import sys
+import tomllib
+
+with Path(sys.argv[1]).open("rb") as stream:
+    lock = tomllib.load(stream)
+values = lock["freeimage"]
+for name in (
+    "version",
+    "source_url",
+    "source_sha256",
+    "license_gpl2_sha256",
+    "license_gpl3_sha256",
+    "license_fipl_sha256",
+):
+    print(values[name])
+values = lock["sdl2_mixer"]
+for name in (
+    "version",
+    "source_url",
+    "source_sha256",
+    "license_sha256",
+    "dr_flac_license_source_sha256",
+    "minimp3_license_source_sha256",
+    "stb_vorbis_license_source_sha256",
+):
+    print(values[name])
+PY
+)
+version="${lock_values[0]}"
+source_url="${lock_values[1]}"
+source_sha256="${lock_values[2]}"
+license_gpl2_sha256="${lock_values[3]}"
+license_gpl3_sha256="${lock_values[4]}"
+license_fipl_sha256="${lock_values[5]}"
+sdl_version="${lock_values[6]}"
+sdl_source_url="${lock_values[7]}"
+sdl_source_sha256="${lock_values[8]}"
+sdl_license_sha256="${lock_values[9]}"
+dr_flac_license_source_sha256="${lock_values[10]}"
+minimp3_license_source_sha256="${lock_values[11]}"
+stb_vorbis_license_source_sha256="${lock_values[12]}"
+
+if [[ ! -x "$cmake_bin" ]]; then
+  printf 'Missing pinned CMake build tool: %s\n' "$cmake_bin" >&2
+  exit 1
+fi
+
+build_root="$(mktemp -d "$project_root/.work/frontend-libs-build.XXXXXX")"
+trap 'find "$build_root" -depth -delete' EXIT
+archive="$build_root/FreeImage3180.zip"
+source_root="$build_root/source"
+sdl_archive="$build_root/SDL2_mixer-$sdl_version.tar.gz"
+sdl_source_root="$build_root/SDL2_mixer-$sdl_version"
+sdl_build_root="$build_root/sdl-build"
+prepared_root="$build_root/prepared"
+
+curl --fail --location --retry 2 --output "$archive" "$source_url"
+curl --fail --location --retry 2 --output "$sdl_archive" "$sdl_source_url"
+printf '%s  %s\n' "$source_sha256" "$archive" | sha256sum --check
+printf '%s  %s\n' "$sdl_source_sha256" "$sdl_archive" | sha256sum --check
+mkdir -p \
+  "$source_root" \
+  "$prepared_root/include/SDL2" \
+  "$prepared_root/lib" \
+  "$prepared_root/licenses/freeimage" \
+  "$prepared_root/licenses/sdl2_mixer/codecs"
+bsdtar -xf "$archive" -C "$source_root" --strip-components 1
+bsdtar -xf "$sdl_archive" -C "$build_root"
+
+printf '%s  %s\n' "$license_gpl2_sha256" "$source_root/license-gplv2.txt" | sha256sum --check
+printf '%s  %s\n' "$license_gpl3_sha256" "$source_root/license-gplv3.txt" | sha256sum --check
+printf '%s  %s\n' "$license_fipl_sha256" "$source_root/license-fi.txt" | sha256sum --check
+printf '%s  %s\n' "$sdl_license_sha256" "$sdl_source_root/LICENSE.txt" | sha256sum --check
+printf '%s  %s\n' "$dr_flac_license_source_sha256" \
+  "$sdl_source_root/src/codecs/dr_libs/dr_flac.h" | sha256sum --check
+printf '%s  %s\n' "$minimp3_license_source_sha256" \
+  "$sdl_source_root/src/codecs/minimp3/minimp3.h" | sha256sum --check
+printf '%s  %s\n' "$stb_vorbis_license_source_sha256" \
+  "$sdl_source_root/src/codecs/stb_vorbis/stb_vorbis.h" | sha256sum --check
+
+env \
+  CFLAGS='-O2 -fPIC -fexceptions -fvisibility=hidden -march=x86-64 -mtune=generic -Wno-implicit-function-declaration' \
+  CXXFLAGS='-O2 -fPIC -fexceptions -fvisibility=hidden -Wno-ctor-dtor-privacy -march=x86-64 -mtune=generic -std=c++11' \
+  make --silent -C "$source_root" -f Makefile.gnu --jobs="$(nproc)"
+
+env LD_LIBRARY_PATH="$deps_root/lib" \
+  "$cmake_bin" -S "$sdl_source_root" -B "$sdl_build_root" \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_C_FLAGS='-O2 -fPIC -march=x86-64 -mtune=generic' \
+    -DSDL2MIXER_BUILD_SHARED_LIBS=ON \
+    -DSDL2MIXER_SAMPLES=OFF \
+    -DSDL2MIXER_INSTALL=OFF \
+    -DSDL2MIXER_MOD=OFF \
+    -DSDL2MIXER_MIDI=OFF \
+    -DSDL2MIXER_OPUS=OFF \
+    -DSDL2MIXER_WAVPACK=OFF \
+    -DSDL2MIXER_GME=OFF \
+    -DSDL2MIXER_FLAC=ON \
+    -DSDL2MIXER_FLAC_LIBFLAC=OFF \
+    -DSDL2MIXER_FLAC_DRFLAC=ON \
+    -DSDL2MIXER_MP3=ON \
+    -DSDL2MIXER_MP3_MINIMP3=ON \
+    -DSDL2MIXER_MP3_MPG123=OFF \
+    -DSDL2MIXER_VORBIS=STB
+env LD_LIBRARY_PATH="$deps_root/lib" \
+  "$cmake_bin" --build "$sdl_build_root" --parallel
+
+install -Dm755 \
+  "$source_root/Dist/libfreeimage-$version.so" \
+  "$prepared_root/lib/libfreeimage-$version.so"
+ln -s "libfreeimage-$version.so" "$prepared_root/lib/libfreeimage.so.3"
+install -Dm755 \
+  "$sdl_build_root/libSDL2_mixer-2.0.so.0.800.2" \
+  "$prepared_root/lib/libSDL2_mixer-2.0.so.0.800.2"
+ln -s "libSDL2_mixer-2.0.so.0.800.2" \
+  "$prepared_root/lib/libSDL2_mixer-2.0.so.0"
+ln -s "libSDL2_mixer-2.0.so.0" "$prepared_root/lib/libSDL2_mixer-2.0.so"
+ln -s "libSDL2_mixer-2.0.so.0" "$prepared_root/lib/libSDL2_mixer.so"
+install -Dm644 "$sdl_source_root/include/SDL_mixer.h" \
+  "$prepared_root/include/SDL2/SDL_mixer.h"
+install -Dm644 "$source_root/license-gplv2.txt" \
+  "$prepared_root/licenses/freeimage/license-gplv2.txt"
+install -Dm644 "$source_root/license-gplv3.txt" \
+  "$prepared_root/licenses/freeimage/license-gplv3.txt"
+install -Dm644 "$source_root/license-fi.txt" \
+  "$prepared_root/licenses/freeimage/license-fi.txt"
+install -Dm644 "$sdl_source_root/LICENSE.txt" \
+  "$prepared_root/licenses/sdl2_mixer/LICENSE.txt"
+install -Dm644 "$sdl_source_root/src/codecs/dr_libs/dr_flac.h" \
+  "$prepared_root/licenses/sdl2_mixer/codecs/dr_flac.h"
+install -Dm644 "$sdl_source_root/src/codecs/minimp3/minimp3.h" \
+  "$prepared_root/licenses/sdl2_mixer/codecs/minimp3.h"
+install -Dm644 "$sdl_source_root/src/codecs/stb_vorbis/stb_vorbis.h" \
+  "$prepared_root/licenses/sdl2_mixer/codecs/stb_vorbis.h"
+
+cp -- "$source_root/Source/FreeImage.h" "$prepared_root/include/FreeImage.h"
+
+library_sha256="$(sha256sum "$prepared_root/lib/libfreeimage-$version.so" | awk '{print $1}')"
+printf '%s\n' \
+  "FreeImage $version is bundled as an unmodified upstream build." \
+  "Source: $source_url" \
+  "Source SHA-256: $source_sha256" \
+  "Built library SHA-256: $library_sha256" \
+  "Build target: generic x86-64 (no build-host -march)." \
+  "The original GPL-2.0, GPL-3.0 and FreeImage Public License texts are included here." \
+  > "$prepared_root/licenses/freeimage/NOTICE.txt"
+
+sdl_library_sha256="$(sha256sum "$prepared_root/lib/libSDL2_mixer-2.0.so.0.800.2" | awk '{print $1}')"
+printf '%s\n' \
+  "SDL2_mixer $sdl_version is bundled as an unmodified upstream build." \
+  "Source: $sdl_source_url" \
+  "Source SHA-256: $sdl_source_sha256" \
+  "Built library SHA-256: $sdl_library_sha256" \
+  "Build target: generic x86-64 with built-in DR FLAC, minimp3 and stb_vorbis decoders." \
+  "The original zlib license and license-bearing source headers for the three embedded decoders are included here." \
+  > "$prepared_root/licenses/sdl2_mixer/NOTICE.txt"
+
+mkdir -p "$output_root"
+find "$output_root" -depth -mindepth 1 -delete
+cp -a "$prepared_root/." "$output_root/"
+"$project_root/scripts/frontend-libs-smoke"
+printf 'Prepared Embercade frontend libraries: %s\n' "$output_root"

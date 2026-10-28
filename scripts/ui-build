@@ -1,0 +1,182 @@
+#!/usr/bin/env bash
+set -euo pipefail
+umask 077
+
+project_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
+reference_root="$(cd -- "$project_root/.." && pwd -P)"
+ui_root="$project_root/.work/ui"
+source_root="$ui_root/es-source"
+build_root="$ui_root/es-build"
+es_repo="$reference_root/Batocera-EmulationStation"
+deps_root="$reference_root/Batocera-EmulationStation-desktop-test/deps/usr"
+patch_root="$project_root/patches/emulationstation"
+policy_patch="$patch_root/0001-embercade-desktop-policy.patch"
+scraper_patch="$patch_root/0002-embercade-screenscraper.patch"
+scraper_header="$patch_root/EmbercadeScreenScraper.h"
+startup_patch="$patch_root/0003-embercade-startup-splash.patch"
+user_secrets_patch="$patch_root/0004-embercade-user-secrets.patch"
+startup_header="$patch_root/EmbercadeStartupSplash.h"
+notice_patch="$patch_root/0005-embercade-launch-notices.patch"
+notice_header="$patch_root/EmbercadeLaunchNotice.h"
+polish_patch="$patch_root/0006-embercade-polish.patch"
+decoration_patch="$patch_root/0007-embercade-decoration-availability.patch"
+system_decoration_patch="$patch_root/0008-embercade-system-decoration-choices.patch"
+personal_ra_patch="$patch_root/0009-embercade-personal-web-api.patch"
+clipboard_patch="$patch_root/0010-embercade-clipboard-paste.patch"
+personal_ra_header="$patch_root/EmbercadeRetroAchievements.h"
+decoration_header="$patch_root/EmbercadeDecorationAvailability.h"
+frontend_libraries="$project_root/.work/frontend-libs"
+
+# Validate the private production input before any expensive build preparation.
+# The environment carries a file path only, never authorization values.
+export PYTHONDONTWRITEBYTECODE=1
+export PYTHONPATH="$project_root/src"
+build_options=("$@")
+authorization_header="$(python -m embercade.frontend_build --project-root "$project_root" "${build_options[@]}" prepare)"
+
+if [[ ! -f "$frontend_libraries/include/FreeImage.h" ]] || ! "$project_root/scripts/frontend-libs-smoke" >/dev/null 2>&1; then
+  "$project_root/scripts/frontend-libs-prepare"
+fi
+
+readarray -t lock_values < <(python - "$project_root/upstream.lock" <<'PY'
+from pathlib import Path
+import sys
+import tomllib
+
+with Path(sys.argv[1]).open("rb") as stream:
+    upstream = tomllib.load(stream)["upstream"]
+print(upstream["batocera-emulationstation"])
+PY
+)
+es_commit="${lock_values[0]}"
+
+required=(
+  "$es_repo/.git"
+  "$deps_root/bin/cmake"
+  "$frontend_libraries/include/SDL2/SDL_mixer.h"
+  "$frontend_libraries/lib/libSDL2_mixer.so"
+  "$policy_patch"
+  "$scraper_patch"
+  "$scraper_header"
+  "$startup_patch"
+  "$user_secrets_patch"
+  "$startup_header"
+  "$polish_patch"
+  "$decoration_patch"
+  "$system_decoration_patch"
+  "$personal_ra_patch"
+  "$clipboard_patch"
+  "$personal_ra_header"
+  "$decoration_header"
+)
+for path in "${required[@]}"; do
+  if [[ ! -e "$path" ]]; then
+    printf 'Missing UI build prerequisite: %s\n' "$path" >&2
+    exit 1
+  fi
+done
+for command in objcopy readelf; do
+  if ! command -v "$command" >/dev/null 2>&1; then
+    printf 'Missing UI portability build tool: %s\n' "$command" >&2
+    exit 1
+  fi
+done
+if [[ "$(git -C "$es_repo" cat-file -t "$es_commit" 2>/dev/null || true)" != commit ]]; then
+  printf 'Pinned EmulationStation commit is missing: %s\n' "$es_commit" >&2
+  exit 1
+fi
+
+mkdir -p "$ui_root"
+patch_checksum="$(sha256sum "$policy_patch" "$scraper_patch" "$scraper_header" "$startup_patch" "$user_secrets_patch" "$startup_header" "$notice_patch" "$notice_header" "$polish_patch" "$decoration_patch" "$system_decoration_patch" "$decoration_header" "$personal_ra_patch" "$personal_ra_header" "$clipboard_patch" | sha256sum | awk '{print $1}')"
+source_identity="$es_commit $patch_checksum"
+if [[ ! -f "$source_root/.embercade-source-commit" ]] || \
+   [[ "$(<"$source_root/.embercade-source-commit")" != "$source_identity" ]]; then
+  if [[ -e "$source_root" ]]; then
+    if [[ "$source_root" != "$project_root/.work/ui/es-source" || -L "$source_root" ]]; then
+      printf 'Refusing unexpected UI source path: %s\n' "$source_root" >&2
+      exit 1
+    fi
+    find "$source_root" -depth -mindepth 1 -delete
+  fi
+  mkdir -p "$source_root"
+  git -C "$es_repo" archive "$es_commit" | tar -x -C "$source_root"
+  patch --directory "$source_root" --strip=1 --forward < "$policy_patch"
+  patch --directory "$source_root" --strip=1 --forward < "$scraper_patch"
+  patch --directory "$source_root" --strip=1 --forward < "$startup_patch"
+  patch --directory "$source_root" --strip=1 --forward < "$user_secrets_patch"
+  patch --directory "$source_root" --strip=1 --forward < "$notice_patch"
+  patch --directory "$source_root" --strip=1 --forward < "$polish_patch"
+  patch --directory "$source_root" --strip=1 --forward < "$decoration_patch"
+  patch --directory "$source_root" --strip=1 --forward < "$system_decoration_patch"
+  patch --directory "$source_root" --strip=1 --forward < "$personal_ra_patch"
+  patch --directory "$source_root" --strip=1 --forward < "$clipboard_patch"
+  cp -- "$personal_ra_header" "$source_root/es-core/src/EmbercadeRetroAchievements.h"
+  cp -- "$decoration_header" "$source_root/es-app/src/EmbercadeDecorationAvailability.h"
+  cp -- "$scraper_header" "$source_root/es-core/src/EmbercadeScreenScraper.h"
+  cp -- "$startup_header" "$source_root/es-core/src/EmbercadeStartupSplash.h"
+  cp -- "$notice_header" "$source_root/es-core/src/EmbercadeLaunchNotice.h"
+  cp -- "$project_root/resources/branding/icon/embercade-512.png" "$source_root/resources/window_icon_256.png"
+  if ! rg -q 'EMBERCADE_HIDE_SYSTEM_SETTINGS' "$source_root/es-app/src/guis/GuiMenu.cpp" || \
+     ! rg -q 'EMBERCADE_EXIT_ONLY' "$source_root/es-app/src/guis/GuiMenu.cpp"; then
+    printf 'Desktop policy patch is not present in the extracted UI source.\n' >&2
+    exit 1
+  fi
+  printf '%s\n' "$source_identity" > "$source_root/.embercade-source-commit"
+fi
+
+export PATH="$deps_root/bin:$PATH"
+export LD_LIBRARY_PATH="$deps_root/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+
+frontend_product_label="$(PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="$project_root/src" \
+  python -c 'from embercade.version import FRONTEND_PRODUCT_LABEL; print(FRONTEND_PRODUCT_LABEL)')"
+frontend_compile_flags="-O2 -march=x86-64 -mtune=generic -ffile-prefix-map=\"$reference_root\"=/embercade-source"
+
+python -m embercade.frontend_build --project-root "$project_root" "${build_options[@]}" run -- \
+  "$deps_root/bin/cmake" --fresh -S "$source_root" -B "$build_root" \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_C_FLAGS="$frontend_compile_flags" \
+  -DCMAKE_CXX_FLAGS="$frontend_compile_flags" \
+  -DCMAKE_SKIP_BUILD_RPATH=ON \
+  -DCMAKE_PREFIX_PATH="$frontend_libraries;$deps_root" \
+  -DFreeImage_INCLUDE_DIR="$frontend_libraries/include" \
+  -DFreeImage_LIBRARY_REL="$frontend_libraries/lib/libfreeimage.so.3" \
+  -DSDLMIXER_INCLUDE_DIR="$frontend_libraries/include/SDL2" \
+  -DSDLMIXER_LIBRARY="$frontend_libraries/lib/libSDL2_mixer.so" \
+  -DBATOCERA=ON \
+  -DEMBERCADE_SCREENSCRAPER_RUNTIME=ON \
+  -DEMBERCADE_SCREENSCRAPER_AUTH_HEADER="$authorization_header" \
+  -USCREENSCRAPER_DEV_LOGIN \
+  -UCHEEVOS_DEV_LOGIN \
+  -DEMBERCADE_FRONTEND_PRODUCT_LABEL="$frontend_product_label" \
+  -DGL=ON \
+  -DGLES=OFF \
+  -DGLES2=OFF \
+  -DGLES3=OFF \
+  -DCEC=OFF \
+  -DDISABLE_KODI=ON \
+  -DENABLE_FILEMANAGER=OFF \
+  -DENABLE_TTS=OFF \
+  -DUSE_SYSTEM_PUGIXML=ON
+
+python -m embercade.frontend_build --project-root "$project_root" "${build_options[@]}" run -- \
+  "$deps_root/bin/cmake" --build "$build_root" --target emulationstation --parallel "${EMBERCADE_BUILD_JOBS:-4}"
+objcopy --remove-section .note.gnu.property --strip-debug "$source_root/emulationstation"
+if readelf -n "$source_root/emulationstation" | grep -q 'x86 ISA needed:'; then
+  printf 'Built frontend still declares a build-host CPU ISA requirement.\n' >&2
+  exit 1
+fi
+if LC_ALL=C rg --text --quiet '/home/[^/[:space:]]+/' "$source_root/emulationstation"; then
+  printf 'Built frontend still contains a personal build path.\n' >&2
+  exit 1
+fi
+printf 'Built policy-aware Batocera EmulationStation: %s\n' \
+  "$source_root/emulationstation"
+
+python -m embercade.frontend_build --project-root "$project_root" "${build_options[@]}" finalize
+
+# Compile the patched native translations used by game-specific launch notices.
+for language in de en_GB; do
+  locale_dir="$ui_root/share/emulationstation/locale/$language/LC_MESSAGES"
+  mkdir -p "$locale_dir"
+  msgfmt "$source_root/locale/lang/$language/LC_MESSAGES/emulationstation2.po" -o "$locale_dir/emulationstation2.mo"
+done

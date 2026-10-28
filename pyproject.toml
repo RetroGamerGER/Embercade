@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "embercade"
+dynamic = ["version"]
+description = "Desktop compatibility layer for Batocera's frontend and launcher architecture"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+embercade = "embercade.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.dynamic]
+version = {attr = "embercade.version.__version__"}

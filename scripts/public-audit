@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+project_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
+cd "$project_root"
+
+status=0
+
+fail() {
+  printf 'FAIL: %s\n' "$1" >&2
+  status=1
+}
+
+required=(
+  README.md
+  ROADMAP.md
+  LICENSE
+  THIRD_PARTY_NOTICES.md
+  docs/PRODUCTION.md
+  docs/PUBLIC_RELEASE_AUDIT.md
+)
+for path in "${required[@]}"; do
+  [[ -f "$path" ]] || fail "missing public-release document: $path"
+done
+
+if git ls-files | grep -Eq '(^|/)(\.work|build|dist)(/|$)'; then
+  fail 'generated work/build output is tracked'
+fi
+
+forbidden_extensions='\.(iso|chd|cue|bin|rom|nes|sfc|smc|gba|gb|gbc|n64|z64|v64|3ds|cia|xci|nsp|wad|wbfs|rvz|gcz|cso|pbp|elf|self|pkg|rap|rif|key|keys|pem|p12|pfx|crt|cer|der|appimage|zip|7z|rar|tar|gz|xz|zst|so|dll|exe|dylib)$'
+if git ls-files | grep -Eiq "$forbidden_extensions"; then
+  git ls-files | grep -Ei "$forbidden_extensions" >&2
+  fail 'risky binary, content, archive or credential filename is tracked'
+fi
+
+local_user='den'"nis"
+handheld_user='de'"ck"
+mainrig_name='cachyos-'"MainRig"
+living_room_name='wohn'"zimmer"
+personal_pattern="/home/$local_user|/run/media/$local_user|192\\.168\\.|$mainrig_name|$living_room_name|$handheld_user@|$local_user@"
+personal_files="$(git grep -I -l -E "$personal_pattern" -- . ':!scripts/public-audit' || true)"
+if [[ -n "$personal_files" ]]; then
+  printf '%s\n' "$personal_files" >&2
+  fail 'personal host identifiers remain in tracked content'
+fi
+
+private_key_pattern='-----BEGIN (RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----'
+private_key_files="$(git grep -I -l -E -- "$private_key_pattern" . ':!scripts/public-audit' || true)"
+if [[ -n "$private_key_files" ]]; then
+  printf '%s\n' "$private_key_files" >&2
+  fail 'private-key marker found in tracked content'
+fi
+
+token_pattern='gh[pousr]_[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|https?://[^/@[:space:]]+:[^/@[:space:]]+@'
+token_files="$(git grep -I -l -E -- "$token_pattern" . ':!scripts/public-audit' || true)"
+if [[ -n "$token_files" ]]; then
+  printf '%s\n' "$token_files" >&2
+  fail 'credential-shaped value found in tracked content'
+fi
+
+# Preserve cleared original artwork with exact path/size/hash exceptions.
+if ! python - "$project_root" <<'PY_AUDIT'
+from pathlib import Path
+import hashlib,json,subprocess,sys
+root=Path(sys.argv[1]);policy_path=root/'compliance/public-source-files.json'
+policy=json.loads(policy_path.read_text()) if policy_path.is_file() else {'large_source_files':[]}
+allowed={row['path']:row for row in policy['large_source_files']}
+failed=False
+for name in subprocess.check_output(['git','ls-files','-z'],cwd=root).decode().split('\0'):
+ if not name:continue
+ p=root/name
+ if p.stat().st_size<=5242880:continue
+ row=allowed.get(name)
+ if row and p.stat().st_size==row['bytes'] and hashlib.file_digest(p.open('rb'),'sha256').hexdigest()==row['sha256']:continue
+ print(name+': large source file is not covered by the exact artwork policy',file=sys.stderr);failed=True
+raise SystemExit(int(failed))
+PY_AUDIT
+then
+  fail 'an unreviewed large file is tracked'
+fi
+
+if (( status == 0 )); then
+  printf 'Public tree audit: clean\n'
+else
+  printf 'Public tree audit: blockers found\n' >&2
+fi
+exit "$status"

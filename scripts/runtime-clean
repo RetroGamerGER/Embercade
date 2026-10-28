@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+project_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
+runtime_root="$project_root/.work/runtime"
+
+if [[ "$runtime_root" != "$project_root/.work/runtime" || -L "$runtime_root" ]]; then
+  printf 'Refusing to clean unexpected runtime path: %s\n' "$runtime_root" >&2
+  exit 1
+fi
+
+if [[ -d "$runtime_root" ]]; then
+  find "$runtime_root" -depth -mindepth 1 -delete
+  rmdir -- "$runtime_root"
+fi
+printf 'Removed Embercade compatibility runtime: %s\n' "$runtime_root"
+

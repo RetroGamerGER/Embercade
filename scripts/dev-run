@@ -1,0 +1,235 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+project_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
+reference_root="$(cd -- "$project_root/.." && pwd -P)"
+dev_root="$project_root/.work/dev"
+launch_root="$project_root/.work/e2e-xdg"
+ui_root="$project_root/.work/ui"
+es_test="$reference_root/Batocera-EmulationStation-desktop-test"
+es_binary="$ui_root/es-source/emulationstation"
+
+"$project_root/scripts/dev-prepare" >/dev/null
+
+readarray -t collection_roots < <(
+  PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="$project_root/src" \
+    python - "$launch_root/config/embercade/embercade.toml" <<'PY'
+from pathlib import Path
+import sys
+
+from embercade.paths import EmbercadePaths
+from embercade.runtime import load_config
+
+config = load_config(Path(sys.argv[1]))
+paths = EmbercadePaths.from_environment(config=config)
+print(paths.rom_root)
+print(paths.bios_root)
+PY
+)
+if ((${#collection_roots[@]} != 2)); then
+  printf 'Could not resolve the configured ROM and BIOS roots.\n' >&2
+  exit 1
+fi
+collection_mounts=()
+for collection_root in "${collection_roots[@]}"; do
+  if [[ ! -d "$collection_root" || ! -r "$collection_root" ]]; then
+    printf 'Configured collection root is unavailable: %s\n' "$collection_root" >&2
+    exit 1
+  fi
+  collection_mounts+=(--ro-bind "$collection_root" "$collection_root")
+done
+read -r display_width display_height < <(
+  PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="$project_root/src" \
+    python - <<'PY'
+from embercade.display import current_resolution
+
+resolution = current_resolution()
+print(resolution.width, resolution.height)
+PY
+)
+
+if ! command -v bwrap >/dev/null 2>&1; then
+  printf 'Bubblewrap (bwrap) is required for the development harness.\n' >&2
+  exit 1
+fi
+
+if [[ -z "${WAYLAND_DISPLAY:-}" && -z "${DISPLAY:-}" ]]; then
+  printf 'No active Wayland or X11 display is visible. Run this inside the desktop session.\n' >&2
+  exit 1
+fi
+
+host_runtime="${XDG_RUNTIME_DIR:-}"
+if [[ -z "$host_runtime" || ! -d "$host_runtime" ]]; then
+  printf 'XDG_RUNTIME_DIR is missing; the Wayland socket cannot be exposed safely.\n' >&2
+  exit 1
+fi
+
+pulse_socket="$host_runtime/pulse/native"
+if [[ ! -S "$pulse_socket" ]]; then
+  printf 'The desktop PulseAudio compatibility socket is missing: %s\n' "$pulse_socket" >&2
+  exit 1
+fi
+pulse_server="${PULSE_SERVER:-unix:$pulse_socket}"
+
+runtime_mounts=(
+  --dir /run
+  --dir /run/user
+  --dir "$host_runtime"
+  --dir "$host_runtime/pulse"
+  --ro-bind /run/udev /run/udev
+  --ro-bind "$pulse_socket" "$pulse_socket"
+)
+
+if [[ -n "${WAYLAND_DISPLAY:-}" ]]; then
+  wayland_socket="$host_runtime/$WAYLAND_DISPLAY"
+  if [[ ! -S "$wayland_socket" ]]; then
+    printf 'The Wayland socket is missing: %s\n' "$wayland_socket" >&2
+    exit 1
+  fi
+  runtime_mounts+=(--ro-bind "$wayland_socket" "$wayland_socket")
+fi
+
+if [[ "${DBUS_SESSION_BUS_ADDRESS:-}" == unix:path=* ]]; then
+  dbus_socket="${DBUS_SESSION_BUS_ADDRESS#unix:path=}"
+  dbus_socket="${dbus_socket%%,*}"
+  if [[ -S "$dbus_socket" ]]; then
+    runtime_mounts+=(--ro-bind "$dbus_socket" "$dbus_socket")
+  fi
+fi
+
+if [[ ! -d /dev/input || ! -r /dev/input || ! -x /dev/input ]]; then
+  printf 'The host input device directory is unavailable: /dev/input\n' >&2
+  exit 1
+fi
+
+xemu_source_root="${XDG_DATA_HOME:-$HOME/.local/share}/xemu/xemu"
+xemu_source_mounts=()
+xemu_source_args=()
+missing_xemu_sources=()
+for source_name in Complex_4627.bin mcpx_1.0.bin xbox_hdd.qcow2; do
+  if [[ ! -r "$xemu_source_root/$source_name" ]]; then
+    missing_xemu_sources+=("$xemu_source_root/$source_name")
+  fi
+done
+if ((${#missing_xemu_sources[@]} == 0)); then
+  xemu_source_mounts+=(--ro-bind "$xemu_source_root" /host-xemu-data)
+  xemu_source_args+=(
+    --setenv EMBERCADE_XEMU_FLASHROM_SOURCE /host-xemu-data/Complex_4627.bin
+    --setenv EMBERCADE_XEMU_BOOTROM_SOURCE /host-xemu-data/mcpx_1.0.bin
+    --setenv EMBERCADE_XEMU_HDD_SOURCE /host-xemu-data/xbox_hdd.qcow2
+  )
+  if [[ -r "$xemu_source_root/eeprom.bin" ]]; then
+    xemu_source_args+=(--setenv EMBERCADE_XEMU_EEPROM_SOURCE /host-xemu-data/eeprom.bin)
+  fi
+else
+  printf 'Xemu is unavailable because prepared source files are missing:\n' >&2
+  printf '  %s\n' "${missing_xemu_sources[@]}" >&2
+fi
+
+rpcs3_profile="${EMBERCADE_RPCS3_FIRMWARE_SOURCE:-$HOME/.config/rpcs3}"
+rpcs3_source_mounts=()
+rpcs3_source_args=()
+if [[ -r "$rpcs3_profile/dev_flash/vsh/etc/version.txt" ]] && \
+   [[ -d "$rpcs3_profile/dev_flash2" ]] && [[ -d "$rpcs3_profile/dev_flash3" ]]; then
+  rpcs3_source_mounts+=(--ro-bind "$rpcs3_profile" /host-rpcs3-profile)
+  rpcs3_source_args+=(--setenv EMBERCADE_RPCS3_FIRMWARE_SOURCE /host-rpcs3-profile)
+else
+  printf 'RPCS3 is unavailable because installed firmware is missing from: %s\n' \
+    "$rpcs3_profile" >&2
+fi
+
+retroarch_profile="${XDG_CONFIG_HOME:-$HOME/.config}/retroarch"
+retroarch_source_mounts=()
+retroarch_source_args=()
+if [[ -d "$retroarch_profile" ]]; then
+  retroarch_source_mounts+=(--ro-bind "$retroarch_profile" /host-retroarch-profile)
+  retroarch_source_args+=(
+    --setenv EMBERCADE_RETROARCH_USER_CONFIG /host-retroarch-profile/retroarch.cfg
+    --setenv EMBERCADE_LIBRETRO_USER_CORES /host-retroarch-profile/cores
+    --setenv EMBERCADE_LIBRETRO_USER_INFO /host-retroarch-profile/info
+  )
+fi
+
+uinput_mounts=()
+readarray -t wii_mounts < <(PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="$project_root/src" python -B -m embercade.wii)
+if [[ -c /dev/uinput && -r /dev/uinput && -w /dev/uinput ]]; then
+  uinput_mounts+=(--dev-bind /dev/uinput /dev/uinput)
+else
+  printf 'Warning: /dev/uinput is unavailable; desktop Select+Start exit will not work.\n' >&2
+fi
+
+library_path="$es_test/deps/usr/lib:$es_test/build/out/lib"
+if [[ -n "${LD_LIBRARY_PATH:-}" ]]; then
+  library_path="$library_path:$LD_LIBRARY_PATH"
+fi
+
+default_args=(--windowed --no-splash)
+if (($#)); then
+  default_args=("$@")
+fi
+
+policy_args=()
+while IFS='=' read -r policy_name policy_value; do
+  if [[ "$policy_name" != EMBERCADE_* || "$policy_value" != [01] ]]; then
+    printf 'Invalid generated desktop policy entry: %s=%s\n' "$policy_name" "$policy_value" >&2
+    exit 1
+  fi
+  policy_args+=(--setenv "$policy_name" "$policy_value")
+done < <(
+  PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="$project_root/src" \
+    python -m embercade policy-env \
+      --policy "$project_root/resources/policy/desktop-capabilities.conf"
+)
+
+exec bwrap \
+  --die-with-parent \
+  --new-session \
+  --ro-bind /usr/bin /usr/bin \
+  --ro-bind /usr/lib /usr/lib \
+  --ro-bind /etc /etc \
+  "${runtime_mounts[@]}" \
+  --ro-bind /usr/share /host-usr-share \
+  --ro-bind /sys /sys \
+  --ro-bind /var /var \
+  "${collection_mounts[@]}" \
+  --ro-bind "$reference_root" "$reference_root" \
+  --ro-bind "$dev_root/usr-share" /usr/share \
+  --dev /dev \
+  --dir /dev/input \
+  --dev-bind /dev/input /dev/input \
+  "${wii_mounts[@]}" \
+  "${uinput_mounts[@]}" \
+  --dev-bind /dev/dri /dev/dri \
+  --proc /proc \
+  --bind "$dev_root" "$dev_root" \
+  --bind "$launch_root" "$launch_root" \
+  --bind "$dev_root/userdata" /userdata \
+  --bind "$dev_root/tmp" /tmp \
+  "${xemu_source_mounts[@]}" \
+  "${rpcs3_source_mounts[@]}" \
+  "${retroarch_source_mounts[@]}" \
+  --ro-bind-try /tmp/.X11-unix /tmp/.X11-unix \
+  --symlink usr/bin /bin \
+  --symlink usr/bin /sbin \
+  --symlink usr/lib /lib \
+  --symlink usr/lib /lib64 \
+  --setenv HOME /userdata/system/home \
+  --setenv SDL_JOYSTICK_HIDAPI_WII 0 \
+  --setenv XDG_CONFIG_HOME /userdata/system/xdg/config \
+  --setenv XDG_DATA_HOME /userdata/system/xdg/data \
+  --setenv XDG_CACHE_HOME /userdata/system/xdg/cache \
+  --setenv XDG_STATE_HOME /userdata/system/xdg/state \
+  --setenv XDG_RUNTIME_DIR "$host_runtime" \
+  --setenv PULSE_SERVER "$pulse_server" \
+  --setenv EMBERCADE_RUNTIME_HOME /userdata/system/xdg/runtime/embercade \
+  --setenv EMBERCADE_DISPLAY_WIDTH "$display_width" \
+  --setenv EMBERCADE_DISPLAY_HEIGHT "$display_height" \
+  --setenv EMBERCADE_TEST_XDG_ROOT "$launch_root" \
+  --setenv EMBERCADE_HOST_PROVIDER_RUNNER "$project_root/scripts/run-external-provider" \
+  "${xemu_source_args[@]}" \
+  "${rpcs3_source_args[@]}" \
+  "${retroarch_source_args[@]}" \
+  "${policy_args[@]}" \
+  --setenv LD_LIBRARY_PATH "$library_path" \
+  --chdir /userdata \
+  "$es_binary" "${default_args[@]}"

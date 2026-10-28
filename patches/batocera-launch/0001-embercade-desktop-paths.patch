@@ -1,0 +1,229 @@
+diff --git a/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroConfig.py b/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroConfig.py
+index 8bf33d3..890645a 100644
+--- a/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroConfig.py
++++ b/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroConfig.py
+@@ -15,7 +15,9 @@ from . import libretroMAMEConfig, libretroOptions
+ from .libretroPaths import (
+     RETROARCH_CONFIG,
+     RETROARCH_CORE_CUSTOM,
++    RETROARCH_CORES,
+     RETROARCH_OVERLAY_CONFIG,
++    RETROARCH_SHARE,
+ )
+ 
+ if TYPE_CHECKING:
+@@ -216,8 +218,8 @@ def createLibretroConfig(
+     retroarchConfig['cache_directory'] = RETROARCH_CONFIG / 'cache'
+ 
+     # require for core informations
+-    retroarchConfig['libretro_directory'] = '/usr/lib/libretro'
+-    retroarchConfig['libretro_info_path'] = '/usr/share/libretro/info'
++    retroarchConfig['libretro_directory'] = RETROARCH_CORES
++    retroarchConfig['libretro_info_path'] = RETROARCH_SHARE / 'info'
+ 
+     retroarchConfig['video_fullscreen'] = 'true'                # Fullscreen is required at least for x86* and odroidn2
+ 
+@@ -734,7 +736,7 @@ def createLibretroConfig(
+     retroarchConfig['width']  = gameResolution["width"]  # default value
+     retroarchConfig['height'] = gameResolution["height"] # default value
+     # force the assets directory while it was wrong in some beta versions
+-    retroarchConfig['assets_directory'] = '/usr/share/libretro/assets'
++    retroarchConfig['assets_directory'] = RETROARCH_SHARE / 'assets'
+ 
+     # Adaptation for small resolution (GPICase)
+     if isLowResolution(gameResolution):
+diff --git a/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroGenerator.py b/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroGenerator.py
+index 2de0390..5265ab6 100755
+--- a/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroGenerator.py
++++ b/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroGenerator.py
+@@ -128,10 +128,9 @@ class LibretroGenerator(Generator):
+         # Retroarch core on the filesystem
+         retroarchCore = RETROARCH_CORES / f"{system.config.core}_libretro.so"
+ 
+-        # for each core, a file /usr/lib/<core>.info must exit, otherwise, info such as rewinding/netplay will not work
+-        # to do a global check : cd /usr/lib/libretro && for i in *.so; do INF=$(echo $i | sed -e s+/usr/lib/libretro+/usr/share/libretro/info+ -e s+\.so+.info+); test -e "$INF" || echo $i; done
+-        infoFile = RETROARCH_SHARE / "info" / f"{system.config.core}_libretro.info"
+-        if not infoFile.exists():
++        # Desktop distributions can package executable cores separately from optional core metadata.
++        # A direct RetroArch -L launch requires the shared library, not the .info file.
++        if not retroarchCore.is_file():
+             raise MissingCore
+ 
+         # The command to run
+diff --git a/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroPaths.py b/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroPaths.py
+index b735620..37b574e 100644
+--- a/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroPaths.py
++++ b/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroPaths.py
+@@ -1,5 +1,6 @@
+ from __future__ import annotations
+ 
++import os
+ from pathlib import Path
+ from typing import Final
+ 
+@@ -10,8 +11,8 @@ RETROARCH_CUSTOM: Final = RETROARCH_CONFIG / 'retroarchcustom.cfg'
+ RETROARCH_CORE_CUSTOM: Final = RETROARCH_CONFIG / 'cores' / 'retroarch-core-options.cfg'
+ RETROARCH_OVERLAY_CONFIG: Final = RETROARCH_CONFIG / 'overlay.cfg'
+ 
+-RETROARCH_BIN: Final = Path("/usr/bin/retroarch")
++RETROARCH_BIN: Final = Path(os.environ.get('EMBERCADE_RETROARCH_BIN', '/usr/bin/retroarch'))
+ 
+ RETROARCH_ROOT_INIT: Final = CONF_INIT / 'retroarch'
+-RETROARCH_CORES: Final = Path("/usr/lib/libretro")
+-RETROARCH_SHARE: Final = Path("/usr/share/libretro")
++RETROARCH_CORES: Final = Path(os.environ.get('EMBERCADE_LIBRETRO_CORES', '/usr/lib/libretro'))
++RETROARCH_SHARE: Final = Path(os.environ.get('EMBERCADE_LIBRETRO_SHARE', '/usr/share/libretro'))
+diff --git a/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroRetroarchCustom.py b/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroRetroarchCustom.py
+index 710ba27..94e4cca 100644
+--- a/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroRetroarchCustom.py
++++ b/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroRetroarchCustom.py
+@@ -1,8 +1,16 @@
+ from __future__ import annotations
+ 
+-from ...batoceraPaths import mkdir_if_not_exists
++from ...batoceraPaths import (
++    BIOS,
++    CHEATS,
++    CONFIGS,
++    SAVES,
++    SCREENSHOTS,
++    USER_SHADERS,
++    mkdir_if_not_exists,
++)
+ from ...settings.unixSettings import UnixSettings
+-from .libretroPaths import RETROARCH_CUSTOM
++from .libretroPaths import RETROARCH_CORE_CUSTOM, RETROARCH_CUSTOM, RETROARCH_SHARE
+ 
+ 
+ def generateRetroarchCustom() -> None:
+@@ -86,18 +94,18 @@ def generateRetroarchCustom() -> None:
+ 
+ def generateRetroarchCustomPathes(retroarchSettings: UnixSettings) -> None:
+     # Path Retroarch
+-    retroarchSettings.save('core_options_path',             '"/userdata/system/configs/retroarch/cores/retroarch-core-options.cfg"')
+-    retroarchSettings.save('assets_directory',              '"/usr/share/libretro/assets"')
+-    retroarchSettings.save('screenshot_directory',          '"/userdata/screenshots/"')
+-    retroarchSettings.save('recording_output_directory',    '"/userdata/screenshots/"')
+-    retroarchSettings.save('savestate_directory',           '"/userdata/saves/"')
+-    retroarchSettings.save('savefile_directory',            '"/userdata/saves/"')
+-    retroarchSettings.save('extraction_directory',          '"/userdata/extractions/"')
+-    retroarchSettings.save('cheat_database_path',           '"/userdata/cheats/cht/"')
+-    retroarchSettings.save('cheat_settings_path',           '"/userdata/cheats/saves/"')
+-    retroarchSettings.save('system_directory',              '"/userdata/bios/"')
+-    retroarchSettings.save('joypad_autoconfig_dir',         '"/userdata/system/configs/retroarch/inputs/"')
+-    retroarchSettings.save('video_shader_dir',              '"/usr/share/batocera/shaders/"')
++    retroarchSettings.save('core_options_path',             f'"{RETROARCH_CORE_CUSTOM}"')
++    retroarchSettings.save('assets_directory',              f'"{RETROARCH_SHARE / "assets"}"')
++    retroarchSettings.save('screenshot_directory',          f'"{SCREENSHOTS}"')
++    retroarchSettings.save('recording_output_directory',    f'"{SCREENSHOTS}"')
++    retroarchSettings.save('savestate_directory',           f'"{SAVES}"')
++    retroarchSettings.save('savefile_directory',            f'"{SAVES}"')
++    retroarchSettings.save('extraction_directory',          f'"{CONFIGS / "retroarch" / "extractions"}"')
++    retroarchSettings.save('cheat_database_path',           f'"{CHEATS / "cht"}"')
++    retroarchSettings.save('cheat_settings_path',           f'"{CHEATS / "saves"}"')
++    retroarchSettings.save('system_directory',              f'"{BIOS}"')
++    retroarchSettings.save('joypad_autoconfig_dir',         f'"{CONFIGS / "retroarch" / "inputs"}"')
++    retroarchSettings.save('video_shader_dir',              f'"{USER_SHADERS}"')
+     retroarchSettings.save('video_font_path',               '"/usr/share/fonts/dejavu/DejaVuSansMono.ttf"')
+     retroarchSettings.save('video_filter_dir',              '"/usr/share/video_filters"')
+     retroarchSettings.save('audio_filter_dir',              '"/usr/share/audio_filters"')
+diff --git a/python-src/batocera-launch/batocera_launch/cli/main.py b/python-src/batocera-launch/batocera_launch/cli/main.py
+index 1c18b24..fcdff46 100644
+--- a/python-src/batocera-launch/batocera_launch/cli/main.py
++++ b/python-src/batocera-launch/batocera_launch/cli/main.py
+@@ -1,5 +1,7 @@
+ from __future__ import annotations
+ 
++import os
++from pathlib import Path
+ from typing import Final
+ 
+ from ..logging import setup_logging
+@@ -12,7 +14,8 @@ _MAX_PLAYERS: Final = 8
+ def main() -> None:
+     arguments = Arguments.parse(_MAX_PLAYERS)
+ 
+-    with setup_logging(), Profiler('/var/run/batocera-launch.perf') as profiler:
++    profiler_path = Path(os.environ.get('EMBERCADE_PROFILER_PATH', '/var/run/batocera-launch.perf'))
++    with setup_logging(), Profiler(profiler_path) as profiler:
+         from ..launch import launch
+ 
+         launch(arguments, profiler)
+diff --git a/python-src/batocera-launch/batocera_launch/paths.py b/python-src/batocera-launch/batocera_launch/paths.py
+index 4e13320..361e92a 100644
+--- a/python-src/batocera-launch/batocera_launch/paths.py
++++ b/python-src/batocera-launch/batocera_launch/paths.py
+@@ -1,5 +1,6 @@
+ from __future__ import annotations
+ 
++import os
+ from pathlib import Path
+ from typing import Final
+ 
+@@ -11,14 +12,14 @@ HOME_INIT: Final = DATAINIT_DIR / 'system'
+ CONF_INIT: Final = HOME_INIT / 'configs'
+ 
+ EVMAPY: Final = CONFIGS / 'evmapy'
+-EVMAPY_SHARE_DIR: Final = Path('/usr/share/evmapy')
++EVMAPY_SHARE_DIR: Final = Path(os.environ.get('EMBERCADE_EVMAPY_SHARE_DIR', '/usr/share/evmapy'))
+ 
+ LAUNCH_SHARE_DIR: Final = BATOCERA_SHARE_DIR / 'launch'
+ LAUNCH_DATA_DIR: Final = LAUNCH_SHARE_DIR / 'data'
+ LAUNCH_DEFAULTS_DIR: Final = LAUNCH_SHARE_DIR / 'defaults'
+ 
+ USER_ES_DIR: Final = CONFIGS / 'emulationstation'
+-SYSTEM_ES_DIR: Final = Path('/usr/share/emulationstation')
++SYSTEM_ES_DIR: Final = Path(os.environ.get('EMBERCADE_SYSTEM_ES_DIR', '/usr/share/emulationstation'))
+ 
+ ES_SETTINGS: Final = USER_ES_DIR / 'es_settings.cfg'
+ 
+diff --git a/python-src/python-batocera-common/batocera_common/paths.py b/python-src/python-batocera-common/batocera_common/paths.py
+index 64e2785..c4cfc4c 100644
+--- a/python-src/python-batocera-common/batocera_common/paths.py
++++ b/python-src/python-batocera-common/batocera_common/paths.py
+@@ -1,23 +1,29 @@
+ from __future__ import annotations
+ 
++import os
+ from pathlib import Path
+ from typing import Final
+ 
+-BATOCERA_SHARE_DIR: Final = Path('/usr/share/batocera')
+-USERDATA: Final = Path('/userdata')
+ 
+-HOME: Final = USERDATA / 'system'
+-CONFIGS: Final = HOME / 'configs'
+-SAVES: Final = USERDATA / 'saves'
+-SCREENSHOTS: Final = USERDATA / 'screenshots'
+-RECORDINGS: Final = USERDATA / 'recordings'
+-BIOS: Final = USERDATA / 'bios'
+-OVERLAYS: Final = USERDATA / 'overlays'
+-CACHE: Final = HOME / 'cache'
+-ROMS: Final = USERDATA / 'roms'
+-CHEATS: Final = USERDATA / 'cheats'
+-LOGS: Final = HOME / 'logs'
+-BATOCERA_CONF: Final = HOME / 'batocera.conf'
++def _path(name: str, default: str | Path) -> Path:
++    return Path(os.environ.get(name, default))
+ 
+-SQUASHFS_DIR: Final = Path('/var/run/squashfs')
+-ROM_OVERLAY_DIR: Final = Path('/var/run/overlays')
++
++BATOCERA_SHARE_DIR: Final = _path('EMBERCADE_BATOCERA_SHARE_DIR', '/usr/share/batocera')
++USERDATA: Final = _path('EMBERCADE_USERDATA', '/userdata')
++
++HOME: Final = _path('EMBERCADE_HOME', USERDATA / 'system')
++CONFIGS: Final = _path('EMBERCADE_CONFIGS', HOME / 'configs')
++SAVES: Final = _path('EMBERCADE_SAVES', USERDATA / 'saves')
++SCREENSHOTS: Final = _path('EMBERCADE_SCREENSHOTS', USERDATA / 'screenshots')
++RECORDINGS: Final = _path('EMBERCADE_RECORDINGS', USERDATA / 'recordings')
++BIOS: Final = _path('EMBERCADE_BIOS', USERDATA / 'bios')
++OVERLAYS: Final = _path('EMBERCADE_OVERLAYS', USERDATA / 'overlays')
++CACHE: Final = _path('EMBERCADE_CACHE', HOME / 'cache')
++ROMS: Final = _path('EMBERCADE_ROMS', USERDATA / 'roms')
++CHEATS: Final = _path('EMBERCADE_CHEATS', USERDATA / 'cheats')
++LOGS: Final = _path('EMBERCADE_LOGS', HOME / 'logs')
++BATOCERA_CONF: Final = _path('EMBERCADE_BATOCERA_CONF', HOME / 'batocera.conf')
++
++SQUASHFS_DIR: Final = _path('EMBERCADE_SQUASHFS_DIR', '/var/run/squashfs')
++ROM_OVERLAY_DIR: Final = _path('EMBERCADE_ROM_OVERLAY_DIR', '/var/run/overlays')

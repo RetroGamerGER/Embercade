@@ -1,0 +1,249 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -273,6 +273,18 @@
+   if(DEFINED libCEC_FOUND)
+     add_definitions(-DHAVE_LIBCEC)
+   endif()
++endif()
++
++if(DEFINED EMBERCADE_SCREENSCRAPER_AUTH_HEADER)
++    if(NOT EXISTS "${EMBERCADE_SCREENSCRAPER_AUTH_HEADER}")
++        message(FATAL_ERROR "Private application authorization header is missing")
++    endif()
++    # Only the private header path is in cache/argv; never developer values.
++    add_compile_options(-include "${EMBERCADE_SCREENSCRAPER_AUTH_HEADER}")
++endif()
++
++if(EMBERCADE_SCREENSCRAPER_RUNTIME)
++    add_definitions(-DEMBERCADE_SCREENSCRAPER_RUNTIME -DSCREENSCRAPER_SOFTNAME="Embercade")
+ endif()
+ 
+ if(DEFINED SCREENSCRAPER_SOFTNAME)
+--- a/es-app/src/scrapers/ScreenScraper.h
++++ b/es-app/src/scrapers/ScreenScraper.h
+@@ -6,7 +6,7 @@
+ #include "scrapers/Scraper.h"
+ #include "EmulationStation.h"
+ 
+-#if defined(SCREENSCRAPER_DEV_LOGIN)
++#if defined(SCREENSCRAPER_DEV_LOGIN) || defined(EMBERCADE_SCREENSCRAPER_RUNTIME)
+ 
+ #define VERSIONED_SOFT_NAME std::string(SCREENSCRAPER_SOFTNAME) + " " + static_cast<std::string>(PROGRAM_VERSION_STRING)
+ 
+--- a/es-app/src/scrapers/ScreenScraper.cpp
++++ b/es-app/src/scrapers/ScreenScraper.cpp
+@@ -23,7 +23,27 @@
+ 
+ using namespace PlatformIds;
+ 
+-#if defined(SCREENSCRAPER_DEV_LOGIN)
++#if defined(SCREENSCRAPER_DEV_LOGIN) || defined(EMBERCADE_SCREENSCRAPER_RUNTIME)
++#ifdef EMBERCADE_SCREENSCRAPER_RUNTIME
++#include "EmbercadeScreenScraper.h"
++#endif
++#ifdef SCREENSCRAPER_DEV_LOGIN
++// Public build-mode marker, not a claim that compiled authorization is secret.
++__attribute__((used)) static const char embercadeScraperBuild[] = "EMBERCADE_SCREENSCRAPER_EMBEDDED_V1";
++#endif
++static std::string developerQuery()
++{
++#ifdef SCREENSCRAPER_DEV_LOGIN
++    // Production authorization is self-contained; no local override is needed.
++    return std::string(SCREENSCRAPER_DEV_LOGIN);
++#else
++    auto credentials = EmbercadeScreenScraper::load();
++    if (!credentials.valid()) return "";
++    return "devid=" + HttpReq::urlEncode(credentials.developerId)
++        + "&devpassword=" + HttpReq::urlEncode(credentials.developerPassword);
++#endif
++}
++
+ 
+ /**
+ 	List of systems and thein IDs from
+@@ -347,7 +367,7 @@
+ 
+ 	if (response.find("<html") == 0)
+ 	{
+-		setError(Utils::String::removeHtmlTags(response));
++		setError("ScreenScraper: invalid server response. Please try again later.");
+ 		return false;
+ 	}
+ 
+@@ -837,8 +857,10 @@
+ 
+ std::string ScreenScraperRequest::ScreenScraperConfig::getGameSearchUrl(const std::string gameName, bool jeuRecherche) const
+ {	
++	auto query = developerQuery();
++	if (query.empty()) return "";
+ 	std::string ret = API_URL_BASE
+-		+ "/jeuInfos.php?" + std::string(SCREENSCRAPER_DEV_LOGIN) +
++		+ "/jeuInfos.php?" + query
+ 		+ "&softname=" + HttpReq::urlEncode(VERSIONED_SOFT_NAME)
+ 		+ "&output=xml"
+ 		+ "&romnom=" + HttpReq::urlEncode(gameName);
+@@ -846,7 +868,7 @@
+ 	if (jeuRecherche)
+ 	{
+ 		ret = std::string(API_URL_BASE)
+-			+ "/jeuRecherche.php?" + std::string(SCREENSCRAPER_DEV_LOGIN) +
++			+ "/jeuRecherche.php?" + query
+ 			+ "&softname=" + HttpReq::urlEncode(VERSIONED_SOFT_NAME)
+ 			+ "&output=xml"
+ 			+ "&recherche=" + HttpReq::urlEncode(gameName);
+@@ -863,8 +885,10 @@
+ 
+ std::string ScreenScraperRequest::ScreenScraperConfig::getUserInfoUrl() const
+ {
++	auto query = developerQuery();
++	if (query.empty()) return "";
+ 	std::string ret = API_URL_BASE
+-		+ "/ssuserInfos.php?" + std::string(SCREENSCRAPER_DEV_LOGIN) +
++		+ "/ssuserInfos.php?" + query
+ 		+ "&softname=" + HttpReq::urlEncode(VERSIONED_SOFT_NAME)
+ 		+ "&output=xml";
+ 
+@@ -946,6 +970,13 @@
+ 
+ int ScreenScraperScraper::getThreadCount(std::string &result)
+ {
++#ifdef EMBERCADE_SCREENSCRAPER_RUNTIME
++    if (developerQuery().empty())
++    {
++        result = "ScreenScraper: application access is unavailable in this build. Use a complete Embercade build or try again later.";
++        return -1;
++    }
++#endif
+ 	ScreenScraperRequest::ScreenScraperConfig ssConfig;
+ 	std::string url = ssConfig.getUserInfoUrl();
+ 
+--- a/es-app/src/scrapers/Scraper.cpp
++++ b/es-app/src/scrapers/Scraper.cpp
+@@ -22,7 +22,7 @@
+ 
+ std::vector<std::pair<std::string, Scraper*>> Scraper::scrapers
+ {
+-#ifdef SCREENSCRAPER_DEV_LOGIN
++#if defined(SCREENSCRAPER_DEV_LOGIN) || defined(EMBERCADE_SCREENSCRAPER_RUNTIME)
+ 	{ "ScreenScraper", new ScreenScraperScraper() },
+ #endif
+ 
+@@ -521,7 +521,7 @@
+ 
+ std::unique_ptr<ImageDownloadHandle> MDResolveHandle::downloadImageAsync(const std::string& url, const std::string& saveAs, bool resize)
+ {
+-	LOG(LogDebug) << "downloadImageAsync : " << url << " -> " << saveAs;
++	LOG(LogDebug) << "downloadImageAsync -> " << saveAs;
+ 
+ 	return std::unique_ptr<ImageDownloadHandle>(new ImageDownloadHandle(url, saveAs, 
+ 		resize ? Settings::getInstance()->getInt("ScraperResizeWidth") : 0,
+--- a/es-core/src/HttpReq.cpp
++++ b/es-core/src/HttpReq.cpp
+@@ -1,4 +1,5 @@
+ #include "HttpReq.h"
++#include "EmbercadeScreenScraper.h"
+ 
+ #include "utils/FileSystemUtil.h"
+ #include "utils/StringUtil.h"
+@@ -126,6 +127,13 @@
+ {
+ 	mUrl = url;
+ 
++    if (url.empty() || (EmbercadeScreenScraper::isSensitive(url)
++        && !EmbercadeScreenScraper::isService(url)))
++    {
++        mStatus = REQ_IO_ERROR;
++        onError("ScreenScraper request or credentials unavailable");
++        return;
++    }
+ 	std::string outputFilename;
+ 
+ 	if (options != nullptr && !options->outputFilename.empty())
+@@ -180,7 +188,7 @@
+ 	}
+ 
+ 	//set curl to handle redirects
+-	err = curl_easy_setopt(mHandle, CURLOPT_FOLLOWLOCATION, 1L);
++	err = curl_easy_setopt(mHandle, CURLOPT_FOLLOWLOCATION, EmbercadeScreenScraper::isSensitive(url) ? 0L : 1L);
+ 	if(err != CURLE_OK)
+ 	{
+ 		mStatus = REQ_IO_ERROR;
+@@ -189,7 +197,8 @@
+ 	}
+ 
+ 	// Ignore expired SSL certificates
+-	curl_easy_setopt(mHandle, CURLOPT_SSL_VERIFYPEER, 0L);
++	curl_easy_setopt(mHandle, CURLOPT_SSL_VERIFYPEER, EmbercadeScreenScraper::isSensitive(url) ? 1L : 0L);
++	curl_easy_setopt(mHandle, CURLOPT_SSL_VERIFYHOST, 2L);
+ 
+ 	//set curl to connection timeout
+ 	err = curl_easy_setopt(mHandle, CURLOPT_CONNECTTIMEOUT_MS, options != nullptr ? options->connectTimeout : 10000L);
+@@ -262,7 +271,7 @@
+ 		}
+ 	}
+ 
+-	if (options == nullptr || options->useCookieManager)
++	if (!EmbercadeScreenScraper::isSensitive(url) && (options == nullptr || options->useCookieManager))
+ 	{
+ 		std::string cookiesFile = getCookiesContainerPath(); 
+ 
+@@ -540,7 +549,7 @@
+ 
+ void HttpReq::onError(const char* msg)
+ {
+-	mErrorMsg = msg;
++	mErrorMsg = EmbercadeScreenScraper::isSensitive(mUrl) ? EmbercadeScreenScraper::safeError(mStatus) : std::string(msg);
+ 	LOG(LogError) << "HttpReq::onError (" + std::to_string(mStatus) << ") : " + mErrorMsg;
+ }
+ 
+--- a/es-core/src/Settings.cpp
++++ b/es-core/src/Settings.cpp
+@@ -10,6 +10,7 @@
+ #include "utils/StringUtil.h"
+ #include "Paths.h"
+ 
++#include <sys/stat.h>
+ Settings* Settings::sInstance = NULL;
+ static std::string mEmptyString = "";
+ Delegate<ISettingsChangedEvent> Settings::settingChanged;
+@@ -482,7 +483,10 @@
+ 		node.append_attribute("value").set_value(iter->second.c_str());
+ 	}
+ 
++	chmod(path.c_str(), 0600);
++	auto previousMask = umask(0077);
+ 	doc.save_file(WINSTRINGW(path).c_str());
++	umask(previousMask);
+ 
+ 	Scripting::fireEvent("config-changed");
+ 	Scripting::fireEvent("settings-changed");
+--- a/es-app/src/main.cpp
++++ b/es-app/src/main.cpp
+@@ -44,6 +44,7 @@
+ #include <thread>
+ #include "ZaparooSupport.h"
+ #include "utils/ThreadPool.h"
++#include <sys/prctl.h>
+ 
+ #ifdef WIN32
+ #include <Windows.h>
+@@ -464,6 +465,14 @@
+ 
+ int main(int argc, char* argv[])
+ {
++#ifdef EMBERCADE_SCREENSCRAPER_RUNTIME
++    // Disable dumps before loading either developer or UI account secrets.
++    if (prctl(PR_SET_DUMPABLE, 0) != 0)
++    {
++        std::cerr << "Cannot protect local credentials from process dumps.\n";
++        return 1;
++    }
++#endif
+ 	// Utils::MathExpr::performUnitTests();
+ 
+ #ifdef WIN32
+@@ -885,4 +894,3 @@
+ 
+ 	return 0;
+ }
+-

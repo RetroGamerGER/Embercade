@@ -1,0 +1,23 @@
+diff --git a/python-src/batocera-launch-dolphin/batocera_launch_dolphin/controllers.py b/python-src/batocera-launch-dolphin/batocera_launch_dolphin/controllers.py
+--- a/python-src/batocera-launch-dolphin/batocera_launch_dolphin/controllers.py
++++ b/python-src/batocera-launch-dolphin/batocera_launch_dolphin/controllers.py
+@@ -161,7 +161,19 @@ def generate_controller_config_emulatedwiimotes(
+         'joystick2up': 'Tilt/Forward',
+         'joystick2left': 'Tilt/Left',
+         'hotkey': 'Buttons/Hotkey',
+     }
++    if environ.get('EMBERCADE_DESKTOP') == '1':
++        # Desktop gamepads expose Start/Back/Guide independently. Keep the
++        # Wii + and - buttons on those physical keys instead of shoulders;
++        # the previous mapping made RB act like Start and left Start unused.
++        # Keep this within emulated mode: native Real Wiimotes are untouched.
++        wii_mapping.update({
++            'start': 'Buttons/+',
++            'select': 'Buttons/-',
++            'hotkey': 'Buttons/Home',
++            'pageup': None,
++            'pagedown': 'Shake/Z',
++        })
+     wii_reverse_axes: dict[str | None, str] = {
+         'IR/Up': 'IR/Down',
+         'IR/Left': 'IR/Right',

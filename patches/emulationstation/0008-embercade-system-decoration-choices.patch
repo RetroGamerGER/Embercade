@@ -1,0 +1,136 @@
+diff --git a/es-app/src/guis/GuiMenu.cpp b/es-app/src/guis/GuiMenu.cpp
+--- a/es-app/src/guis/GuiMenu.cpp
++++ b/es-app/src/guis/GuiMenu.cpp
+@@ -1,4 +1,5 @@
+ #include "guis/GuiMenu.h"
++#include "EmbercadeDecorationAvailability.h"
+ 
+ #include "components/OptionListComponent.h"
+ #include "components/SliderComponent.h"
+@@ -2432,7 +2433,7 @@
+ 	for (auto set : sets)
+ 		items.push_back(set.name);
+ 
+-	std::string bezel = SystemConf::getInstance()->get(configName + ".bezel");
++	std::string bezel = EmbercadeDecorations::selectionName(SystemConf::getInstance()->get(configName + ".bezel"));
+ 
+ 	for (auto item : items)
+ 		decorations->add(item, item, (bezel == item) || (bezel == "none" && item == _("NONE")) || (bezel == "" && item == _("AUTO")));
+@@ -2443,6 +2444,8 @@
+ 	parentWindow->addWithLabel(_("DECORATION SET"), decorations);
+ 	parentWindow->addSaveFunc([decorations, configName]
+ 	{
++		if (!decorations->changed())
++			return; // Opening a filtered list must preserve an existing hidden choice.
+ 		SystemConf::getInstance()->set(configName + ".bezel", decorations->getSelected() == _("NONE") ? "none" : decorations->getSelected() == _("AUTO") ? "" : decorations->getSelected());
+ 	});
+ }
+@@ -2713,9 +2716,10 @@
+ 	}
+ 	else if (feat.preset == "decorations" || feat.preset == "bezel")
+ 	{
++		storedValue = EmbercadeDecorations::selectionName(storedValue);
+ 		item->add(_("AUTO"), "auto", storedValue.empty() || storedValue == "auto");
+ 
+-		auto sets = GuiMenu::getDecorationsSets(ViewController::get()->getState().getSystem());
++		auto sets = GuiMenu::getDecorationsSets(ViewController::get()->getState().getSystem(), configName != "global");
+ 		if (sets.size() > 0)
+ 		{
+ 			item->setRowTemplate([window, sets](std::string data, ComponentListRow& row) { createDecorationItemTemplate(window, sets, data, row); });
+@@ -2788,7 +2792,11 @@
+ 	else
+ 		settings->addWithLabel(pgettext("game_options", feat.name.c_str()), item);
+ 
+-	settings->addSaveFunc([item, storageName] { SystemConf::getInstance()->set(storageName, item->getSelected()); });
++	bool decorationChoice = feat.preset == "decorations" || feat.preset == "bezel";
++	settings->addSaveFunc([item, storageName, decorationChoice] {
++		if (!decorationChoice || item->changed())
++			SystemConf::getInstance()->set(storageName, item->getSelected());
++	});
+ }
+ 
+ static bool hasGlobalFeature(const std::string& name)
+@@ -3100,7 +3108,7 @@
+ 	// decorations
+ 	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::DECORATIONS) && !hasGlobalFeature("bezel"))
+ 	{		
+-		auto sets = GuiMenu::getDecorationsSets(ViewController::get()->getState().getSystem());
++		auto sets = GuiMenu::getDecorationsSets(ViewController::get()->getState().getSystem(), false);
+ 		if (sets.size() > 0)
+ 		{
+ #ifdef BATOCERA
+@@ -5396,13 +5404,13 @@
+ 	return videoResolutionMode_choice;
+ }
+ 
+-std::vector<DecorationSetInfo> GuiMenu::getDecorationsSets(SystemData* system)
++std::vector<DecorationSetInfo> GuiMenu::getDecorationsSets(SystemData* system, bool systemSpecific)
+ {
+ 	std::vector<DecorationSetInfo> sets;
+-	if (system == nullptr)
++	if (system == nullptr && systemSpecific)
+ 		return sets;
+ 
+-	static const size_t pathCount = 3;
++	EmbercadeDecorations::Sources sources;
+ 
+ 	std::vector<std::string> paths = 
+ 	{
+@@ -5433,23 +5441,32 @@
+ 				info.path = folder;
+ 
+ 				// Internal default alias and unsupported animation are not menu choices.
+-				if (info.name == "default" || Utils::FileSystem::exists(folder + "/.embercade-unavailable"))
++				if (info.name == "default" || info.name == "consoles" || Utils::FileSystem::exists(folder + "/.embercade-unavailable"))
+ 					continue;
+ 
+-				if (system != nullptr && Utils::String::startsWith(info.name, "default"))
++				info.imageUrl = EmbercadeDecorations::preview(folder, system ? system->getName() : "",
++					systemSpecific, [](const std::string& file) { return Utils::FileSystem::isRegularFile(file); });
++				if (systemSpecific && info.imageUrl.empty())
++					continue;
++				if (std::find_if(sets.begin(), sets.end(), [&info](const DecorationSetInfo& previous) {
++					return previous.name == info.name;
++				}) != sets.end())
++					continue; // User root has precedence over the packaged root.
++				if (systemSpecific)
+ 				{
+-					std::string systemImg = path + "/"+ info.name +"/systems/" + system->getName() + ".png";
+-					if (Utils::FileSystem::exists(systemImg))
+-						info.imageUrl = systemImg;
++					auto png = Utils::FileSystem::getCanonicalPath(info.imageUrl);
++					auto layout = info.imageUrl.substr(0, info.imageUrl.size() - 4) + ".info";
++					auto identity = png + "\n" + Utils::FileSystem::getCanonicalPath(layout);
++					bool direct = Utils::String::startsWith(png, Utils::FileSystem::getCanonicalPath(folder) + "/");
++					auto slot = sources.select(identity, direct, sets.size());
++					if (slot == EmbercadeDecorations::Sources::skip)
++						continue;
++					if (slot < sets.size())
++					{
++						sets[slot] = info;
++						continue;
++					}
+ 				}
+-
+-				if (info.imageUrl.empty())
+-				{
+-					std::string img = folder + "/default.png";
+-					if (Utils::FileSystem::exists(img))
+-						info.imageUrl = img;
+-				}
+-
+ 				sets.push_back(info);
+ 			}
+ 		}
+diff --git a/es-app/src/guis/GuiMenu.h b/es-app/src/guis/GuiMenu.h
+--- a/es-app/src/guis/GuiMenu.h
++++ b/es-app/src/guis/GuiMenu.h
+@@ -97,7 +97,7 @@
+ 	static void loadSubsetSettings(const std::string themeName);
+ 
+ public:
+-	static std::vector<DecorationSetInfo> getDecorationsSets(SystemData* system = nullptr);
++	static std::vector<DecorationSetInfo> getDecorationsSets(SystemData* system = nullptr, bool systemSpecific = true);
+ 
+ 	virtual bool hitTest(int x, int y, Transform4x4f& parentTransform, std::vector<GuiComponent*>* pResult = nullptr) override;
+ 	virtual bool onMouseClick(int button, bool pressed, int x, int y);
