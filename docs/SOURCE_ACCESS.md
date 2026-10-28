@@ -10,7 +10,7 @@ instructions; the automatic GitHub source ZIP alone is insufficient.
 
 The binary's exact project source is
 [`cb00b093`](https://github.com/RetroGamerGER/Embercade/tree/cb00b093ff0e87d2462ee060bb4b7717afda43dc).
-The release tag also contains the final publication-documentation update.
+The release tag also contains the final publication text and documentation updates.
 Image/source manifests retain the original preparation-time state; the release
 BUILD_INFO identifies the publication separately. No shared personal
 RetroAchievements key is distributed. The known laptop 16:10 bezel limitation

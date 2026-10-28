@@ -122,26 +122,26 @@ a new Embercade source pin. Batocera remains at its exact `upstream.lock` pin.
 ## Acceptance
 
 Implementation and structural tests alone do not establish gameplay or
-peripheral READY. The user confirms **Super Mario Galaxy** on MainRig with
+peripheral READY. The user confirms **Super Mario Galaxy** on Garuda with
 image/audio, real buttons, Nunchuk stick/C/Z, IR pointer, shaking/motion and
 rumble. Turning the remote off/on inside Dolphin restores control. Turning
 it off/on in the same frontend and relaunching also works. Guide+Start on the
 ordinary gamepad returns to the same EmulationStation process. GameCube
 **F-Zero GX** image/audio/gamepad/exit regression is confirmed. This supports
-READY for that MainRig standalone route, not every Wii peripheral.
+READY for that Garuda standalone route, not every Wii peripheral.
 
 The same RVL-003/Nunchuk/DolphinBar is also user-accepted in **Super Mario
-Galaxy** from the WohnzimmerPC's real interactive Steam/Gamescope session:
+Galaxy** from the CachyOS Handheld's real interactive Steam/Gamescope session:
 image/audio, real buttons, stick/C/Z, pointer, motion, rumble, wireless off/on
 inside Dolphin and the frontend, relaunch and Select+Start return to the same
 frontend. Process evidence verifies native Source 2, continuous scanning,
 the receiver HID handle and clean launcher status 0. This is independent
-second-host hardware acceptance, not inferred from MainRig or structural tests.
+second-host hardware acceptance, not inferred from Garuda or structural tests.
 
 The later standalone-decoration extension also passes with the real Wiimote
-in the WohnzimmerPC's Steam/Gamescope session: the existing console bezel is
+in the CachyOS Handheld's Steam/Gamescope session: the existing console bezel is
 visible around the 4:3 game while Nunchuk, pointer, buttons, image/audio and
-Player-1 gamepad Select+Start still work. MainRig separately accepts the
+Player-1 gamepad Select+Start still work. Garuda separately accepts the
 emulated-gamepad +/−/Home mapping and Wii bezel; *New Super Mario Bros. Wii*
 uses its per-game Sideway setting to orient the D-pad correctly. These checks
 do not expand the accepted hardware set beyond the DolphinBar/Nunchuk route.
@@ -161,7 +161,7 @@ native transport.
 
 With the real remote off, Auto/gamepad emulation and the configured exit are
 also user-confirmed. NES/Libretro, 3DO, PCSX2, Xenia and shadPS4 start/exit
-regressions are accepted on MainRig; normal Quit Embercade returns to the
+regressions are accepted on Garuda; normal Quit Embercade returns to the
 desktop with no remaining test frontend or emulator service. The native splash
 is measured at 2,750 ms on the warm restart, with no branding/theme change.
 
@@ -178,7 +178,7 @@ the same verified production payload; the tested native DolphinBar/Nunchuk
 route is gameplay-accepted on both.
 
 The alternative Dolphin Libretro route is not implemented for GameCube/Wii.
-A MainRig attempt with F-Zero GX aborts in Configgen with `MissingCore` before
+A Garuda attempt with F-Zero GX aborts in Configgen with `MissingCore` before
 RetroArch runs, even though the core is present: the standalone-oriented path
 does not supply the central exact-core handoff for this alternative. That is
 a separate diagnosed port, not a real-remote regression or a repaired route.

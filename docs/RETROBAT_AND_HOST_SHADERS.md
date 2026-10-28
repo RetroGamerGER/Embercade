@@ -2,7 +2,7 @@
 
 Prepared on 27 October 2026. This implementation supersedes the older resource
 freeze for the next candidate. The accepted Gold AppImage and installed copies
-are unchanged. The later explicit MainRig acceptance authorizes one new private owner AppImage
+are unchanged. The later explicit Garuda acceptance authorizes one new private owner AppImage
 and replacement on all three PCs; no push or public publication is authorized.
 
 ## Decoration source and selection
@@ -180,9 +180,9 @@ no normal user profiles, driver settings or installed images are changed.
 
 | Host/session | Prepared checks | Remaining manual acceptance |
 | --- | --- | --- |
-| MainRig / Garuda KDE Wayland / AMD | Host-package graph, native route/selection tests, real 120-frame RetroArch runs | New candidate menu, 13-set appearance, Xemu/PCSX2 geometry, game/exit/frontend return |
-| WohnzimmerPC / CachyOS Gamescope / AMD | Existing separate compositor route and test checklist retained | Optional package detection/install, Gaming Mode selection, RetroArch + standalone appearance/return; no SteamOS Manager/session changes |
-| EmbercadeLaptop / Garuda KDE / NVIDIA | Same provider/menu/setup regressions prepared | Package detection/install, effects, game launch, 16:10 known limitation; no driver changes |
+| Garuda / Garuda KDE Wayland / AMD | Host-package graph, native route/selection tests, real 120-frame RetroArch runs | New candidate menu, 13-set appearance, Xemu/PCSX2 geometry, game/exit/frontend return |
+| CachyOS Handheld / CachyOS Gamescope / AMD | Existing separate compositor route and test checklist retained | Optional package detection/install, Gaming Mode selection, RetroArch + standalone appearance/return; no SteamOS Manager/session changes |
+| Garuda laptop / Garuda KDE / NVIDIA | Same provider/menu/setup regressions prepared | Package detection/install, effects, game launch, 16:10 known limitation; no driver changes |
 
 After the owner started both hosts, read-only SSH preflight succeeded. The
 same provider-discovery/dependency code initially reported no installed shader
@@ -199,7 +199,7 @@ on both. Both active image hashes still match the accepted Gold SHA below.
 The later authorized package installation is the only remote system change;
 profiles, drivers, sessions and images remain unchanged. They are not claimed
 visually tested. Known laptop 16:10 cropping/proportions remain documented;
-MainRig/Wohnzimmer 16:9 renderer guards remain unchanged.
+Garuda/Wohnzimmer 16:9 renderer guards remain unchanged.
 
 For the eventual candidate: inspect None and a chosen shader, switch games,
 check global/system/game settings, test each used regular bezel, Xemu and PCSX2,
@@ -231,7 +231,7 @@ candidate. The existing build authorization/identity checks require the proper
 private production build after the owner lifts the hold.
 
 
-## System-aware choices and MainRig acceptance
+## System-aware choices and Garuda acceptance
 
 The owner confirmed the initial shader/None/exit tests and then requested that
 per-system selection show only resources available for that system. New native

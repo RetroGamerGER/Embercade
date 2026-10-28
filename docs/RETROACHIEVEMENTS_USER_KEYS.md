@@ -76,7 +76,7 @@ runtime smoke and diff checks also pass. New executable probes exercise the
 actual paste method and shortcut handler with synthetic clipboard stubs: full
 length, mid-string insertion, UTF-8 byte cursor, masking, explicit-action-only
 reads, freed SDL allocations and failure preservation. Both masked dialogs use
-the same method. The owner’s separate MainRig acceptance is recorded below.
+the same method. The owner’s separate Garuda acceptance is recorded below.
 
 The full isolated suite ran 843 tests: 838 passed, five native opt-ins skipped.
 It included the existing GTK and 52-route structural checks. After a translated
@@ -94,7 +94,7 @@ Synthetic values are used; no live authenticated request is claimed here.
 
 The separately named PRIVATE candidate is for the owner's acceptance. Existing
 installed/Gold images and the frozen d8e6ca6 source kit remain unchanged. The
-owner still needs to check MainRig, EmbercadeLaptop and WohnzimmerPC: masked
+owner still needs to check Garuda, Garuda laptop and CachyOS Handheld: masked
 entry with keyboard/controller, Cancel/Reset, restart persistence, actual list
 and progress display, and a game start/achievement flow with the optional key
 absent. Do not infer those physical checks from native stubs or a successful
@@ -134,17 +134,17 @@ probes, contains the clipboard entry points and per-user API marker, and has no
 old private key in any of its 5,684 files. All six checked Gold,
 canonical, installed and first per-user image hashes remain unchanged. The
 previous Stage is restored. After confirming no frontend/game was active, this
-separate correction was opened on MainRig with the owner's existing settings
+separate correction was opened on Garuda with the owner's existing settings
 for the requested visible retest. No installed image was replaced, no remote
 host was accessed and no clipboard/key value was inspected by diagnostic tools.
 No push/publication.
 
-### MainRig owner acceptance — 28 October 2026
+### Garuda owner acceptance — 28 October 2026
 
 The owner confirms the corrected flow works and supplies a screenshot showing
 the actual account overview with games, points and individual achievement
 progress. This confirms successful personal-key entry and live overview
-rendering on MainRig with the corrected candidate. The key itself is not
+rendering on Garuda with the corrected candidate. The key itself is not
 recorded. Restart persistence, Cancel/Reset, key-absent emulator gameplay and
 the laptop/living-room acceptance remain separate checks; none is inferred
 from this screenshot. Existing installed images remain unchanged and the

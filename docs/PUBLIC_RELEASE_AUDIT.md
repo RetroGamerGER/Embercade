@@ -266,7 +266,7 @@ not mean no embedded notices or historical grants exist.
 [per-file history/hash companion](BEZEL_PROVENANCE.json) inventory all 302
 actual paths, 33 preserved symlinks and 187 resolved content blobs. The recipe
 has 144 overwritten paths; winning-entry and merged-tree link targets are
-distinguished and match reference, stage and MainRig installed content.
+distinguished and match reference, stage and Garuda installed content.
 
 Recorded contributions or specific source credits associate 231 paths with
 Duimon, 10 with Mikael42 and 17 with Fery65/Lorenzolamas; 44 lack that

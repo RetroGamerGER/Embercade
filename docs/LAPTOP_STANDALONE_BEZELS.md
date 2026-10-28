@@ -1,6 +1,6 @@
 # Laptop standalone decorations — 26 October 2026
 
-The owner reported missing Xbox/Xemu and PS2/PCSX2 decorations on EmbercadeLaptop
+The owner reported missing Xbox/Xemu and PS2/PCSX2 decorations on Garuda laptop
 after successful tests on the other PCs. This investigation changes no graphics
 driver, desktop configuration, emulator aspect setting or original media.
 
@@ -8,7 +8,7 @@ driver, desktop configuration, emulator aspect setting or original media.
 
 Both laptop AppImage copies match the accepted private candidate:
 SHA-256 `b77666fcb7a3acc1f1e495633301430386df89f646177082d20d86065a82eca8`,
-source `935eacf508ab18c369091d8bfbd9023b0d9ed7fd`. MainRig's active managed copy
+source `935eacf508ab18c369091d8bfbd9023b0d9ed7fd`. Garuda's active managed copy
 has the same hash. An outdated laptop image does not explain this failure.
 
 During the owner's real fullscreen PS2 launch the shared renderer printed:
@@ -18,7 +18,7 @@ Standalone decoration unavailable; game unchanged: No module named 'cairo'
 ```
 
 The laptop already had `gtk-layer-shell` 0.10.1-1, `python-gobject` 3.58.1-1,
-GTK3 and the native Cairo library. `python-cairo` was absent. MainRig had
+GTK3 and the native Cairo library. `python-cairo` was absent. Garuda had
 `python-cairo` 1.29.2-1. The shared helper imports `cairo` before creating its
 KWin observer or drawing either system's artwork, explaining the common failure.
 The configured package metadata lists `cairo` and `python` as Pycairo's
@@ -88,8 +88,8 @@ Two geometry paths must be distinguished:
   an implemented or accepted rendering repair.
 
 The owner explicitly permits documenting a 16:10 limitation if a safe common
-repair is not straightforward, and requires preserving the working MainRig
-and WohnzimmerPC presentation. A complete repair must address image transforms,
+repair is not straightforward, and requires preserving the working Garuda
+and CachyOS Handheld presentation. A complete repair must address image transforms,
 cache validity, viewport overrides and standalone game protection together;
 simply stretching artwork or removing the clipping guard is not acceptable.
 No renderer, native viewport, aspect/FMV option, shader or existing derived

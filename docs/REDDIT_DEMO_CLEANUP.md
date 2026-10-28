@@ -1,10 +1,10 @@
-# MainRig cleanup for the Reddit demo
+# Garuda cleanup for the Reddit demo
 
 On 10 October 2026 the owner reported personal 1.0 acceptance complete and
-requested another clean user installation on MainRig/Garuda Mokka KDE. This
+requested another clean user installation on Garuda/Garuda Mokka KDE. This
 operation inventoried the current host, re-read the previous report and checked
 current package provenance/dependencies before deletion. The normal shadPS4
-profile was separately reconfirmed as test-only. WohnzimmerPC was not accessed.
+profile was separately reconfirmed as test-only. CachyOS Handheld was not accessed.
 
 ## Removed files
 
@@ -69,7 +69,7 @@ original EEPROM source, Clonezilla/other backups, package caches and system
 snapshots remain. Normal package-manager snapshots/hooks were allowed to run.
 Other applications and their data, including OBS, were preserved.
 
-`~/.config/embercade` remains solely for the protected `WohnzimmerPC` private
+`~/.config/embercade` remains solely for the protected `CachyOS Handheld` private
 SSH key. Its bytes, metadata and 0600 permissions, other SSH keys and Git
 configuration passed comparison. No Steam shortcut files/Embercade integration
 were present; Steam data was not changed. No global KDE history/configuration

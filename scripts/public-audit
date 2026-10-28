@@ -35,9 +35,9 @@ fi
 
 local_user='den'"nis"
 handheld_user='de'"ck"
-mainrig_name='cachyos-'"MainRig"
+desktop_host='cachyos-'"$(printf '\115\141\151\156\122\151\147')"
 living_room_name='wohn'"zimmer"
-personal_pattern="/home/$local_user|/run/media/$local_user|192\\.168\\.|$mainrig_name|$living_room_name|$handheld_user@|$local_user@"
+personal_pattern="/home/$local_user|/run/media/$local_user|192\\.168\\.|$desktop_host|$living_room_name|$handheld_user@|$local_user@"
 personal_files="$(git grep -I -l -E "$personal_pattern" -- . ':!scripts/public-audit' || true)"
 if [[ -n "$personal_files" ]]; then
   printf '%s\n' "$personal_files" >&2

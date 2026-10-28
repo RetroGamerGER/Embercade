@@ -148,7 +148,7 @@ LAUNCH_CAPABILITIES: Mapping[str, Mapping[str, str]] = {
         "launch_path": "READY",
         "special_controller_validation": "DOLPHINBAR_NUNCHUK_VALIDATED",
         "note": (
-            "MainRig and interactive Steam/Gamescope Super Mario Galaxy E2E validate "
+            "Garuda and interactive Steam/Gamescope Super Mario Galaxy E2E validate "
             "RVL-003, DolphinBar mode 4, "
             "Nunchuk, IR, motion, rumble, wireless reconnect and gamepad exit. "
             "MotionPlus, direct Bluetooth, passthrough and multiple remotes "

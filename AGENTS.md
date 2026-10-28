@@ -54,8 +54,8 @@ publication, never silently expose or rewrite the original private history.
 
 ## Three-host owner acceptance complete (28 October 2026)
 
-The owner now accepts the deployed d2194fc candidate on MainRig, EmbercadeLaptop
-and WohnzimmerPC and reports that it works perfectly except for the previously
+The owner now accepts the deployed d2194fc candidate on Garuda, Garuda laptop
+and CachyOS Handheld and reports that it works perfectly except for the previously
 known laptop 16:10 bezel cropping/proportion issue. Record the three-host
 functional acceptance as complete with that explicit limitation; do not reopen
 it as an outstanding gate from older pending notes. This is the owner's broad
@@ -67,8 +67,8 @@ or visibility change is authorized; the owner's publication hold remains.
 
 ## Current private candidate replacement approved (28 October 2026)
 
-The owner explicitly requests replacing the active AppImages on MainRig,
-EmbercadeLaptop and WohnzimmerPC under their existing filenames, preserving
+The owner explicitly requests replacing the active AppImages on Garuda,
+Garuda laptop and CachyOS Handheld under their existing filenames, preserving
 Desktop/Steam links and settings. This supersedes the earlier no-deployment
 limits for this exact private C64/per-user-RA candidate from d2194fc only.
 Keep the canonical source/Gold/previous private artifacts; prepare verified
@@ -84,11 +84,11 @@ checks pass. Recovery receipts are in each host’s image-backups directory unde
 user-api-c64-2026-10-28-a3348017. No interactive process/session or package/driver
 was changed. The optional per-user RA key file was absent on the two remote
 PCs at deployment inventory; no current key state is inferred from acceptance
-and the MainRig key must not be copied silently. See docs/PRIVATE_DEPLOYMENT_2026_10_28.md.
+and the Garuda key must not be copied silently. See docs/PRIVATE_DEPLOYMENT_2026_10_28.md.
 
 ## C64 disk-start correction (28 October 2026)
 
-The owner reports DEVICE NOT PRESENT for Giana Sisters D64 on MainRig and
+The owner reports DEVICE NOT PRESENT for Giana Sisters D64 on Garuda and
 authorizes scoped C64 launch diagnosis/repair. The real log shows the D64 is
 attached; forced JiffyDOS without optional external ROMs disables the emulated
 1541-II drive. Correct the desktop default, keep explicit overrides, other
@@ -100,9 +100,9 @@ owner testing; no push/publication, remote/host/driver changes or deployment.
 The correction passes 848 isolated tests (843 passed/five expected skips),
 52 structural routes, the real-disk A/B autostart comparison and packaged
 Configgen/help/privacy audits. A separate d2194fc candidate is now open on
-MainRig for owner retesting, after safely closing only this chat’s idle preview.
+Garuda for owner retesting, after safely closing only this chat’s idle preview.
 Seven protected image hashes remain unchanged. The owner now confirms that
-Giana Sisters D64 starts and Start + Guide returns to the frontend on MainRig.
+Giana Sisters D64 starts and Start + Guide returns to the frontend on Garuda.
 This accepts that disk/start/exit case only; do not infer other-host or
 all-format gameplay acceptance. See docs/C64_STARTUP.md for candidate/source-kit
 identities. The accepted image remains private; no push/release/deployment.
@@ -118,10 +118,10 @@ Prepare a separate private correction for owner retesting; no publication/push,
 remote deployment or host changes. Restart only this chat's own test frontend
 after verifying no game is active; never terminate unrelated applications.
 The separate correction from fd337ec is now package/source-kit verified and
-opened on MainRig with existing settings; all six protected image hashes remain
+opened on Garuda with existing settings; all six protected image hashes remain
 unchanged. The owner now confirms successful entry and supplies a screenshot
-of the live account overview with per-game progress on MainRig. This accepts
-paste and overview rendering on MainRig only; other hosts and the remaining
+of the live account overview with per-game progress on Garuda. This accepts
+paste and overview rendering on Garuda only; other hosts and the remaining
 restart/Cancel/Reset/key-absent gameplay cases are not inferred. See
 docs/RETROACHIEVEMENTS_USER_KEYS.md. No push/deployment/publication is authorized.
 
@@ -246,9 +246,9 @@ and the prior Gold canonical image/history intact. This completes the explicit
 private build/deploy request, not public publication/push or remote visual
 acceptance. The image's source identity does not move with later docs commits.
 
-## Accepted MainRig test and private replacement authorized (27 October 2026)
+## Accepted Garuda test and private replacement authorized (27 October 2026)
 
-The owner accepted the MainRig shader/None/exit tests, then the corrected Xbox
+The owner accepted the Garuda shader/None/exit tests, then the corrected Xbox
 and PSP starts and the system-specific bezel menu. The owner explicitly requests
 one new PRIVATE AppImage and replacement on all three PCs under their existing
 filenames. This supersedes the earlier no-new-AppImage hold for this private
@@ -259,7 +259,7 @@ manifest/SHA, rollback copies, ownership receipts and unchanged profiles/links.
 Do not kill unrelated emulators or change host drivers/sessions. Remote visual
 acceptance remains deferred to the owner; do not infer it from deployment.
 
-The initial separate MainRig test omitted the existing Xbox EEPROM/HDD and the
+The initial separate Garuda test omitted the existing Xbox EEPROM/HDD and the
 PSP-assets reference. Those were test-profile omissions, repaired using private
 copies/RO asset binds; existing profiles were never reset. System/game menus now
 show matching PNG+INFO pairs, deduplicate exact source aliases and retain one
@@ -270,7 +270,7 @@ for display unless the owner actually changes the choice.
 ## Owner-approved shader package installation (27 October 2026)
 
 The owner subsequently explicitly approved installing libretro-shaders-slang on
-MainRig, EmbercadeLaptop and WohnzimmerPC. This supersedes the earlier no-package
+Garuda, Garuda laptop and CachyOS Handheld. This supersedes the earlier no-package
 installation rule for this one package on these three hosts only. All three now
 have 20260620.024025.g8ec4c82cf61a-1; native transactions completed with zero exit,
 including hooks. The central resolver finds all 26 complete preset/include/texture
@@ -302,7 +302,7 @@ Keep the independent GPL/own-code licensing question separate from resources.
 
 The implementation now passes 801 tests (five expected skips), 52/52 structure
 routes and the credential-free frontend compiler check. All 26 official-package
-shader graphs and real frame-limited effects pass on MainRig, plus 13 regular
+shader graphs and real frame-limited effects pass on Garuda, plus 13 regular
 bezel overlay runs. Both remote hosts were read-only checked after boot and
 initially lacked libretro-shaders-slang; the later approved installation above
 is complete. Existing Gold image hashes are unchanged.
@@ -387,7 +387,7 @@ Keep the tested Gold image, runtime, all host profiles and artwork unchanged.
 
 ## Laptop standalone-decoration dependency (26 October 2026)
 
-The owner authorized diagnosing Xbox/PS2 decorations on EmbercadeLaptop and
+The owner authorized diagnosing Xbox/PS2 decorations on Garuda laptop and
 separately approved installing the confirmed missing python-cairo there. The
 shared renderer failed before drawing with No module named 'cairo', despite
 available gtk-layer-shell/PyGObject/native Cairo. Preserve the accepted private
@@ -398,7 +398,7 @@ KDE/Hyprland/Gamescope routes. Do not infer general NVIDIA compatibility from
 package presence or a KWin snapshot. The visible retest restored artwork but
 revealed a separate 16:10 proportion/cropping limitation, including RetroArch.
 The owner allows a README limitation instead of a risky geometry change and
-requires preserving MainRig/WohnzimmerPC. Do not remove clipping guards, force
+requires preserving Garuda/CachyOS Handheld. Do not remove clipping guards, force
 aspect/FMV options, alter shaders or relabel visible artwork as correct 16:10
 presentation. No geometry fix is implemented. See docs/LAPTOP_STANDALONE_BEZELS.md.
 
@@ -419,7 +419,7 @@ The owner now authorizes targeted RetroAchievements, KDE identity, GameSir
 repairs, isolated tests and ONE new private AppImage candidate. No push,
 publication or release is authorized for this sprint. Preserve the released
 v1.0.0 tag/assets, the original image in verified rollback copies, and user profiles/media.
-The MainRig installation is active again; historical cleanup handoffs below
+The Garuda installation is active again; historical cleanup handoffs below
 must not be applied. Existing GameSir Native Linux drivers/services, controller
 configuration and other hosts' normal profiles are outside the writable scope.
 
@@ -435,10 +435,10 @@ receipt must identify this private mode and reject stale/unlabelled binaries.
 No values or authenticated URLs belong in output, logs, commits or reports.
 
 The owner separately approved installing the verified missing vlc-plugin-ffmpeg
-on MainRig for visual testing. Keep host libVLC and its distro-matched plugins
+on Garuda for visual testing. Keep host libVLC and its distro-matched plugins
 together; add the dynamic decoder/colour-conversion dependency to setup checks.
 The owner has now accepted the real private candidate's Carbon and external-theme
-list/video/icon and game/exit/mouse/notification flows on MainRig. Preserve the
+list/video/icon and game/exit/mouse/notification flows on Garuda. Preserve the
 candidate hash/source identity and record limits; this is no remote-host or
 public-distribution approval. Original videos/gamelists/scraper media remain read-only. A successful decoder
 probe is not itself proof of a rendered theme video or A/V synchronization.
@@ -447,7 +447,7 @@ Record each host/build/session/theme and manual acceptance limit separately.
 ## Three-host private image replacement authorized (25 October 2026)
 
 The owner's later explicit request authorized installing the accepted candidate
-on MainRig, EmbercadeLaptop and WohnzimmerPC under their existing AppImage names.
+on Garuda, Garuda laptop and CachyOS Handheld under their existing AppImage names.
 That deployment is complete; it is not public distribution/push/release approval.
 Five active copies share SHA b77666fcb7a3acc1f1e495633301430386df89f646177082d20d86065a82eca8.
 Menu/Steam targets remain valid; Wohnzimmer's menu now targets its existing
@@ -508,27 +508,27 @@ are read-only.
 
 ## Reddit-demo cleanup handoff
 
-MainRig's owner-authorized final test cleanup completed on 2026-10-10; see
+Garuda's owner-authorized final test cleanup completed on 2026-10-10; see
 `docs/REDDIT_DEMO_CLEANUP.md`. The remaining Embercade config directory contains
-only the protected `WohnzimmerPC` SSH key. Never delete that parent directory
+only the protected `CachyOS Handheld` SSH key. Never delete that parent directory
 as a setup reset. Preserve the final AppImage, checksum/manifest, installation
 material, development SSD, original collections, shared scraper media and backups.
 The existing encrypted ScreenScraper backup was authenticated and recovered only
 in memory; no credentials were restored into the fresh user profile.
 
 The manual xpadneo modprobe setting and live `disable_shift_mode=Y` remain
-unchanged. MainRig is already prepared for Guide + Start; do not count its next
+unchanged. Garuda is already prepared for Guide + Start; do not count its next
 clean user setup as fresh privileged helper apply/undo acceptance. Any driver
 reset still needs separate user confirmation and the safe disconnect/input-device
 removal/reconnect sequence. Preserve independently installed OBS Studio and its
 now-shared `mbedtls3`, FUSE 2 for AppImagePool, development `pugixml`, DOSBox/Boxtron
 and normal desktop dependencies. No recursive orphan cleanup. This handoff ends
 without launching or rebuilding the image, installing emulators, or accessing
-WohnzimmerPC; further installation belongs to the user.
+CachyOS Handheld; further installation belongs to the user.
 
 ## ScreenScraper repair scope (2026-10-25)
 
-The owner's later MainRig setup attempt on 25 October failed during host package
+The owner's later Garuda setup attempt on 25 October failed during host package
 installation. The owner authorized local rollback, explicitly including older
 normal RetroArch/shadPS4 data and excluding network drives. Six freshly checked
 local targets (414 entries, 2,215,167,556 logical bytes) were removed: the new
@@ -542,19 +542,19 @@ collections and network drives. See the new rollback section in PROJECT_STATE;
 do not repeat deletion from historical plans or start setup automatically.
 
 The owner authorized source changes, isolated tests and a new private AppImage
-candidate after the earlier cleanup. Preserve MainRig's prepared normal profile,
+candidate after the earlier cleanup. Preserve Garuda's prepared normal profile,
 its handoff AppImage, system packages, SSH, original media and encrypted backups;
 never re-run setup or update the menu-owned image there. Use disposable XDG
 profiles inside development workspaces. No proxy/service or new user signup.
-The owner subsequently confirmed moving/removing the old MainRig handoff image;
+The owner subsequently confirmed moving/removing the old Garuda handoff image;
 do not restore it automatically. The new candidate copy in the requested laptop
-backup folder is not a MainRig installation/update.
+backup folder is not a Garuda installation/update.
 Do not publish, release or push this work without new explicit approval. The
 earlier perceived host-package installation delay is no longer being pursued;
 keep truthful progress and safe package/result handling. The owner has since
 confirmed working ScreenScraper in the candidate and reported a separate slow
 RetroArch game-start issue on the laptop (Game Boy/SNES/N64, already in dock).
-Investigate that issue without altering MainRig's prepared profile or drivers.
+Investigate that issue without altering Garuda's prepared profile or drivers.
 The owner authorized scoped SSH diagnosis on the laptop with separate test
 profiles. The Qt/KDE desktop browser was confirmed to scan scoped scraper mounts
 for folder icons: 43.135 seconds to the first EGL swap with 920 read-only media
@@ -711,7 +711,7 @@ existing managed importer, embedded identity, SHA-256 reuse/conflict policy,
 resolver and scoped host runner. Never download/link/bundle it or fall back to
 PATH. Direct games use `-g <eboot.bin>`; `-b` opens only its Big Picture UI.
 Keep configuration/saves outside the AppImage and normal host profiles.
-MainRig gameplay evidence does not establish second-host PS4 gameplay.
+Garuda gameplay evidence does not establish second-host PS4 gameplay.
 
 ## Licensing boundary
 
@@ -859,7 +859,7 @@ use the pinned Batocera catalog for system/core mappings and extensions.
 - Readiness must distinguish actual isolated PS3 firmware from an importable
   host source and prioritize effective pinned/user collection routes. Setup
   availability is not per-host gameplay READY. On 2026-10-10 the owner confirmed
-  ScreenScraper works in the new MainRig AppImage after identifying a user-side
+  ScreenScraper works in the new Garuda AppImage after identifying a user-side
   issue; the earlier personal-authentication failure is historical. Record this
   as user-confirmed operation, without inventing new automated, media-specific
   or second-host tests. The owner's 2026-10-25 instruction authorizes the existing build-time application

@@ -71,8 +71,8 @@ existing login independently.
 
 ## Tested systems and known limits
 
-The owner accepted the functional build on Garuda KDE MainRig, the NVIDIA
-Garuda KDE laptop, and CachyOS/Gamescope WohnzimmerPC. This establishes those
+The functional build was accepted on Garuda KDE/Wayland and CachyOS Handheld
+Edition with Steam/Gamescope. This establishes those
 reported test environments, not every Linux distribution, GPU or game.
 
 **The laptop's known 16:10 bezel cropping/proportion issue remains.** It affects
@@ -108,7 +108,7 @@ routing, original texts and rebuild/replacement instructions are included.
 
 The AppImage and its complete corresponding source archive remain the verified
 candidate built from [`cb00b093`](https://github.com/RetroGamerGER/Embercade/tree/cb00b093ff0e87d2462ee060bb4b7717afda43dc).
-The release tag also includes the final publication-documentation update;
+The release tag also includes the final publication text and documentation updates;
 no runtime, emulator, shader, bezel or installer behavior changed after the
 recorded 849 passing tests (five expected opt-in skips). The source bundle
 contains the exact clean build source; BUILD_INFO records the separate

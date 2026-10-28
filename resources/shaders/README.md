@@ -18,7 +18,7 @@ Shaders stay **OFF** in fresh profiles (`global.shaderset=none`). Vulkan prefere
 where supported does not enable a shader.
 
 NewPixie and all 26 selected package presets passed complete dependency checks
-and real frame-limited compilation/execution on MainRig. This does not establish
+and real frame-limited compilation/execution on Garuda. This does not establish
 appearance, performance or compatibility on every host. See the integration
 [report and manual matrix](../../docs/RETROBAT_AND_HOST_SHADERS.md).
 

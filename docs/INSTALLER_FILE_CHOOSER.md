@@ -85,7 +85,7 @@ Local automation/build evidence is under
 
 ### Actual AppImage and visual KDE evidence — 2026-10-10
 
-The built AppImage was launched on MainRig's Garuda KDE Plasma Wayland session
+The built AppImage was launched on Garuda's Garuda KDE Plasma Wayland session
 with disposable HOME/XDG profiles, separately for English and German. Only the
 isolated installer language was seeded. No installation action was performed.
 The wizard was advanced from Welcome to the paths page through its actual UI.

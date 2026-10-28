@@ -44,12 +44,12 @@ save scraped media in the designated folders within your game collection.
 
 Embercade is developed and tested on **x86-64 Linux**:
 
-- **Garuda Linux, KDE Plasma / Wayland** — the current MainRig desktop setup.
-- **CachyOS Handheld Edition, Steam / Gamescope** — the living-room setup.
+- **Garuda Linux, KDE Plasma / Wayland**.
+- **CachyOS Handheld Edition, Steam / Gamescope**.
 
-The owner also accepted the **Garuda KDE laptop with an NVIDIA RTX 4080**,
-with the known 16:10 bezel limitation below. These results cover the listed
-setups, not every GPU or Linux distribution.
+The listed environments have been tested. The known 16:10 bezel limitation
+below remains; these results do not establish support for every GPU or Linux
+distribution.
 
 **The current installer supports Arch Linux, CachyOS and Garuda only.** It uses
 `pacman` for automatic host-software installation. Other distributions are not
@@ -140,8 +140,7 @@ The full Libretro shader collection comes from the optional official
 off until selected. Only Carbon is bundled; downloaded themes retain their
 own terms. See [resources and coverage](docs/RETROBAT_AND_HOST_SHADERS.md).
 
-The functional build has been accepted by the owner on MainRig,
-EmbercadeLaptop and WohnzimmerPC. The known laptop 16:10 bezel cropping/proportion
+The functional build has been accepted on Garuda and CachyOS Handheld. The known laptop 16:10 bezel cropping/proportion
 issue remains; see [acceptance and limitations](docs/PRIVATE_DEPLOYMENT_2026_10_28.md#owner-acceptance--28-october-2026).
 [Release notes](docs/PUBLIC_RELEASE_1_0.md) describe the downloads, requirements
 and known limits. The complete matching source and notice archive is supplied

@@ -431,7 +431,7 @@ its 33 symlink OIDs are link-text hashes, not final image/layout hashes.
 matrix: 302 paths, 187 resolved content blobs, 144 overwritten paths and
 separate winner/terminal histories. The surviving unglazed Amiga aliases
 resolve to later standalone-night targets after the layers merge. Reference,
-stage and MainRig installed content/link identity is verified.
+stage and Garuda installed content/link identity is verified.
 The recipe and pinned root README supply install/customization information,
 not a redistribution license. No root/subdirectory LICENSE/COPYING was found
 at that bezel pin. Batocera's parent code COPYING is not proof that independent
@@ -697,7 +697,7 @@ to their own scope review. Registry-list tests in `test_ui_data.py` and
 gates include schema/version/error/malformed-output tests; existing isolation,
 timeout, controller, None/fallback, geometry/workspace/cleanup, source and
 installed execution tests; descriptor comparisons; all smokes/Stage/Doctor;
-and real MainRig/Gamescope acceptance if runtime is actually refactored.
+and real Garuda/Gamescope acceptance if runtime is actually refactored.
 No test or payload has been moved now.
 
 ### Maintainability and future review guardrails

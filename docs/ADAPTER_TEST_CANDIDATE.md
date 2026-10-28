@@ -86,20 +86,20 @@ receipts. Logs contain no secret values.
 
 ## Protected baseline and manual handoff
 
-Four canonical/MainRig-installed image hashes match their pre-work records.
+Four canonical/Garuda-installed image hashes match their pre-work records.
 The Gold artifact remains
 `b77666fcb7a3acc1f1e495633301430386df89f646177082d20d86065a82eca8`;
-the accepted RetroBat/shader artifact and active MainRig copies remain
+the accepted RetroBat/shader artifact and active Garuda copies remain
 `938df3ab6a33de069baab4b8f9dfac876693a9efaa40f4b952d0519c916027d5`.
 The prior build Stage was parked for each guarded build and restored with the
 same manifest SHA. Neither remote PC was accessed or changed. No package,
 driver, normal profile, firmware/EEPROM, ROM/media or shortcut was modified.
 
-For MainRig acceptance, close the existing frontend and manually open the new
+For Garuda acceptance, close the existing frontend and manually open the new
 file above. It uses the usual existing settings; it does not reset setup.
 Check global/system/per-game options and priority, one RetroArch and standalone
 start, decorations and Start + Guide return with normal mouse behavior. The
-owner repeats the relevant visible checks on Laptop and Wohnzimmer-PC. These
+owner repeats the relevant visible checks on Laptop and CachyOS Handheld. These
 manual results have not been claimed by the automated backend/package tests.
 The installed shortcuts still point to the previous image for ordinary use.
 

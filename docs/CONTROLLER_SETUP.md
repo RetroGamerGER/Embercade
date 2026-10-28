@@ -8,7 +8,7 @@ No emulator profile, ROM, firmware or controller mapping is reset.
 
 ## Observed problem and recovery
 
-On MainRig/Garuda KDE, the owner's GuliKit NS39 used Bluetooth through xpadneo
+On Garuda/Garuda KDE, the owner's GuliKit NS39 used Bluetooth through xpadneo
 0.10.4. The selected Guide + Start preset, SDL mapping and RetroArch hotkey
 numbers were consistent, but xpadneo's enabled Guide shift mode withheld the
 normal held Guide signal. Guide + Select also toggled the driver's mouse mode.
@@ -58,7 +58,7 @@ It installs neither packages nor drivers.
 The receipt is `/var/lib/embercade/controller-compat/xpadneo.json`. Undo checks
 exact file contents and ownership, follows the same disconnect-before-change
 sequence, restores the prior live setting, and removes only its own files.
-Foreign settings, including the earlier manual MainRig adjustment, are neither
+Foreign settings, including the earlier manual Garuda adjustment, are neither
 adopted nor silently overwritten. A partially completed transaction retains an
 ownership record for recovery. Authentication cancellation and reconnect
 failure never become an unqualified success message.
@@ -105,7 +105,7 @@ status, no driver calls and no saved user configuration. Evidence is under
 `.work/controller-setup-xtv3fteh/`. Automated helper tests use synthetic
 filesystems and Bluetooth responses; they never alter the actual host driver.
 
-Owner-confirmed interactive acceptance on MainRig (10 October 2026): the new
+Owner-confirmed interactive acceptance on Garuda (10 October 2026): the new
 AppImage was opened with the existing setup, Start + Guide passed its installer
 live test, and the physical mouse continued to work normally. The host already
 had the earlier manual driver adjustment. This confirms the actual installer
@@ -115,5 +115,5 @@ was performed during this session.
 
 Fresh install/undo with real administrator authentication, interrupted Bluetooth
 reconnection, multiple xpadneo pads and live Gamescope/Hyprland interaction
-remain separate manual acceptance cases. Existing manual MainRig success must
+remain separate manual acceptance cases. Existing manual Garuda success must
 not be presented as those additional tests.

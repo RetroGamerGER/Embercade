@@ -126,7 +126,7 @@ this is an integrity pin, not a Git commit or license.
 All matrix paths have the installed/staged prefix
 `share/embercade/resources/batocera/datainit/decorations/consoles/`.
 The audit compares the existing `.work/stage`, captured reference bundle and
-MainRig user installation; production does not read this audit cache.
+Garuda user installation; production does not read this audit cache.
 
 | Measurement | Verified result |
 | --- | ---: |
@@ -364,7 +364,7 @@ or approval is concluded.
 ## Watermark findings and limitations
 
 All 302 file contents and 33 link texts are unchanged from the verified
-recipe result in reference, stage and installed MainRig. Thus any watermark
+recipe result in reference, stage and installed Garuda. Thus any watermark
 already embedded in that payload survives the **transport** unchanged.
 
 Existing PS2 standalone day/night and nocurve day/night variants retain the

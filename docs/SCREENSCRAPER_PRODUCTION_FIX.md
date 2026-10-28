@@ -1,8 +1,8 @@
 # First-install and ScreenScraper production-build repair
 
 Date: 25 October 2026. This is local development and private artifact validation;
-no publication, release, push, MainRig installation or WohnzimmerPC change is
-authorized by this work. The prepared MainRig handoff image/profile is preserved.
+no publication, release, push, Garuda installation or CachyOS Handheld change is
+authorized by this work. The prepared Garuda handoff image/profile is preserved.
 
 ## Confirmed cause
 
@@ -117,7 +117,7 @@ build inputs, encoding, missing configuration, stale binary/production guards,
 private account/namespace/transport regressions and safe errors. All 52 pinned
 structural routes passed using the owner's relocated core source read-only.
 Runtime, frontend-library and shader smoke checks passed. No test game or
-package-manager install ran on MainRig.
+package-manager install ran on Garuda.
 
 One sparse, real developer-only `ssinfraInfos.php` request returned HTTP 200
 and the expected authenticated infrastructure response with software identity
@@ -130,7 +130,7 @@ available medium, frontend display and restart persistence in the same fresh
 image remain the explicit Garuda-laptop manual acceptance. The user enters the
 personal account in the frontend only. No developer file/environment/build
 source fallback may be accessible in that test. New candidate success is not
-inferred from historical MainRig/two-host scraper confirmations.
+inferred from historical Garuda/two-host scraper confirmations.
 
 ## Verified private artifact and laptop copy
 
@@ -168,12 +168,12 @@ overwritten. That CIFS share presents files without executable permission;
 the user must copy the image locally on the laptop and mark it executable in
 file properties. No mount policy was changed to bypass that limitation.
 
-MainRig's normal Embercade roots and package list remain unchanged; its only
+Garuda's normal Embercade roots and package list remain unchanged; its only
 normal config entry remains the protected SSH key. The encrypted backup's hash
 and modification time are unchanged. The previous demo image disappeared from
 its old path during work; the owner explicitly confirmed moving/removing it.
 It was not restored/replaced by the agent. No original collections, scraper
-media or WohnzimmerPC were modified. No public release or push occurred.
+media or CachyOS Handheld were modified. No public release or push occurred.
 
 Local evidence is under `.work/screenscraper-production-2026-10-25-m66s8hcd/`:
 full/packaged test logs, Stage/module/safety proofs, the two API proofs,

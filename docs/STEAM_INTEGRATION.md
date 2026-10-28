@@ -134,14 +134,14 @@ dry run, optional setup failures, CLI confirmation and activation rollback.
 Current 1.0 verification: the full repository suite passes 578 tests, and the
 runtime, frontend-library, shader and Stage Doctor smokes pass. Tests include
 classic/AppImage switching with retained appid, legacy-name migration and
-stable image-path registration. MainRig has confirmed the private image's
+stable image-path registration. Garuda has confirmed the private image's
 startup/menu, active external theme, ScreenScraper, Libretro and Xemu 4:3
 bezel/exit. The owner has also confirmed the complete requested image E2E in
-the WohnzimmerPC's real interactive Steam/Gamescope session. A subsequently
+the CachyOS Handheld's real interactive Steam/Gamescope session. A subsequently
 requested cosmetic change removes only the extra splash version line;
 menu/footer, information, wizard, window title and Steam name retain
-`EMBERCADE 1.0`. MainRig visibly confirmed the caption-free splash, and the
-matching WohnzimmerPC update passed Doctor/status 0 and preservation checks
+`EMBERCADE 1.0`. Garuda visibly confirmed the caption-free splash, and the
+matching CachyOS Handheld update passed Doctor/status 0 and preservation checks
 without another visible run at the owner's request. The previously completed
 interactive E2E remains distinct from that diagnostic update check.
 Packaging reproducibility and the supported-host private functional GO are recorded in
@@ -157,7 +157,7 @@ Doctor, shader smoke and `git diff --check` also passed. A read-only check of th
 captured second-host VDF preserved the existing Embercade ID and all eight
 foreign entries byte for byte.
 
-Fresh automatic registration was accepted on MainRig and WohnzimmerPC. Both
+Fresh automatic registration was accepted on Garuda and CachyOS Handheld. Both
 installed payloads were hash-verified against the same stage built from
 `9ebdca3`; the second host uses the normal offline installer and manifest
 verification, not a Git checkout. Its normal update preserved persistent

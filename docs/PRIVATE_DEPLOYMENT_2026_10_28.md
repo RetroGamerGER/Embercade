@@ -5,7 +5,7 @@ reference PCs under their existing filenames, retaining links and settings.
 The remaining manual tests belong to the owner. This authorizes private file
 replacement only; no push, public release, tag or visibility change occurred.
 
-The deployed file is the already-built and MainRig-tested C64 correction
+The deployed file is the already-built and Garuda-tested C64 correction
 candidate. No new build or runtime/source change was needed for deployment.
 
 - Canonical image: `dist/private-c64-start-2026-10-28/Embercade-1.0-C64-Start-Test-x86_64.AppImage`.
@@ -19,11 +19,11 @@ candidate. No new build or runtime/source change was needed for deployment.
 
 | Host | Existing filename/path retained |
 | --- | --- |
-| MainRig | `~/AppImage/Embercade-1.0-Release Candidate-x86_64.AppImage` |
-| MainRig | `~/.local/share/embercade/application/Embercade.AppImage` |
-| EmbercadeLaptop | `~/AppImages/Embercade-1.0-AutoGraphics-x86_64.AppImage` |
-| EmbercadeLaptop | `~/.local/share/embercade/application/Embercade.AppImage` |
-| WohnzimmerPC | `~/Applications/Embercade/Embercade-1.0-x86_64.AppImage` |
+| Garuda | `~/AppImage/Embercade-1.0-Release Candidate-x86_64.AppImage` |
+| Garuda | `~/.local/share/embercade/application/Embercade.AppImage` |
+| Garuda laptop | `~/AppImages/Embercade-1.0-AutoGraphics-x86_64.AppImage` |
+| Garuda laptop | `~/.local/share/embercade/application/Embercade.AppImage` |
+| CachyOS Handheld | `~/Applications/Embercade/Embercade-1.0-x86_64.AppImage` |
 
 All five active copies have the SHA above. Matching manifest/checksum sidecars
 use each retained filename; applicable image-ownership hashes are updated.
@@ -56,14 +56,14 @@ unchanged. No user profile, firmware, EEPROM, save, ROM/BIOS/media collection,
 driver or package was reset or installed. No interactive frontend/game or
 remote display session was stopped or started for this replacement.
 
-The personal RA Web API file already existed on MainRig and is preserved.
+The personal RA Web API file already existed on Garuda and is preserved.
 It was absent on the laptop and living-room PC. No credential/config file was
 copied between machines. The owner can enter the personal key in the existing
 optional settings field on each of those PCs for frontend views; normal
 emulator login remains available independently.
 
 This is deployment/hash/CLI verification, not new visual/gameplay acceptance
-on the remote hosts. MainRig's previous personal-key/paste/progress and Giana
+on the remote hosts. Garuda's previous personal-key/paste/progress and Giana
 Sisters startup/Start + Guide acceptance remain documented separately. That
 deployment-time pending status is superseded by the owner acceptance below;
 specific unreported checklist actions are not invented from the broad result.
@@ -79,9 +79,9 @@ systems and reports that everything works perfectly except for the known
 
 | Host | Owner result | Remaining known limitation |
 | --- | --- | --- |
-| MainRig | Accepted | None reported in this acceptance |
-| EmbercadeLaptop | Accepted with known limitation | 16:10 bezel cropping/proportions |
-| WohnzimmerPC | Accepted | None reported in this acceptance |
+| Garuda | Accepted | None reported in this acceptance |
+| Garuda laptop | Accepted with known limitation | 16:10 bezel cropping/proportions |
+| CachyOS Handheld | Accepted | None reported in this acceptance |
 
 This closes overall three-host functional acceptance for the artifact identified
 above. It does not assert every possible title/format or independently enumerate

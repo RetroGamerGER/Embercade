@@ -35,7 +35,7 @@ HTTPS requests, suppressing unsafe error/URL logging and process dumps, and
 restricting personal-account settings-file permissions. Debug credentials are
 separately parsed, never transmitted in the normal path. All three inputs are
 part of the disposable source identity. See `docs/SCREENSCRAPER.md`; real
-MainRig and interactive second-host Steam/Gamescope acceptance pass.
+Garuda and interactive second-host Steam/Gamescope acceptance pass.
 
 `0005-embercade-launch-notices.patch` consumes only whitelisted, bounded shader
 notice codes from the external state path, clears stale notices before launch,

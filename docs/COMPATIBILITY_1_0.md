@@ -24,13 +24,13 @@ is unproven, and the independent public-release licensing gate remains BLOCKED.
 
 ## C64 disk startup
 
-The historical visible C64 acceptance covered T64 content. A later MainRig D64
+The historical visible C64 acceptance covered T64 content. A later Garuda D64
 failure was traced to forced optional JiffyDOS with missing external ROMs,
 although media attachment was correct. The C64 desktop default now uses the
 embedded stock ROMs; explicit choices and other formats keep their existing
 paths. The actual Giana Sisters disk passes unattended loading/autostart in an
 isolated comparison. The owner subsequently confirms that Giana Sisters D64
-starts on MainRig and Start + Guide returns to the frontend in the new private
+starts on Garuda and Start + Guide returns to the frontend in the new private
 candidate. See [C64_STARTUP.md](C64_STARTUP.md); this accepts that visible
 start/exit case without promoting every C64 format or host to a new gameplay
 result.
@@ -47,11 +47,11 @@ result.
 | BIOS directory | Configured read-only BIOS root, not a new `3do/` subfolder |
 | Controller/exit | Existing dynamic Player 1 mapping and configured exit chord |
 | Graphics | Existing curated shaders and RetroArch console-overlay generation |
-| MainRig | Two CUE games visibly accepted, with normal exit/return and frontend quit |
-| WohnzimmerPC | CUE game accepted from interactive Steam/Gamescope, with normal exit/return and frontend quit |
+| Garuda | Two CUE games visibly accepted, with normal exit/return and frontend quit |
+| CachyOS Handheld | CUE game accepted from interactive Steam/Gamescope, with normal exit/return and frontend quit |
 | Result | **READY**, visibly validated on both reference hosts |
 
-The targeted read-only MainRig collection audit found 673 CUEs and 673 BINs,
+The targeted read-only Garuda collection audit found 673 CUEs and 673 BINs,
 with no missing track references, unreferenced BINs or CUEs without a FILE
 entry. These are collection counts, not 673 successful game tests. Two
 explicit CUE dry runs resolve the existing managed `opera_libretro.so`,
@@ -62,7 +62,7 @@ configuration/saves/cache. No new emulator or core is installed or distributed.
 
 Pinned Batocera `9d2f7fc7d2436ba3bdccf64c8009dd73fa291f48` provides the
 Opera system/core metadata and Configgen options. Its BIOS checker lists
-`panafz1.bin`, `panafz10.bin` and `goldstar.bin`; the MainRig currently has all
+`panafz1.bin`, `panafz10.bin` and `goldstar.bin`; the Garuda currently has all
 three with matching upstream MD5s. Opera requires one supported system BIOS,
 not all three. The shared read-only Doctor/launch/dry-run check reuses the
 BIOS inventory evaluator and accepts a checksum-verified BIOS at its exact
@@ -95,11 +95,11 @@ external-source immutability. A real pinned launcher/Configgen dry-run test
 also verifies Opera options, console-overlay generation and the staged shader
 chain without executing RetroArch. Runtime, frontend-library and shader
 smokes (14 presets/142 dependency files), Production Stage, offline bundle,
-staged/installed Doctor and `git diff --check` pass. MainRig's normal update
+staged/installed Doctor and `git diff --check` pass. Garuda's normal update
 preserves the inventoried config, saves, themes, cores/providers, PPSSPP
 resources, Steam artwork and normal host emulator profiles.
 
-### Visible MainRig acceptance
+### Visible Garuda acceptance
 
 The user confirms the 3DO system is visible without separate BIN entries and
 two CUE games work with image, sound, controller input, `consoles` decoration,
@@ -110,7 +110,7 @@ overlay path in isolated Embercade config. Both launcher runs end with status
 to the desktop, leaving no frontend or RetroArch process. This E2E evidence,
 not the dry runs, permits adding `3do` to the compatibility ledger.
 
-### Visible WohnzimmerPC acceptance and update preservation
+### Visible CachyOS Handheld acceptance and update preservation
 
 The normal offline installer updates the second host without purge. Its
 existing read-only host Opera core is found by the same resolver's fallback
@@ -158,10 +158,10 @@ not resolve the existing third-party asset licensing/public-release blocker.
 | Command | Resolved AppImage `-g <eboot.bin> --fullscreen true`; `-b` opens the browser only |
 | State | Embercade-owned config/input/saves/addons/cache/logs; normal host profile untouched |
 | Input / exit | Existing dynamic SDL selection and launch-scoped central configured exit bridge |
-| MainRig | Actual gameplay, audio, controller, Guide+Start, exit 0, same frontend and normal quit: **READY** |
-| WohnzimmerPC | Actual Steam/Gamescope gameplay/audio/controller, Select+Start, exit 0 and same frontend: **READY** |
+| Garuda | Actual gameplay, audio, controller, Guide+Start, exit 0, same frontend and normal quit: **READY** |
+| CachyOS Handheld | Actual Steam/Gamescope gameplay/audio/controller, Select+Start, exit 0 and same frontend: **READY** |
 
-The MainRig tested user-provided v0.19.0, revision
+The Garuda tested user-provided v0.19.0, revision
 `c7e065d1b415be16c23e260a21f1dd8bbfc4cb57`, with its existing game and host
 RADV/Wayland GPU stack. External AppImage/game and host-profile fingerprints
 remain unchanged. No automatic 60-FPS/4K setup or patch is invented; existing
@@ -175,7 +175,7 @@ via SSH, separately from the Embercade payload. Its installed copy passes the
 same identity and host-runtime checks. Separate real interactive second-host
 acceptance confirms Bloodborne gameplay, image/audio/controller and
 Select+Start, launcher status 0 and return to the same frontend. No provider
-process or AppImage mount remains. MainRig evidence was not substituted for
+process or AppImage mount remains. Garuda evidence was not substituted for
 this Gamescope test. The existing Xenia/Steam-return regression also passes.
 The shared ledger records this tested route, not universal title performance.
 
@@ -190,7 +190,7 @@ scope changes.
 
 ## Wii native controllers (1.0)
 
-MainRig **READY** is supported by user-confirmed Super Mario Galaxy gameplay:
+Garuda **READY** is supported by user-confirmed Super Mario Galaxy gameplay:
 image/audio, RVL-003 buttons, Nunchuk stick/C/Z, IR, motion, rumble, wireless
 reconnect inside Dolphin and the frontend, and Guide+Start return to the same
 frontend. Hardware is Mayflash DolphinBar mode 4 / `057e:0306`, player 1.
@@ -199,7 +199,7 @@ emulation or forced Real. Native Dolphin owns extensions and scanning;
 GameCube F-Zero GX launch/control/exit regression passes.
 
 The same hardware is independently accepted in Super Mario Galaxy from the
-WohnzimmerPC's real interactive Steam/Gamescope session: image/audio, real
+CachyOS Handheld's real interactive Steam/Gamescope session: image/audio, real
 buttons, Nunchuk, IR, motion, rumble, wireless reconnect in Dolphin/the frontend,
 relaunch and Select+Start return. Native Source 2, continuous scanning, the
 receiver HID handle and launcher status 0 are verified. The tested standalone
@@ -209,14 +209,14 @@ MotionPlus, direct Bluetooth/passthrough and multiple remotes are
 **UNVALIDATED**. Receiver USB unplug/replug requires restarting the frontend;
 wireless reconnect is a separate, accepted case. Doctor does not require Wii
 hardware. Dolphin Libretro is a separate unimplemented desktop path: its
-present MainRig core is not handed to Configgen and that selection aborts
+present Garuda core is not handed to Configgen and that selection aborts
 with `MissingCore` before RetroArch starts. No Libretro READY is inferred.
 See [WII_CONTROLLERS.md](WII_CONTROLLERS.md) for scope, isolation and sources.
 
 ## Two-player gamepads (1.0)
 
 The 1.0 input route retains EmulationStation's player preferences and Batocera
-Configgen. MainRig/Hyprland visibly validates Xbox 360 USB-receiver Player 1
+Configgen. Garuda/Hyprland visibly validates Xbox 360 USB-receiver Player 1
 and Xbox Series Bluetooth Player 2 in NES Contra: independent D-pads and face
 buttons, live reconnect of either player without losing the other's input,
 P1-only exit and return to the same frontend. GameCube Mario Kart: Double
@@ -228,16 +228,16 @@ GameCube face-button rotation option. These are tested titles and devices,
 not a blanket multiplayer claim for every core or emulator.
 
 The same live translation now applies to Dolphin's Player-1 exit binding.
-On MainRig, an Xbox Bluetooth Player-1 GameCube launch generated matching
+On Garuda, an Xbox Bluetooth Player-1 GameCube launch generated matching
 `Hotkeys.ini` and `GCPadNew.ini` evdev button slots, and Guide+Start returned
 to the same frontend. This fixes the case where gameplay worked but the
 Bluetooth pad's exit chord did not.
 
-The WohnzimmerPC independently passed the same two titles from its real
+The CachyOS Handheld independently passed the same two titles from its real
 Steam/Gamescope session with a generic USB Xbox-style P1 pad and an Xbox Series
 Bluetooth P2 pad. Contra retained both players after P2 live reconnect; both
 Mario Kart drivers had independent, matching controls. P1 exited each title
-back to the same frontend. The second host's offline payload and the MainRig
+back to the same frontend. The second host's offline payload and the Garuda
 installation have the same verified Stage manifest, and installed Doctor
 passes on both. PCSX2 and Xenia single-player launch/input/exit regressions
 also pass there. This does not establish P1 live reconnect on the second host.
@@ -310,7 +310,7 @@ autoload glob. Staging preserves all existing theme/shader/decoration assets,
 ships the complete metadata and rejects stale generator-proof source digests.
 Production does not depend on development `.work` paths or host shader packs.
 
-This MainRig snapshot has no missing mandatory BIOS for PREPARED systems.
+This Garuda snapshot has no missing mandatory BIOS for PREPARED systems.
 The pinned checker currently reports missing requirements for the blocked
 coco, dragon64, gp32, mc10, namco2x6, supracan and triforce routes.
 NONE_DECLARED is absence of a matching pinned requirement, not a guarantee
@@ -319,7 +319,7 @@ not change the identical-payload requirement for the reference hosts.
 
 The pre-PS4 reference-host comparison matched every system's status/reason,
 effective emulator/core, BIOS status, extensions and structural proof, not
-just the totals. MainRig and real interactive Steam/Gamescope acceptance both
+just the totals. Garuda and real interactive Steam/Gamescope acceptance both
 pass the existing NES, 3DO, PCSX2 and Xenia regressions (image/audio/controller,
 configured exit and frontend return). Quit Embercade returns cleanly to the
 desktop/Steam. No new PREPARED system acquires READY from those regressions.

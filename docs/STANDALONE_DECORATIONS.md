@@ -53,11 +53,11 @@ Stretch or unknown settings omit the overlay. `Decoration=None` remains an
 explicit opt-out for either Dolphin system. The layer is input-transparent and
 does not move the game window or transform Wii pointer coordinates.
 
-The MainRig's missing Xemu frame in the pre-AppImage check was not a missing
+The Garuda's missing Xemu frame in the pre-AppImage check was not a missing
 asset or Hyprland failure. Its preserved Xemu aspect setting was Auto, whereas
-the WohnzimmerPC had an explicit 4x3 selection. Auto correctly reserves a
+the CachyOS Handheld had an explicit 4x3 selection. Auto correctly reserves a
 possible 16:9 Xemu game area and leaves no safe side strip on a 16:9 monitor.
-Selecting 4x3 on the MainRig restored the existing frame in the normal
+Selecting 4x3 on the Garuda restored the existing frame in the normal
 Hyprland path. Embercade does not silently change this user choice.
 
 ## Compositor backends
@@ -163,7 +163,7 @@ prototype as an automatic fallback.
 
 ## Acceptance
 
-MainRig live prototypes for both PCSX2 and Xemu were user-confirmed: correct
+Garuda live prototypes for both PCSX2 and Xemu were user-confirmed: correct
 4:3 proportions, workspace binding, input/audio and frame removal on exit.
 On 2026-09-27 PCSX2's integrated fresh production start in Gamescope on the
 second host's 4K TV was visually confirmed after correcting the external
@@ -184,9 +184,9 @@ integrated Hyprland retesting had not been repeated beyond the accepted live
 prototypes; the later extension adds the targeted checks below.
 
 The GameCube/Wii extension has separate current production acceptance. On
-MainRig/Hyprland, the user confirmed the 4:3 GameCube frame around Mario Kart:
+Garuda/Hyprland, the user confirmed the 4:3 GameCube frame around Mario Kart:
 Double Dash!!, the Wii frame with gamepad input and normal exit, and the Xemu
-frame after explicitly selecting 4:3. On WohnzimmerPC, the user confirmed
+frame after explicitly selecting 4:3. On CachyOS Handheld, the user confirmed
 Xemu, GameCube and Wii frames from real Steam/Gamescope, including the Wii
 DolphinBar/Nunchuk/IR-pointer game and Select+Start return. All frames disappear
 with their emulator; Quit Embercade returns to Steam. The current 542-test suite,

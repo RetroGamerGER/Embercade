@@ -111,7 +111,7 @@ confirm private permissions, Developer-file read-only mounting and personal
 account writes. The Production Stage and offline bundle have the same manifest
 on both reference hosts (`e827135bf082…`).
 
-On MainRig/Hyprland and WohnzimmerPC/Steam-Gamescope, the existing personal
+On Garuda/Hyprland and CachyOS Handheld/Steam-Gamescope, the existing personal
 account was migrated locally to the private file with mode `0600`; the old ES
 settings fields were removed only after the new file existed. The Developer
 file and directory retained modes `0600` and `0700`. Real single-title

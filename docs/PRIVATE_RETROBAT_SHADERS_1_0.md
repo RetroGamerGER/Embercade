@@ -1,6 +1,6 @@
 # Private RetroBat / shader candidate — 27 October 2026
 
-The owner accepted MainRig's shader/None/exit tests, then the corrected Xbox/PSP
+The owner accepted Garuda's shader/None/exit tests, then the corrected Xbox/PSP
 starts and per-system bezel menu, and explicitly requested building and replacing
 the image on all three owner PCs. This lifts the earlier build hold for this
 private candidate. No push, public release, tag or visibility change occurred.
@@ -43,7 +43,7 @@ Details, exact 11 missing dedicated variants and original pins are in the
   entries and Steam shortcut files/routes match their predeployment hashes.
   No firmware, EEPROM, saves, original ROM/media, driver or session was reset.
 
-The isolated MainRig test initially omitted the existing Xbox EEPROM/HDD and PSP
+The isolated Garuda test initially omitted the existing Xbox EEPROM/HDD and PSP
 assets reference. Private copies/read-only binds fixed those test inputs; the
 owner confirmed actual starts. These were not missing data in the normal setup.
 Per-system/game menus now show actual matching image/layout resources and merge
@@ -59,11 +59,11 @@ were updated atomically with verified backups.
 
 | Host | Existing path retained | Copies |
 | --- | --- | ---: |
-| MainRig | `~/AppImage/Embercade-1.0-Release Candidate-x86_64.AppImage` | 1 |
-| MainRig | `~/.local/share/embercade/application/Embercade.AppImage` | 1 |
-| EmbercadeLaptop | `~/AppImages/Embercade-1.0-AutoGraphics-x86_64.AppImage` | 1 |
-| EmbercadeLaptop | `~/.local/share/embercade/application/Embercade.AppImage` | 1 |
-| WohnzimmerPC | `~/Applications/Embercade/Embercade-1.0-x86_64.AppImage` | 1 |
+| Garuda | `~/AppImage/Embercade-1.0-Release Candidate-x86_64.AppImage` | 1 |
+| Garuda | `~/.local/share/embercade/application/Embercade.AppImage` | 1 |
+| Garuda laptop | `~/AppImages/Embercade-1.0-AutoGraphics-x86_64.AppImage` | 1 |
+| Garuda laptop | `~/.local/share/embercade/application/Embercade.AppImage` | 1 |
+| CachyOS Handheld | `~/Applications/Embercade/Embercade-1.0-x86_64.AppImage` | 1 |
 
 No emulator/frontend was active at the guarded exchange. Unrelated applications
 were not stopped. The older Wohnzimmer pre-polish image was not a target.
@@ -82,7 +82,7 @@ The prior Gold image SHA remains
 `b77666fcb7a3acc1f1e495633301430386df89f646177082d20d86065a82eca8`.
 The canonical old private artifact and its Git/source history remain available.
 
-MainRig's manual functional acceptance preceded packaging. Final package tests
+Garuda's manual functional acceptance preceded packaging. Final package tests
 above are recorded separately. Laptop/Gamescope visible gameplay, aspect/overlay
 checks and controller return remain for the owner in the coming days. The known
 laptop 16:10 limitation is unchanged. No new three-host visual acceptance,

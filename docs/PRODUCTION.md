@@ -34,16 +34,16 @@ It wraps this verified Stage unchanged under `AppDir/usr`, delegates through
 the existing launcher and keeps all mutable state external. The only bundled
 theme is Carbon (`themes/es-theme-carbon`); downloaded themes and active
 selection remain user XDG state. The full suite passes 578 tests, and runtime,
-frontend-library, shader and Stage Doctor smokes pass. MainRig has confirmed
+frontend-library, shader and Stage Doctor smokes pass. Garuda has confirmed
 the image's startup/menu, active external theme, ScreenScraper, Libretro and
 Xemu 4:3 bezel/exit. The owner has also confirmed the complete requested image
-E2E in the WohnzimmerPC's real interactive Steam/Gamescope session. The later
+E2E in the CachyOS Handheld's real interactive Steam/Gamescope session. The later
 requested removal of an extra splash version line is confirmed visibly on
-MainRig. The matching WohnzimmerPC update passes Doctor with status 0 and
+Garuda. The matching CachyOS Handheld update passes Doctor with status 0 and
 preservation checks, without another visible run at the owner's request.
-The final updates preserve 16,161 MainRig entries with zero changes/additions
-and 198,109 WohnzimmerPC entries with zero unexpected changes/additions;
-only the owned install manifest is excluded. The classic MainRig game/exit/quit
+The final updates preserve 16,161 Garuda entries with zero changes/additions
+and 198,109 CachyOS Handheld entries with zero unexpected changes/additions;
+only the owned install manifest is excluded. The classic Garuda game/exit/quit
 regression also passes. Two fresh full packaging builds with identical Stage,
 packaging inputs, source identity and epoch produce byte-identical images and
 manifests. Private functional GO applies to the two tested AMD/CachyOS reference
@@ -165,8 +165,8 @@ private. The delegated transient service uses `KillMode=mixed`, allowing its
 host runner to stop its own process group and unmount only AppImage mounts
 created by that launch before the service exits. Select+Start has been
 validated with launcher status 0, no remaining Xenia process or AppImage
-mount, and return to the same frontend process on MainRig/Hyprland and the
-WohnzimmerPC's real Steam/Gamescope session.
+mount, and return to the same frontend process on Garuda/Hyprland and the
+CachyOS Handheld's real Steam/Gamescope session.
 
 ## Native Wii controller access (1.0)
 
@@ -202,7 +202,7 @@ using the already staged console art and pinned Batocera bezel selection.
 `Decoration=None`, missing art, unsupported compositor and wide/unknown aspect
 settings leave game launch functional. The helper is tied to the concrete
 fullscreen emulator window and is removed before return to the frontend.
-MainRig's earlier missing Xemu frame was caused by its preserved Auto aspect
+Garuda's earlier missing Xemu frame was caused by its preserved Auto aspect
 setting, not absent assets; explicit 4:3 permits the existing frame.
 Gamescope continues to require an unoccupied external-overlay plane. See
 [STANDALONE_DECORATIONS.md](STANDALONE_DECORATIONS.md).
@@ -273,7 +273,7 @@ This includes the emulator's save-migration question: Embercade makes no
 migration choice and never silently copies/moves normal host-profile data.
 The private runtime directory is translated to its host-visible Embercade
 path for delegated helpers, not left as a sandbox-only path.
-MainRig/Hyprland and the WohnzimmerPC's real interactive Steam/Gamescope
+Garuda/Hyprland and the CachyOS Handheld's real interactive Steam/Gamescope
 session both confirm Bloodborne gameplay, audio, controller and configured
 exit back to the same frontend, with status 0 and complete process/mount
 cleanup. This is acceptance for the tested user-supplied build/game, not
@@ -333,15 +333,15 @@ before the 1.0 branding and AppImage packaging change.
 
 Automated checks cover path preparation, writable namespace/read-only branding,
 theme-independent splash selection and preservation of downloaded themes,
-partial downloads and active ThemeSet during reinstall. MainRig Hyprland
+partial downloads and active ThemeSet during reinstall. Garuda Hyprland
 acceptance confirms an actual AI-Hypertocera download/install, activation,
 Carbon round trip, controller navigation, Xemu launch/return and complete
 restart with the unchanged Embercade splash. Theme/artwork hashes remain
-separate. Normal MainRig offline reinstall preserves inventoried themes,
+separate. Normal Garuda offline reinstall preserves inventoried themes,
 active selection, config, saves and provider data; the same theme and splash
 load afterward without a fresh download.
 
-The WohnzimmerPC's real interactive Steam/Gamescope acceptance also passes:
+The CachyOS Handheld's real interactive Steam/Gamescope acceptance also passes:
 frontend download/install of AI-Hypertocera, activation and Carbon round trip,
 controller navigation, Gambatte/Game Boy launch/exit/return, normal Quit
 Embercade back to Steam, complete Steam restart and the unchanged product
@@ -510,8 +510,8 @@ starting `bbfddb109650`. Each host completed a changed update, an identical
 second run with no replacements, and a green installed Doctor. Pre/post
 inventories of Embercade's configuration, data, cache and state roots (excluding
 only the owned install manifest) were identical immediately after install;
-Steam shortcut and grid-artwork hashes were unchanged. MainRig Hyprland and
-the real WohnzimmerPC Steam/Gamescope session then passed user-visible splash,
+Steam shortcut and grid-artwork hashes were unchanged. Garuda Hyprland and
+the real CachyOS Handheld Steam/Gamescope session then passed user-visible splash,
 product label, theme/controller menu, Xenia launch, Select+Start exit, return
 to the same frontend and normal Quit Embercade. Launcher logs recorded status
 0 on both hosts. The second host left no provider or AppImage mount. Gameplay
@@ -559,7 +559,7 @@ alone. See [STEAM_INTEGRATION.md](STEAM_INTEGRATION.md) for precise targets,
 recovery and remaining validation limits.
 
 The following automatic-registration evidence is historical 0.5
-installed-prefix acceptance. The path was accepted on MainRig and WohnzimmerPC.
+installed-prefix acceptance. The path was accepted on Garuda and CachyOS Handheld.
 The latter runs
 CachyOS Handheld Edition with Steam/Gamescope and received a normal offline
 update from `9ebdca3`. Both installed payloads match the same verified stage
@@ -593,7 +593,7 @@ SSH-triggered launches are not visible acceptance evidence.
 ## Portable offline test payload
 
 The 1.0 3DO addition is accepted through the existing Libretro/Opera production
-route on MainRig/Hyprland and interactive Steam/Gamescope on WohnzimmerPC.
+route on Garuda/Hyprland and interactive Steam/Gamescope on CachyOS Handheld.
 It adds no bundled core/BIOS or standalone emulator. Normal offline updates
 preserve inventoried user state; both final installations match the same
 manifest and per-file hashes. See [COMPATIBILITY_1_0.md](COMPATIBILITY_1_0.md)
@@ -706,7 +706,7 @@ stdout through an inherited read-only file descriptor; no extraction directory
 is created. ELF offsets, helper output (8 KiB) and time (5 seconds) are bounded.
 If neither tool is available, the provider is **unverified**, not claimed to
 be corrupt. Embercade neither installs nor bundles these tools. The reference
-MainRig uses `unsquashfs`; the WohnzimmerPC uses its existing `7z`.
+Garuda uses `unsquashfs`; the CachyOS Handheld uses its existing `7z`.
 
 Setup/import outcomes:
 
@@ -804,15 +804,15 @@ source directories remain untouched. CLI setup remains fully supported for
 automation and non-graphical sessions.
 
 The installed Wizard's existing-setup/Doctor/controller route was accepted on
-MainRig/Hyprland and WohnzimmerPC/KDE. On the latter, the normal Steam entry
+Garuda/Hyprland and CachyOS Handheld/KDE. On the latter, the normal Steam entry
 was separately tested in the real Gamescope session through splash, controller
 menu and return to Steam. The Wizard was not tested inside Gamescope; KDE is
 its validated second-host desktop path. Both hosts retained their user state
 through the normal update and installed the same verified Stage payload.
-In the later MainRig-only clean-install test, a user completed the expanded
+In the later Garuda-only clean-install test, a user completed the expanded
 Wizard, Doctor passed for PSP and Xemu, and both Xenia and Libretro-PPSSPP
 played and returned to the same frontend. A normal update preserved user data;
-an identical-payload dry run reported no changes. The WohnzimmerPC was not
+an identical-payload dry run reported no changes. The CachyOS Handheld was not
 updated as part of that follow-up.
 
 `embercade bootstrap --dry-run` detects the distribution from
@@ -903,13 +903,13 @@ coverage on that host remains separate validation.
 
 The CLI source-selection and managed-import sprint passed 307 unit tests,
 runtime/frontend-library smoke, Production Stage and Doctor, offline payload
-build, and `git diff --check`. The user personally completed a MainRig install
+build, and `git diff --check`. The user personally completed a Garuda install
 with a visible, usable menu. The managed Core directory contains 232 logical
 cores, including one previously imported Nestopia build retained after a safe
 same-name conflict; the 231 other selected source cores were imported. All 28
 collection-required logical cores resolve from the managed directory even when
 the original source is excluded from discovery. The Xenia managed copy matches
-its external source by SHA-256. The updated WohnzimmerPC retained its config
+its external source by SHA-256. The updated CachyOS Handheld retained its config
 hash, passed Doctor (including PPSSPP, Xemu and RPCS3), and visibly started
 under Steam/Gamescope.
 
@@ -919,7 +919,7 @@ installed Doctor, and verified offline-payload builds. Both reference hosts
 used normal committed-payload updates: the managed Xenia AppImage remained
 byte-identical, repeat Setup reused it, and neither host required a new
 provider download or import. The installed payloads matched all 9,658 Stage
-files and the same Stage manifest. MainRig and WohnzimmerPC both completed a
+files and the same Stage manifest. Garuda and CachyOS Handheld both completed a
 visible Xenia run with Select+Start cleanup and return to the same frontend;
 the latter then quit normally to Steam. Theme, provider, core and PPSSPP
 resource metadata survived the second-host update. Config/save metadata

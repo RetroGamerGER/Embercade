@@ -39,7 +39,7 @@ The packaging identifier remains `0.1.dev0`; Batocera/ES versions used by
 upstream APIs, scrapers and diagnostics are separate and unchanged.
 
 Historical acceptance of the previous `EMBERCADE 0.5` footer text covers Carbon
-and AI-Hypertocera on MainRig/Hyprland and in the WohnzimmerPC's real interactive
+and AI-Hypertocera on Garuda/Hyprland and in the CachyOS Handheld's real interactive
 Steam/Gamescope session. Font and color followed the theme while product text
 stayed fixed. Those runs also accepted the product splash, controller menu and
 normal frontend quit back to the host session without a remaining process. Current

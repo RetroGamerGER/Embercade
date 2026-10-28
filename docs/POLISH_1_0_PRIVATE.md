@@ -1,6 +1,6 @@
 # Embercade 1.0 — private polish candidate
 
-Status: private candidate built and MainRig owner acceptance completed, 25 October 2026. No push,
+Status: private candidate built and Garuda owner acceptance completed, 25 October 2026. No push,
 publication or release is authorized. The existing private v1.0.0 release and
 installed reference AppImage (SHA-256
 `233f17457379dd679eb8a4ef595999e273dd035d52fc88ce49a83c3b0a623efd`)
@@ -132,7 +132,7 @@ The native builder now uses the existing original Embercade PNG for the window
 resource. SDL application identity is embercade for X11/Wayland/SDL2-compat;
 application title remains the existing product label. Managed desktop entries
 advertise StartupWMClass=embercade. Steam IDs/artwork logic is unchanged.
-The candidate actually ran natively over Wayland on MainRig. Protocol trace
+The candidate actually ran natively over Wayland on Garuda. Protocol trace
 shows xdg_toplevel.set_app_id("embercade"). A separate XWayland run reported
 WM_CLASS instance emulationstation / class embercade and title EMBERCADE 1.0.
 The owner explicitly confirmed the correct KDE icon in the real candidate.
@@ -141,7 +141,7 @@ launch/task grouping is not separately accepted.
 
 ## GameSir G7 Pro
 
-Current MainRig SDL discovery reports GameSir G7 Pro, decimal 13623/4252,
+Current Garuda SDL discovery reports GameSir G7 Pro, decimal 13623/4252,
 GUID `03004535373500009c10000053010000`, corresponding to USB 3537:109c.
 The gs_native driver and gamesir-native service were observed, not changed.
 The motion sensor appeared before the main gamepad; after the owner's connection
@@ -168,7 +168,7 @@ unvalidated. No native driver, DKMS, service, firmware or udev rule was changed.
 
 ## Notification sizing
 
-The generated MainRig configuration had widgets enabled, automatic scaling and
+The generated Garuda configuration had widgets enabled, automatic scaling and
 both scale factors at RetroArch's untouched 1.0 defaults; menu driver was ozone.
 RetroArch's upstream widget path uses display metrics/menu scaling rather than
 the legacy video_font_size setting alone. It is not established that KDE reports
@@ -179,7 +179,7 @@ Existing non-default saved widget preferences and explicit retroarch.* values
 remain authoritative. No shader/backend/bezel change is part of this patch.
 The actual writer was tested at 1920x1080, 2560x1440 and 3840x2160, with
 widgets still enabled. The owner accepted the real notifications during the
-MainRig run (2560x1440 desktop). Separate 1080p/4K visual legibility remains
+Garuda run (2560x1440 desktop). Separate 1080p/4K visual legibility remains
 open; configuration tests are not visual acceptance.
 
 ## Frontend video
@@ -187,16 +187,16 @@ open; configuration tests are not visual acceptance.
 The actual pinned frontend uses libVLC, RGBA decode callbacks, double-buffered
 surfaces and the existing OpenGL texture renderer. libVLC is a host dependency;
 its dynamically loaded decoder was not covered by frontend ELF inspection.
-MainRig and NVIDIA laptop had vlc-plugins-base 3.0.24 but no vlc-plugin-ffmpeg.
-Wohnzimmer-PC had the matching VLC FFmpeg decoder, demux and conversion plugins.
+Garuda and NVIDIA laptop had vlc-plugins-base 3.0.24 but no vlc-plugin-ffmpeg.
+CachyOS Handheld had the matching VLC FFmpeg decoder, demux and conversion plugins.
 
 Identical untouched GB/Monopoly H.264/MP3 clip on both machines:
 SHA-256 `294dd2713b239576b96d409bb7b67b2490fdd5f0f019c285d4f775121478d002`.
-Five-second libVLC callback probe: MainRig before repair 0 frames (explicit
+Five-second libVLC callback probe: Garuda before repair 0 frames (explicit
 unsupported H.264 decoder error); Wohnzimmer 138 decoded/displayed frames,
 130 distinct frame hashes. Adding only the distro-matched plugin in an isolated
-MainRig probe gave 149 frames, 141 distinct hashes. After the owner's approved
-system installation, MainRig gave 150 frames, 142 distinct hashes.
+Garuda probe gave 149 frames, 141 distinct hashes. After the owner's approved
+system installation, Garuda gave 150 frames, 142 distinct hashes.
 The transaction and all seven post-transaction hooks completed with exit 0.
 No original clip was converted or rewritten. No video player/rendering rewrite
 was required. These initial figures prove decoding. Subsequent real AppImage GL probes and
@@ -215,14 +215,14 @@ Wohnzimmer system package was changed.
 | RA list/progress/errors | Live original Web API HTTP 200; private build/receipt/redaction tests; real native request/parser tested enabled/disabled, malformed/missing/empty/unavailable replies | Owner confirmed actual list/progress in Carbon and RetroAchievements with external theme; in-game unlock not independently verified |
 | KDE icon/identity | Real Wayland app_id and XWayland WM_CLASS; original branding; desktop/Steam regression tests | Owner confirmed KDE icon; actual Steam grouping remains open |
 | G7 Pro | Real 3537:109c SDL2 autoconfig in four packaged starts; profile preservation; passive button/trigger observations | Owner confirmed gameplay/Start+Guide/frontend return and normal mouse; unobserved inputs/modes documented above |
-| OSD | Original/default/custom/override cases plus real writer at 1080p/1440p/4K; actual generated factor 0.6 | Owner accepted MainRig notification size; separate 1080p/4K visuals open |
+| OSD | Original/default/custom/override cases plus real writer at 1080p/1440p/4K; actual generated factor 0.6 | Owner accepted Garuda notification size; separate 1080p/4K visuals open |
 | Video | Same clip SHA; decoder A/B; actual GL framebuffer changes and texture uploads with packaged frontend over Wayland/XWayland | Owner confirmed picture+sound in Carbon and AI-HYPERTOCERA-THE-MINI-CAKE-TV, including game changes after restart |
 | Regression | Full suite with native GTK; 52/52 structural routes; runtime smoke; 20 packaging checks | Packaged GB/SNES/3DO/N64 render; owner game start/exit/return; no repeat of unused Qt companion startup |
 
 ## Packaged rendering and startup evidence
 
 A short reference playback of the same existing clip through ffplay completed
-outside Embercade. MainRig's original released/reference AppImage then rendered
+outside Embercade. Garuda's original released/reference AppImage then rendered
 moving pictures after installing the decoder, without a frontend video-code
 change. An initial diagnostic run with upstream --videoduration stopped too
 early: its playVideo loop accumulates elapsed time rather than per-frame deltas.
@@ -252,11 +252,11 @@ failure or fixed by changing the retained core exception. N64's direct EGL
 probe observed a 2560x1408 window and over 2.6 million nonblack pixels late in
 the run. No backend/shader selection was changed by this sprint.
 
-Wohnzimmer-PC currently has older AppImage hashes than MainRig's released
+CachyOS Handheld currently has older AppImage hashes than Garuda's released
 reference, and no ES process was running during the read-only inventory. The
 comparison is therefore not advertised as an identical-build Gamescope E2E
 acceptance. Identical media bytes and the decoder-module difference were
-verified; the controlled same-build MainRig before/after test isolated the
+verified; the controlled same-build Garuda before/after test isolated the
 missing dependency. Laptop has the same missing decoder in its inventory, but
 its installed managed image is older. Neither remote system was changed, no
 candidate was installed there, and no AMD/NVIDIA/Gamescope-wide compatibility
@@ -279,13 +279,13 @@ claim is made. Further remote visual checks remain open.
   routes. It includes actual patched Web API/parser failure boundaries and
   notification writer resolution gates. An earlier run used a disappeared
   external Core-backup path and failed structural core discovery; the final
-  run used existing managed MainRig cores read-only, without installing/copying
+  run used existing managed Garuda cores read-only, without installing/copying
   cores or changing owner data.
 - 20 focused AppImage packaging checks passed after the manifest addition;
   pinned native patch replay and runtime smoke passed. One new AppImage candidate
   was built, with post-extraction audit and frontend authorization/hash matching.
 
-The original MainRig batocera.conf hash and both reference/managed AppImage
+The original Garuda batocera.conf hash and both reference/managed AppImage
 hashes still match the preflight inventory. Scoped probes used separate private
 XDG/saves/config roots and read-only collection/media mounts. The owner-completed
 test frontend was closed; no normal application session was terminated. The
@@ -317,17 +317,17 @@ source `935eacf508ab18c369091d8bfbd9023b0d9ed7fd`.
 
 | Host | Updated path | Existing start route |
 | --- | --- | --- |
-| MainRig | `~/AppImage/Embercade-1.0-Release Candidate-x86_64.AppImage` | Manual AppImage selection, same name |
-| MainRig | `~/.local/share/embercade/application/Embercade.AppImage` | Menu and existing Steam shortcut |
-| EmbercadeLaptop | `~/AppImages/Embercade-1.0-AutoGraphics-x86_64.AppImage` | Manual AppImage selection, same name |
-| EmbercadeLaptop | `~/.local/share/embercade/application/Embercade.AppImage` | Existing menu entry |
-| WohnzimmerPC | `~/Applications/Embercade/Embercade-1.0-x86_64.AppImage` | Existing Steam shortcut; menu now targets this same image |
+| Garuda | `~/AppImage/Embercade-1.0-Release Candidate-x86_64.AppImage` | Manual AppImage selection, same name |
+| Garuda | `~/.local/share/embercade/application/Embercade.AppImage` | Menu and existing Steam shortcut |
+| Garuda laptop | `~/AppImages/Embercade-1.0-AutoGraphics-x86_64.AppImage` | Manual AppImage selection, same name |
+| Garuda laptop | `~/.local/share/embercade/application/Embercade.AppImage` | Existing menu entry |
+| CachyOS Handheld | `~/Applications/Embercade/Embercade-1.0-x86_64.AppImage` | Existing Steam shortcut; menu now targets this same image |
 
 Wohnzimmer's menu previously called the classic `.local/bin/embercade` wrapper,
 while Steam already used the AppImage. Only that menu Exec field was redirected
 to the existing AppImage filename; its classic install ownership receipt's
 expected desktop hash was updated consistently. The classic prefix and command
-symlink remain unchanged as a recovery route. MainRig/Laptop desktop integration
+symlink remain unchanged as a recovery route. Garuda/Laptop desktop integration
 ownership hashes were updated for their managed image copies. Steam shortcuts,
 IDs, start directories and artwork were not edited, and no Steam restart was
 required. Historical ScreenScraper/RetroArchStart laptop images and Wohnzimmer's
@@ -345,7 +345,7 @@ Backups on each host are under
 `~/.local/state/embercade/image-backups/polish-2026-10-25-ac2578b8/`.
 The owner-private `deployment.json` records each original path, old/new hash,
 original mode and verified backup file, including relevant integration metadata.
-Independent readback verified 3 original backup files on MainRig, 5 on the laptop
+Independent readback verified 3 original backup files on Garuda, 5 on the laptop
 and 5 on Wohnzimmer. Restore the recorded image/sidecars/metadata together if a
 rollback is needed. The repository's original released/reference payload also
 remains preserved. Transfer-only temporary image copies were removed after

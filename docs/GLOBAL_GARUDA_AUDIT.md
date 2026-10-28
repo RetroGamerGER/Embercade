@@ -9,7 +9,7 @@ changed during implementation/testing. The owner separately approved and
 locally authenticated installation of `gtk-layer-shell` for the KDE test.
 
 Status update, 10 October 2026: the owner confirms ScreenScraper works in the
-new MainRig AppImage after identifying a user-side issue. The findings below
+new Garuda AppImage after identifying a user-side issue. The findings below
 retain this earlier audit's evidence. See [the current ScreenScraper status](SCREENSCRAPER.md#current-garuda-final-polish-status-2026-10-10)
 for the resolved incident and the separate public provisioning gate.
 
@@ -17,7 +17,7 @@ for the resolved incident and the separate public provisioning gate.
 
 | Finding | Root cause / evidence | Change | Automated evidence | Required manual acceptance | Deferred / external |
 | --- | --- | --- | --- | --- | --- |
-| 1. RetroArch viewport offset across GB/SFC and other cores | `current_resolution()` queried Hyprland only and otherwise supplied 1920×1080. Actual KScreen mode was 2560×1440; generated fullscreen/viewport coordinates used the smaller size. | Query KScreen's active physical mode on KDE, respecting rotation; use the logical Xrandr game output in Gamescope/X11. Explicit overrides retain precedence. No mode switch, core-specific viewport/shader workaround or saved aspect override. | Display unit checks, actual KDE query, 52 pinned generator structural routes and regression suite. | GB and SFC, borders, shaders and integer/aspect choices on MainRig; Gamescope resolution regression on Wohnzimmer-PC. | No core workaround. |
+| 1. RetroArch viewport offset across GB/SFC and other cores | `current_resolution()` queried Hyprland only and otherwise supplied 1920×1080. Actual KScreen mode was 2560×1440; generated fullscreen/viewport coordinates used the smaller size. | Query KScreen's active physical mode on KDE, respecting rotation; use the logical Xrandr game output in Gamescope/X11. Explicit overrides retain precedence. No mode switch, core-specific viewport/shader workaround or saved aspect override. | Display unit checks, actual KDE query, 52 pinned generator structural routes and regression suite. | GB and SFC, borders, shaders and integer/aspect choices on Garuda; Gamescope resolution regression on CachyOS Handheld. | No core workaround. |
 | 2. No Xemu/GameCube/Wii standalone frames on KDE | Shared helper selected only Hyprland/Gamescope. KDE was explicitly unsupported. MangoHud was absent and is not the diagnosis. | Reuse the layer renderer with a disposable KWin observer, exact executable/ancestry/fullscreen/monitor checks, focus hiding, owner EOF and crash cleanup. Offer `gtk-layer-shell` through existing bootstrap for KDE/Hyprland Wayland. | Actual KWin 6.7.5 normal/crash cleanup and owned GTK fullscreen→windowed fixture; selection, clipping and lifecycle regressions. | Real Xemu, GameCube and Wii, focus/workspace changes, exit/return/Quit on KDE; unchanged Gamescope route on second host. | Xemu Auto still conservatively reserves 16:9. Select existing 4x3/Scale option for a full frame; no forced user aspect changes. |
 | 3. RPCS3 first-run firmware | GUI setup used noninteractive CLI input and therefore skipped its native firmware offer. Doctor recognized host firmware, but direct runtime resolution did not share that discovery. Owner's normal profile contains 4.90; the isolated tree was empty. | Share source discovery; preserve existing isolated firmware, reject conflicting replacements. Add an explicit wizard action opening RPCS3 in Embercade-owned XDG roots, then recheck. | Host-source import, missing/PUP-only firmware, isolated UI environment and no-overwrite checks. | Install own PUP or import existing firmware; real PS3 game/exit/return. | A 4.90 installed notice does not prove a successful game boot. |
 | 4. ScreenScraper developer authorization | Developer secret absent; separate personal secret configured but authentication not exercised. Embercade intentionally does not embed extractable developer credentials. | Preserve runtime-only provisioning and personal login. Explain the separate developer requirement in localized installer checks. Compare exact pinned .mk/CMake/source chain. | Existing private-file, user migration, scraper boundary and payload tests. | Approved developer provisioning and real successful scrape on both hosts. | PUBLIC-RELEASE BLOCKER; provider approval/provisioning must be settled before distribution. No secret is baked into an AppImage. |
@@ -155,7 +155,7 @@ a GTK window, not a game/emulator fed synthetic content. Native Xemu evidence
 uses only its supported version probe with an isolated config; it never boots
 ROM/BIOS fixtures.
 
-## Manual acceptance: OPEN on MainRig and Wohnzimmer-PC
+## Manual acceptance: OPEN on Garuda and CachyOS Handheld
 
 Run both English and German sequences visibly, with a new isolated test profile
 or a properly backed-up existing profile. Do not delete normal state to simulate

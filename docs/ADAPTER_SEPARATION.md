@@ -2,7 +2,7 @@
 
 The owner approved this targeted extraction and a separate private test version.
 The working Gold artifact, the accepted RetroBat/shader image and all installed
-images are protected. No automatic deployment or manual MainRig/Laptop/Gamescope
+images are protected. No automatic deployment or manual Garuda/Laptop/Gamescope
 session test is part of this sprint; the owner performs those checks.
 
 ## Actual boundary

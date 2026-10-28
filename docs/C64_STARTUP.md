@@ -5,7 +5,7 @@ because Configgen forced JiffyDOS on a fresh desktop installation. The D64
 itself was passed correctly and attached by VICE; no quoting, file-extension
 or missing-media workaround is needed.
 
-The 28 October MainRig log identifies VICE x64 3.10 (`9d79838`, built
+The 28 October Garuda log identifies VICE x64 3.10 (`9d79838`, built
 24 September 2026). It records the exact D64 as one content argument, successful
 image detection/attachment, missing JiffyDOS C64/1541-II ROMs, `Failed to set
 drive type`, and the aborted autostart. The
@@ -77,15 +77,15 @@ the original Stage is restored.
 
 Only the previous test frontend owned by this chat was closed, after verifying
 its process identity, ancestry, executable hash and absence of running games.
-The separate corrected candidate is open on MainRig with existing owner settings
+The separate corrected candidate is open on Garuda with existing owner settings
 for the requested troubleshooting flow. No game was started automatically, no
 installed AppImage was replaced and no remote host was accessed.
 
-## MainRig owner acceptance — 28 October 2026
+## Garuda owner acceptance — 28 October 2026
 
 The owner confirms that Giana Sisters D64 now starts successfully and that
 Start + Guide returns to the same frontend. This accepts the visible disk
-startup and controller-exit/return case on MainRig with the candidate above.
+startup and controller-exit/return case on Garuda with the candidate above.
 Other C64 games/formats and the laptop/living-room systems are not inferred
 from that result. The frozen image/source-kit identities stay unchanged, and
 no push, release or deployment is authorized by this acceptance.

@@ -191,14 +191,14 @@ At the original packaging milestone, the complete source suite passed **578 test
 shader and Stage Doctor smokes pass. The verified Production Stage SHA-256 is
 `a8612d6def70b249785964bb2e51be82965dc15bf7d856e4afa4b23494bce033`.
 
-The owner completed the requested real AppImage E2E on MainRig/Hyprland and
-WohnzimmerPC's interactive Steam/Gamescope session, including return to the
-same frontend and normal Quit Embercade. The classic MainRig game/exit/quit
+The owner completed the requested real AppImage E2E on Garuda/Hyprland and
+CachyOS Handheld's interactive Steam/Gamescope session, including return to the
+same frontend and normal Quit Embercade. The classic Garuda game/exit/quit
 regression also passed. The caption-free splash was subsequently confirmed
-visibly on MainRig. At the owner's request, WohnzimmerPC received the same
+visibly on Garuda. At the owner's request, CachyOS Handheld received the same
 cosmetic update without another visible run; its Doctor returned status 0.
-The final normal updates preserved 16,161 MainRig entries with no changes or
-additions, and 198,109 WohnzimmerPC entries with no unexpected changes or
+The final normal updates preserved 16,161 Garuda entries with no changes or
+additions, and 198,109 CachyOS Handheld entries with no unexpected changes or
 additions. Persistent-state inventories exclude only the owned install manifest.
 
 These functional, update and diagnostic results are recorded in

@@ -3,7 +3,7 @@
 ## Cause and reproduction (25 October 2026)
 
 The owner reported slow Game Boy, SNES and N64 starts on the Garuda KDE/Wayland
-laptop while the same ROM share works quickly on Wohnzimmer-PC. Cores on the
+laptop while the same ROM share works quickly on CachyOS Handheld. Cores on the
 laptop are managed local files on Btrfs; ROMs are on CIFS. The ROM share alone
 does not explain the difference.
 
@@ -50,7 +50,7 @@ overrides remain authoritative, including an intentional opt-in to the companion
 
 No host network mount, scraper permission, controller driver or system package is
 changed. The fix does not remove saved configuration or user data and does not
-modify Wohnzimmer-PC. Disabling the companion manually in the owner profile was
+modify CachyOS Handheld. Disabling the companion manually in the owner profile was
 not required for diagnosis; comparisons used separate temporary XDG profiles.
 
 ## Validation and handoff
@@ -101,6 +101,6 @@ All six temporary remote diagnosis profiles/observer directories were removed
 by exact recorded path after the logs/proofs were retained locally. No owned
 probe processes remained; the delivered image was rehashed after cleanup and
 its executable permission, checksum and manifest were verified again. No system
-packages, drivers, saved games, original ROM/BIOS files or Wohnzimmer-PC were
+packages, drivers, saved games, original ROM/BIOS files or CachyOS Handheld were
 changed by the diagnosis/fix. Documentation and source commits remain local;
 no push or public release occurred.

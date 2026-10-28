@@ -83,8 +83,8 @@ for dry runs and is never passed to a real emulator.
 The complete isolated suite passes 776 of 781 tests (five intended native
 opt-in skips), including 25 GTK checks and all 52 structural routes. Runtime
 and shader smoke pass, validating 14 curated presets and 142 dependencies.
-Actual-image, first-run provision and laptop rendering results follow below. Tests use separate profiles; MainRig, the laptop's
-normal profiles, original collections and Wohnzimmer-PC are not reset. The
+Actual-image, first-run provision and laptop rendering results follow below. Tests use separate profiles; Garuda, the laptop's
+normal profiles, original collections and CachyOS Handheld are not reset. The
 parallel README/getting-started work is preserved through an isolated worktree.
 No push, public release or asset-licensing investigation is authorized.
 
@@ -142,8 +142,8 @@ hashes. The four explicitly owned remote temporary probe roots were removed
 after bounded evidence was copied into the private development audit. Native
 processes exited naturally after the requested frame count; no controller,
 driver, package, normal profile, original ROM/BIOS or shared media change was
-required. MainRig receives source/build artifacts only, with no setup run or
-menu-owned image replacement. Wohnzimmer-PC is untouched. Parallel README and
+required. Garuda receives source/build artifacts only, with no setup run or
+menu-owned image replacement. CachyOS Handheld is untouched. Parallel README and
 getting-started commits are retained in the integrated source history. No push
 or publication occurred.
 
@@ -187,8 +187,8 @@ case, are removed after bounded evidence capture. Normal laptop configuration
 hashes remain unchanged. The verified current image, checksum and manifest
 replace only this task's earlier candidate in the private development `dist`
 folder and requested laptop `~/AppImages/` folder. All other images, menu/Steam
-targets, original collections, normal profiles, MainRig preparation and
-Wohnzimmer-PC remain intact. The existing manual acceptance limits above still
+targets, original collections, normal profiles, Garuda preparation and
+CachyOS Handheld remain intact. The existing manual acceptance limits above still
 apply. Changes are committed locally; no push or publication is authorized.
 
 ## Owner confirmation (25 October 2026)

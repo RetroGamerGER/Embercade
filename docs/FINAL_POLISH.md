@@ -1,8 +1,8 @@
 # Embercade 1.0 final polish — 2026-10-10
 
 This is preparation for the owner's interactive acceptance, not a public release.
-The actual new-host game/display/Steam acceptance remains OPEN on MainRig
-(Garuda KDE/Wayland) and Wohnzimmer-PC (CachyOS Gamescope). Historical gameplay
+The actual new-host game/display/Steam acceptance remains OPEN on Garuda
+(Garuda KDE/Wayland) and CachyOS Handheld (CachyOS Gamescope). Historical gameplay
 proof does not establish acceptance of this revision. The repository is PRIVATE;
 the paused decoration licensing investigation is unchanged.
 
@@ -136,11 +136,11 @@ Stage manifest SHA-256:
 `c9b3933751dfcf3793e4fbf117fbf7135a5aac09377b7c0ecf3b9c2c4f4a209a`.
 Subsequent deployment-documentation commits do not change this build identity.
 
-- MainRig: managed local AppImage plus Games-menu entry created through the
+- Garuda: managed local AppImage plus Games-menu entry created through the
   existing desktop backend; installed Doctor exits 0. All 7,115 prior inventoried
   entries are unchanged; only four expected integration entries are added within
   Embercade XDG roots (local application directory/image, lock and manifest).
-- WohnzimmerPC: actual SSH deployment updates both the existing Steam-target
+- CachyOS Handheld: actual SSH deployment updates both the existing Steam-target
   AppImage and classic Production. The new payload installer verifies the old
   installation before replacement; repeat dry-run reports ALREADY UP TO DATE.
   Installed Stage/image hashes match the delivery. Both actual launchers pass
@@ -149,7 +149,7 @@ Subsequent deployment-documentation commits do not change this build identity.
   remains `4059814080`, and shortcut/artwork bytes are unchanged.
 - State comparison covers Embercade XDG roots, present RetroArch/Dolphin/PCSX2/
   RPCS3/Xemu config/data roots and Steam shortcuts/artwork. Remote: 201,168 entries with no additions,
-  removals or changes; 183,418 readable files content-hashed. MainRig: 6,148
+  removals or changes; 183,418 readable files content-hashed. Garuda: 6,148
   prior readable files content-hashed. Files larger than 16 MiB and one unreadable
   remote RPCS3 cache log have metadata-only comparison. The classic install
   manifest is intentionally excluded. No permission changes or host package
@@ -170,7 +170,7 @@ OPEN on **both** hosts, using the exact same delivered image/revision:
   isolated firmware status, then game launch/exit. Host profile unchanged.
 - Menu/desktop launch after disconnecting the original image drive; same Steam
   shortcut/artwork after restart; no duplicate entry, no host-profile writes.
-- ScreenScraper operation is user-confirmed on MainRig. For the detailed demo
+- ScreenScraper operation is user-confirmed on Garuda. For the detailed demo
   checklist, record one game's metadata, selected cover/screenshot/video when
   available, frontend display and restart persistence; current-build second-host
   confirmation remains open. The new build-provided authorization must be checked
@@ -189,7 +189,7 @@ record of selected EEPROM settings and firmware isolation, with private keys
 and credentials hidden. Restart from the Games entry, then test one known game
 per required route and return to the same frontend. Repeat in the other language
 with independent empty state. Film the English path only after these gates pass.
-Keep the historical MainRig scraper result separate from the new candidate
+Keep the historical Garuda scraper result separate from the new candidate
 image's pending personal-account/media/restart and game/display tests.
 
 ## Recovery / rollback

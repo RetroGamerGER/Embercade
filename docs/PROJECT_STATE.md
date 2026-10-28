@@ -64,8 +64,8 @@ source-delivery and license checks, runtime smoke and public-tree audit pass.
 
 ## Three-system owner acceptance — 28 October 2026
 
-The owner accepts the current private candidate on MainRig, EmbercadeLaptop
-and WohnzimmerPC and reports successful operation on all three. The existing
+The owner accepts the current private candidate on Garuda, Garuda laptop
+and CachyOS Handheld and reports successful operation on all three. The existing
 laptop 16:10 bezel cropping/proportion issue remains the explicitly accepted
 limitation; no fix or wider aspect-ratio compatibility is claimed. This closes
 the remaining overall three-host functional acceptance for the tested candidate.
@@ -82,7 +82,7 @@ push, public release/tag or visibility change is authorized. See
 
 The owner explicitly authorized replacing the current AppImage on all three PCs
 under the existing filenames and takes responsibility for remaining manual
-tests. All five active copies now match the MainRig-accepted d2194fc candidate,
+tests. All five active copies now match the Garuda-accepted d2194fc candidate,
 SHA `a3348017d24d1fa6d8b96118a591da1bcb3e77130a73fa7c5eda05b2c809c130`.
 Fresh inventories, atomic replacements, matching alias manifests/checksums,
 image-ownership records and verified rollback receipts preserve current links.
@@ -111,7 +111,7 @@ replacement, push/public release, host/driver change or remote deployment.
 Final isolated regression: 848 tests, 843 passed and five expected skips,
 including GTK and all 52 structural routes. Three targeted C64 checks, runtime
 smoke, license-scope and diff checks pass. The owner confirms that Giana Sisters
-D64 now starts and Start + Guide returns to the frontend on MainRig. This is
+D64 now starts and Start + Guide returns to the frontend on Garuda. This is
 the actual visible start/exit acceptance for that game; other hosts and media
 formats have no new manual acceptance claim.
 The separate private candidate from `d2194fc` is built and package/source-kit
@@ -119,7 +119,7 @@ verified, SHA `a3348017d24d1fa6d8b96118a591da1bcb3e77130a73fa7c5eda05b2c809c130`
 Packaged Configgen confirms the correction; per-user RA/paste remain present,
 with no old private key in the 5,685 files. Seven protected images and Stage
 remain intact. Only this chat’s idle preview was restarted into the candidate
-with existing MainRig settings; no game auto-start or deployment occurred.
+with existing Garuda settings; no game auto-start or deployment occurred.
 
 ## Native key-editor paste correction — 28 October 2026
 
@@ -136,11 +136,11 @@ host settings or provider authentication changes are authorized.
 The correction passes 70 targeted checks and 845 complete isolated tests
 (840 passed, five expected skips), including 52 structural routes. The native
 frontend build, runtime smoke and diff checks pass. The owner has now accepted
-the MainRig paste flow and supplied a screenshot of the live account overview
+the Garuda paste flow and supplied a screenshot of the live account overview
 showing per-game achievement progress. Other-host acceptance and the remaining
 restart/Cancel/Reset/key-absent gameplay cases remain pending; this screenshot
 is not evidence of those separate checks.
-A separate candidate from `fd337ec` is verified and opened on MainRig for
+A separate candidate from `fd337ec` is verified and opened on Garuda for
 the requested retest. SHA is `827457baba71cd2700840801274778bc4d67d9203c7c11b36a885a5ac31f4777`;
 its matching source kit and all six preserved image hashes are verified.
 See docs/RETROACHIEVEMENTS_USER_KEYS.md. No installed image is replaced.
@@ -285,20 +285,20 @@ The owner's explicit "Abgenommen, Appimage bauen und verteilen" has been fulfill
 [Private candidate / deployment report](PRIVATE_RETROBAT_SHADERS_1_0.md): artifact
 source `87cc521f58e0cc2b3e0db51f8dfb1300e7c219bf`, clean tree at packaging; SHA-256
 `938df3ab6a33de069baab4b8f9dfac876693a9efaa40f4b952d0519c916027d5`.
-Five active copies on MainRig/Laptop/Wohnzimmer were replaced under existing
+Five active copies on Garuda/Laptop/Wohnzimmer were replaced under existing
 names, with verified rollback copies, sidecars and ownership receipts. Profile,
 SSH, Desktop and Steam hashes/routes are unchanged. Installed CLI starts pass
-on all three hosts. MainRig packaged None/NewPixie real 120-frame runs and the
+on all three hosts. Garuda packaged None/NewPixie real 120-frame runs and the
 AppDir audit pass. ScreenScraper and the existing private owner Web API build
 mode are preserved; no credentials entered source/logs/manifests. No push,
 release/tag, visibility change or public-distribution clearance occurred.
 Remote visible gameplay/16:10/Gamescope/controller acceptance remains deferred
 to the owner; no automatic remote session start or driver change was made.
 
-## MainRig acceptance and private candidate authorized — 27 October 2026
+## Garuda acceptance and private candidate authorized — 27 October 2026
 
 The owner accepted None/NewPixie/additional shader, bezel, Start + Guide and
-frontend-return testing in the isolated MainRig test. Xbox initially lacked its
+frontend-return testing in the isolated Garuda test. Xbox initially lacked its
 private EEPROM/HDD and PSP lacked its assets reference in that deliberately
 separate test profile; the normal installation was complete. Private copies and
 RO asset exposure corrected the test without resetting normal state. The owner
@@ -321,8 +321,8 @@ will be recorded after building and verifying; no remote visual pass is inferred
 ## Host shader package installed — 27 October 2026
 
 After the owner's explicit approval, `libretro-shaders-slang`
-`20260620.024025.g8ec4c82cf61a-1` is installed on MainRig, EmbercadeLaptop and
-WohnzimmerPC. Each native package transaction completed successfully, including
+`20260620.024025.g8ec4c82cf61a-1` is installed on Garuda, Garuda laptop and
+CachyOS Handheld. Each native package transaction completed successfully, including
 its post-transaction hooks. Read-only checks through the central provider code
 find `/usr/share/libretro/shaders/shaders_slang` and all 26 complete preset graphs
 on every host, including NewPixie's frame and the selected texture/LUT chains.
@@ -495,7 +495,7 @@ LICENSE, pre-existing private host identifiers and three large source masters.
 
 ## Laptop standalone decorations — 26 October 2026
 
-The Xbox/PS2 missing-artwork report on EmbercadeLaptop was traced to absent
+The Xbox/PS2 missing-artwork report on Garuda laptop was traced to absent
 `python-cairo`: the real PS2 launch's shared helper exited before drawing with
 No module named 'cairo'. Both laptop copies match the accepted private image;
 layer-shell, KWin fullscreen observation and logical monitor geometry work.
@@ -508,7 +508,7 @@ The owner confirmed restored visibility, then reported cropped proportions in
 both standalone and RetroArch bezels. Real laptop captures and offscreen stock
 palette/RGBA comparisons isolate a 16:10 geometry limitation. At the owner's
 request the README records it. Rendering/viewport/cache/shader behavior and
-the working MainRig/WohnzimmerPC installations remain unchanged. Correct 16:10
+the working Garuda/CachyOS Handheld installations remain unchanged. Correct 16:10
 proportions are OPEN, not accepted by the visibility retest. Dependency changes
 pass 792 tests (787 successful, five expected skips), 25 GTK checks, 52/52
 structural routes and runtime smoke. No image was rebuilt or published.
@@ -530,7 +530,7 @@ No runtime source changed after that validation; this handoff updates documents.
 
 The owner requested five bounded fixes after the successful Reddit installation:
 frontend RetroAchievements lists, KDE window identity/icon, G7 Pro autoconfig,
-compact RetroArch notifications and library video playback. Current MainRig is
+compact RetroArch notifications and library video playback. Current Garuda is
 installed and protected. Earlier unconfigured/cleanup instructions are historical.
 No push or publication is permitted; one private candidate will cover the package.
 See [POLISH_1_0_PRIVATE.md](POLISH_1_0_PRIVATE.md) for evidence and the test matrix.
@@ -544,7 +544,7 @@ Start+Guide/frontend return, notification size, normal mouse and RetroAchievemen
 Packaged GB/SNES/3DO/N64 runs show correct G7 Pro autoconfig and rendered frames.
 Real Wayland app_id is embercade; XWayland class is embercade. The video cause is
 missing distro VLC FFmpeg modules, proven with identical media bytes and isolated
-before/after on MainRig. The owner approved installing only vlc-plugin-ffmpeg
+before/after on Garuda. The owner approved installing only vlc-plugin-ffmpeg
 3.0.24-1 there; the installer now checks dynamic modules/ABI too. The independent
 GameSir driver/service was not changed. Normal config and both prior AppImage
 hashes match preflight. Remote hosts remain unchanged and have not accepted the
@@ -565,12 +565,12 @@ login and ScreenScraper account behavior are unchanged.
 ## Private candidate deployed to three PCs — 25 October 2026
 
 The owner subsequently authorized replacing all three hosts' active AppImages
-while retaining their link targets. This is complete: two copies on MainRig,
-two on EmbercadeLaptop and one on WohnzimmerPC share candidate SHA
+while retaining their link targets. This is complete: two copies on Garuda,
+two on Garuda laptop and one on CachyOS Handheld share candidate SHA
 `b77666fcb7a3acc1f1e495633301430386df89f646177082d20d86065a82eca8`.
 Names and individual paths are in the sprint report. Wohnzimmer's menu now calls
 the same AppImage as its unchanged Steam shortcut; the old classic prefix/wrapper
-is retained for recovery. MainRig/Laptop managed-image ownership hashes and the
+is retained for recovery. Garuda/Laptop managed-image ownership hashes and the
 Wohnzimmer desktop ownership hash were updated. Config/preferences/input/SSH
 and Steam shortcut hashes match fresh inventories. Old files and relevant
 metadata were independently verified in each host's private
@@ -631,9 +631,9 @@ shows the current localized phase and elapsed time. Actual child exit including
 hooks remains authoritative, failure diagnostics/retry are preserved, and a
 value-free timing summary survives transaction cleanup.
 
-All tests/builds use development workspaces and isolated XDG roots. MainRig's
+All tests/builds use development workspaces and isolated XDG roots. Garuda's
 prepared profile, handoff AppImage, packages, original collections/backups and
-WohnzimmerPC remain unchanged. Source inspection also exposed relocated CMake
+CachyOS Handheld remain unchanged. Source inspection also exposed relocated CMake
 cache paths and a missing pinned FreeImage build header; these were corrected
 using existing bundled libraries and checksum-verified source, without host
 package installation. The final source run passed 767 of 772 tests (five native opt-ins skipped),
@@ -652,7 +652,7 @@ personal-account menu/game/media/restart flow; that remains laptop acceptance.
 A verified image/checksum/manifest copy is in the owner's requested laptop
 backup folder. The CIFS share lacks executable permissions, so copy locally and
 mark executable before starting on the laptop. No share policy was changed.
-MainRig roots/packages and encrypted backup are unchanged. The owner explicitly
+Garuda roots/packages and encrypted backup are unchanged. The owner explicitly
 confirmed moving/removing the old demo image during this work; it was not
 restored. Code/documentation are local commits only; no push or release.
 
@@ -682,7 +682,7 @@ probes pass with the full read-only media topology; the ScreenScraper frontend
 is byte-identical to the accepted candidate. The owner subsequently confirmed
 that the Game Boy delay has disappeared when opening the new image with existing
 settings. Temporary remote test profiles were removed; no normal profile reset,
-driver/package change, Wohnzimmer-PC update, public release or push occurred.
+driver/package change, CachyOS Handheld update, public release or push occurred.
 
 ## Private GitHub 1.0 release (25 October 2026)
 
@@ -737,7 +737,7 @@ The installer completion page receives no technical graphics hint, per the
 owner's corrected requirement. See [LINUX_GRAPHICS_AND_SHADERS.md](LINUX_GRAPHICS_AND_SHADERS.md)
 for the current validation and handoff state. Development is isolated from
 parallel README/getting-started edits; no system package/driver installation or
-Wohnzimmer-PC change is part of the repair.
+CachyOS Handheld change is part of the repair.
 
 The initial packaged laptop candidate passed 21 distinct GPU start/render cases
 across 3DO/Game Boy/SNES/N64 and all 14 curated effects. Every effect's Slang
@@ -759,7 +759,7 @@ compilation evidence, and empty-profile provision again validates 14/142.
 Normal laptop configuration hashes are unchanged; all four owned remote
 temporary probe roots are removed. Visible popup/full gameplay/controller-exit,
 standalone gameplay and other compositor/GPU acceptance remain separate.
-No normal MainRig setup, driver/package change, menu image replacement, push
+No normal Garuda setup, driver/package change, menu image replacement, push
 or publication is performed. Explicit-None validation follows in
 [LINUX_GRAPHICS_AND_SHADERS.md](LINUX_GRAPHICS_AND_SHADERS.md).
 
@@ -781,10 +781,10 @@ to the recorded automated/startup evidence. The response does not enumerate
 individual games, hosts, controller-exit or exceptional-effect popup scenarios;
 their detailed acceptance limits remain as documented in the graphics report.
 
-## MainRig aborted setup rollback (25 October 2026)
+## Garuda aborted setup rollback (25 October 2026)
 
 After a later setup attempt failed while installing host emulators, the owner
-requested rollback on MainRig, explicitly included older normal RetroArch/shadPS4
+requested rollback on Garuda, explicitly included older normal RetroArch/shadPS4
 data and restricted removal to this local PC. A fresh inventory identified six
 local Btrfs targets, with no symlinks or nested mounts. Per-entry identity checks
 preceded removal of 414 entries (323 regular files, 2,215,167,556 logical bytes):
@@ -811,7 +811,7 @@ All six targets are absent; no Embercade cache, classic prefix/launcher,
 application-menu/desktop entry or Steam shortcut remains. The check creates no
 new profile and does not start the AppImage or an emulator.
 
-The config parent remains solely for the protected `WohnzimmerPC` SSH key.
+The config parent remains solely for the protected `CachyOS Handheld` SSH key.
 Its bytes/permissions, the owner's current AppImage (the verified AutoGraphics
 payload `233f1745…`), encrypted ScreenScraper backup and manual xpadneo file
 pass before/after identity checks. No live ScreenScraper credential files were
@@ -823,14 +823,14 @@ performed. This is a user-state reset, not a fresh controller-driver baseline.
 Network drives, original collections/PPSSPP assets, shared scraped media,
 installation material, external development SSD/repository/builds and backups
 are outside every deletion target. Other applications, Steam data and the
-Wohnzimmer-PC are unchanged. No source change, build, new package install,
+CachyOS Handheld are unchanged. No source change, build, new package install,
 system-update rollback, push or automatic setup is part of this operation.
 Exact inventory, plan, removal journal, protected identities, package snapshots
 and German report are retained in the private development audit folder
-`.work/mainrig-rollback-2026-10-25-m2dy1awr/`. Logical bytes do not establish
+`.work/garuda-rollback-2026-10-25-m2dy1awr/`. Logical bytes do not establish
 physical space reclaimed from Btrfs snapshots.
 
-## MainRig Reddit-demo cleanup (10 October 2026)
+## Garuda Reddit-demo cleanup (10 October 2026)
 
 The owner reports personal Embercade 1.0 acceptance complete and requested a
 new clean user setup for the recording. Fresh inventory, dependency checks and
@@ -853,7 +853,7 @@ The read-only first-run state is unconfigured: no saved language/ROM/BIOS paths,
 zero managed cores, no managed providers or prepared Xemu files. No normal test
 profiles, old desktop/Steam entries or portable AppImage profiles remain. KDE's
 menu cache was refreshed. The config parent contains only the preserved private
-`WohnzimmerPC` SSH key. Git object connectivity passed; protected SSH/Git files,
+`CachyOS Handheld` SSH key. Git object connectivity passed; protected SSH/Git files,
 installation material and final image passed a byte/metadata comparison. Shared
 ROM/BIOS/media and backups received no writes. Network-root checks account for
 CIFS automount identity changes; local roots and protected top-level entries
@@ -872,7 +872,7 @@ The final FileChooser-named AppImage remains at its handoff location with its
 checksum and manifest: source `e084416db1aa4fd30237d24f3bb2ca178db2a2fd`, SHA-256
 `14184e152a4030e84235cadc66c611352c8e1fe0b8f52475720df527dbaa40a3`.
 No image launch/build, emulator installation, application source change or
-WohnzimmerPC access occurred in this cleanup. Only documentation is committed;
+CachyOS Handheld access occurred in this cleanup. Only documentation is committed;
 the user performs the next installation personally. See
 [REDDIT_DEMO_CLEANUP.md](REDDIT_DEMO_CLEANUP.md) for removals, recovery and limits.
 The following installation/build records are retained as historical evidence.
@@ -888,7 +888,7 @@ the Guide shift parameter, then reconnect and inspect synthetic mouse buttons.
 Foreign host settings and normal emulator profiles remain untouched. See
 [CONTROLLER_SETUP.md](CONTROLLER_SETUP.md) for the transaction and test scope.
 
-On MainRig, the owner confirmed Game Boy Guide + Start exit after a manual
+On Garuda, the owner confirmed Game Boy Guide + Start exit after a manual
 xpadneo shift-mode adjustment. A subsequent blocked physical mouse was traced
 to two held keys on the driver's synthetic mouse; targeted controller
 disconnect/reconnect restored clicks and cleared all keys. The owner confirmed
@@ -929,7 +929,7 @@ were unchanged. Packaging/deployment evidence is in
 apply/undo is still explicitly awaiting fresh-host interactive acceptance.
 
 On 10 October 2026, the owner tested the new Controller & Hotkeys live test
-in this AppImage on MainRig with the existing configuration and confirmed that
+in this AppImage on Garuda with the existing configuration and confirmed that
 Start + Guide works and the physical mouse remains normally usable. This is
 real interactive acceptance of the installer chord test and continued desktop
 mouse operation on the already adjusted host. It does not establish fresh-host
@@ -1002,9 +1002,9 @@ Final-polish image and sidecars were replaced by the verified FileChooser build
 under `~/AppImage/`, with existing profile metadata unchanged.
 
 After the historical deployment recorded below, the owner explicitly approved
-removal of MainRig's previous test installation/profiles and its test-only host
+removal of Garuda's previous test installation/profiles and its test-only host
 emulators. Original sources, development data, shared system dependencies,
-encrypted ScreenScraper backup and WohnzimmerPC were preserved. New chooser
+encrypted ScreenScraper backup and CachyOS Handheld were preserved. New chooser
 validation uses disposable development profiles; it must not reinstall host
 emulators or consume the owner's personal clean-install acceptance.
 
@@ -1058,7 +1058,7 @@ nor active user EEPROM/HDD was modified by this work; tests use disposable state
 The format editor is implemented and validated offline against native-generated
 EEPROM; visible dashboard/game acceptance remains separate.
 
-ScreenScraper is **working, user-confirmed on MainRig (10 October 2026)** in
+ScreenScraper is **working, user-confirmed on Garuda (10 October 2026)** in
 the new AppImage. The owner identified the reported problem as a user-side issue
 and explicitly confirmed successful operation; the incident is closed without
 a code change. The earlier developer-only API success and personal-login
@@ -1078,15 +1078,15 @@ separate. The complete prior findings table remains in
 [GLOBAL_GARUDA_AUDIT.md](GLOBAL_GARUDA_AUDIT.md).
 
 Both reference hosts now have the final-polish AppImage built from clean source
-`bd3d2cb4db67eb8b34948e3007c73e743c2b2acf` (10 October 2026). MainRig uses the
+`bd3d2cb4db67eb8b34948e3007c73e743c2b2acf` (10 October 2026). Garuda uses the
 new managed local AppImage and Games-menu integration; its installed Doctor
-passes. WohnzimmerPC's existing Steam-target AppImage was replaced at the same
+passes. CachyOS Handheld's existing Steam-target AppImage was replaced at the same
 durable filename, and its classic installation was updated through the verified
 payload installer. Both remote start paths pass Doctor; classic verification
 reports ALREADY UP TO DATE. Steam's appid, shortcut bytes and artwork are
 unchanged, with the prior image retained for rollback. Preservation checks cover
-201,168 unchanged remote entries and 7,115 unchanged existing MainRig entries;
-MainRig adds only its four expected integration entries within Embercade XDG
+201,168 unchanged remote entries and 7,115 unchanged existing Garuda entries;
+Garuda adds only its four expected integration entries within Embercade XDG
 roots. Profile comparison includes the present RetroArch/Dolphin/PCSX2/RPCS3/
 Xemu config/data roots. Small readable files were content-hashed; large files and one unreadable
 remote cache log were checked by metadata. No host packages, normal emulator
@@ -1142,26 +1142,26 @@ stripping and removal of local pip PEP610 origin records from the Stage copy
 prevent private build-source URLs from being shipped; package identity,
 license notices and the development source/runtime remain unchanged.
 
-MainRig AppImage acceptance is user-confirmed: 1.0 splash/menu, preserved active
+Garuda AppImage acceptance is user-confirmed: 1.0 splash/menu, preserved active
 theme and controller navigation, one ScreenScraper request, Libretro,
 Xemu/Dolphin 4:3 bezels, Xenia and shadPS4 with image/audio/input, exit to the
 same frontend and Quit Embercade. No frontend/provider process or FUSE mount
 remained after quit. The classic path also passes a user-confirmed game/exit/
 quit regression and installed Doctor. The initial normal updates preserved
-16,062 MainRig and 198,102 WohnzimmerPC inventoried XDG entries (only the
-owned install manifest is excluded). WohnzimmerPC's AppImage start from the
+16,062 Garuda and 198,102 CachyOS Handheld inventoried XDG entries (only the
+owned install manifest is excluded). CachyOS Handheld's AppImage start from the
 real interactive Steam/Gamescope session is also user-confirmed: branding,
 splash, preserved theme/controller menu, Libretro and standalone game with
 decoration, Player-1 exit/return and Quit to Steam. No frontend/provider process
 or FUSE mount remains after quit. Steam retained appid `4059814080`; all foreign
 nodes and non-target fields are byte-identical, and existing artwork is unchanged.
-The owner subsequently confirmed the caption-free splash on MainRig. At the
-owner's request, the same cosmetic update was applied to WohnzimmerPC without
+The owner subsequently confirmed the caption-free splash on Garuda. At the
+owner's request, the same cosmetic update was applied to CachyOS Handheld without
 another visible test: its Doctor returned status 0, and preservation checks
 covered 198,109 inventoried entries with zero unexpected changes or additions.
-The final MainRig update preserved 16,161 inventoried entries with zero changes
+The final Garuda update preserved 16,161 inventoried entries with zero changes
 or additions. These update/diagnostic checks are separate from the previously
-completed interactive AppImage E2E on both hosts and the classic MainRig
+completed interactive AppImage E2E on both hosts and the classic Garuda
 game/exit/quit regression.
 
 At the original AppImage milestone, the source suite passed **578 tests**; runtime, frontend-library, shader
@@ -1261,7 +1261,7 @@ The existing theme-independent product splash policy remains in place; the
 product label is also used by About/system information,
 window title, wizard, desktop metadata and new/explicitly updated Steam entries.
 The former `EMBERCADE 0.5` label was user-confirmed with both Carbon and AI-Hypertocera on
-MainRig/Hyprland and in the WohnzimmerPC's real interactive Steam/Gamescope
+Garuda/Hyprland and in the CachyOS Handheld's real interactive Steam/Gamescope
 session. Theme styling follows the selected theme without changing the
 product text. The second-host acceptance used the user's manual Steam launch,
 not an SSH-only startup. Product splash and controller menu remain accepted
@@ -1349,7 +1349,7 @@ pinned catalog supplies system/core mappings and extensions. Missing,
 incomplete or unreadable `.info` never blocks READY or PREPARED; missing core
 libraries, unverified ABI and unresolved dependencies still do.
 
-The MainRig's 291 `.info` files are unchanged files of the signature-validated
+The Garuda's 291 `.info` files are unchanged files of the signature-validated
 Arch `extra` package `libretro-core-info 1.22.2-1`, installed as a dependency of
 Nestopia on 2026-09-24 (package database, integrity check and transaction log).
 They are not a manual Embercade import or setup residue. The second host has
@@ -1394,7 +1394,7 @@ Production Stage/offline payload and installed Doctor pass. Both reference
 hosts report the same 40/51/92/74 coverage; comparison of every system's
 status/reason/effective emulator/core/BIOS/extensions/proof also matches.
 
-MainRig real regression acceptance covers NES/Libretro, 3DO, PCSX2 and Xenia:
+Garuda real regression acceptance covers NES/Libretro, 3DO, PCSX2 and Xenia:
 image, audio, controller, configured exit and return to the existing frontend.
 The corresponding real interactive Steam/Gamescope tests pass on the second
 host, including Quit Embercade back to Steam and no remaining frontend/game
@@ -1426,7 +1426,7 @@ SDL drivers and normal host profiles are not changed.
 The corrected PCSX2 run recognizes the Xbox pad as SDL-0; user-confirmed
 control/Guide+Start return and another real Wii control/pointer/exit test pass.
 
-MainRig user acceptance in **Super Mario Galaxy** confirms image/audio,
+Garuda user acceptance in **Super Mario Galaxy** confirms image/audio,
 RVL-003 buttons, Nunchuk stick/C/Z, IR pointer, motion and rumble through a
 Mayflash DolphinBar in mode 4 (`057e:0306`), synchronized as player 1.
 Wireless disconnect/reconnect succeeds within Dolphin and within the same
@@ -1436,7 +1436,7 @@ This real evidence permits Wii READY for the tested standalone route,
 not universal peripheral support.
 
 The same hardware is independently accepted in **Super Mario Galaxy** on the
-WohnzimmerPC, started from the real interactive Steam/Gamescope session:
+CachyOS Handheld, started from the real interactive Steam/Gamescope session:
 image/audio, real buttons, Nunchuk stick/C/Z, IR, motion, rumble, wireless
 reconnect inside Dolphin/the frontend, relaunch and Select+Start return to the
 same frontend. Native Source 2, continuous scanning, a receiver HID handle and
@@ -1458,7 +1458,7 @@ attachment after frontend start requires restarting the frontend to expose
 new HID nodes. See [WII_CONTROLLERS.md](WII_CONTROLLERS.md) for the exact policy.
 
 The Dolphin Libretro alternative is not an implemented desktop route:
-MainRig's core is present, but selecting it for GameCube reaches Configgen
+Garuda's core is present, but selecting it for GameCube reaches Configgen
 without the central exact-core handoff and aborts with `MissingCore` before
 RetroArch starts. Standalone Dolphin remains the validated choice. This is
 a diagnosed separate port, not repaired or substituted in this sprint.
@@ -1472,7 +1472,7 @@ hardware probe in structural tests, scoped SDL policy/restoration, source and
 host-profile isolation, optional hardware Doctor and production device mounts.
 Runtime, frontend-library and shader smokes (14 presets/142 dependency files),
 Production Stage/offline payload, staged and installed Doctor pass.
-MainRig also confirms the Auto/gamepad Wii fallback with the remote off,
+Garuda also confirms the Auto/gamepad Wii fallback with the remote off,
 NES/Libretro, 3DO, PCSX2, Xenia and shadPS4 launch/exit regressions, and normal
 Quit Embercade to the desktop. The warm native splash is measured at 2,750 ms.
 Normal updates preserve inventoried user config, saves/states, themes, managed
@@ -1521,7 +1521,7 @@ Startup error/quit bypasses the minimum and cleans up normally. SDL tick
 wraparound, short/long loads and failure cleanup are covered by native timing
 tests. One non-secret startup diagnostic records the measured visible time.
 Product branding remains `EMBERCADE 0.5`; theme changes do not replace it.
-Native diagnostics measure **2,750 ms on both reference hosts**. MainRig and
+Native diagnostics measure **2,750 ms on both reference hosts**. Garuda and
 the real Steam/Gamescope session visibly confirm the clean transition without
 black intermission, desktop flash or duplicate splash. Longer-load behavior
 and failure cleanup are structural/native timing tests, not invented live
@@ -1563,7 +1563,7 @@ BIOS must have an exact upstream filename/hash directly in the configured
 BIOS root; files are never copied or renamed. Existing core resolution,
 controller mapping/exit presets, curated shader staging and console-overlay
 generation are reused. The full suite passes 459 tests and both explicit CUE
-dry runs are clean. MainRig's user-confirmed two-game acceptance includes
+dry runs are clean. Garuda's user-confirmed two-game acceptance includes
 image, sound, input, `consoles`, correct proportions, `crt-easymode`, Guide+Start
 and return to the same frontend process, followed by normal Quit Embercade.
 Both launcher runs exit 0, and no emulator/frontend remains. The real
@@ -1783,19 +1783,19 @@ unless an explicit Batocera option changes them; invalid JSON is reported and
 kept, not reset. Synthetic generator tests isolate every XDG root and never
 boot fixture content or write real user configuration.
 
-MainRig's user-supplied shadPS4 v0.19.0 build
+Garuda's user-supplied shadPS4 v0.19.0 build
 `c7e065d1b415be16c23e260a21f1dd8bbfc4cb57` reaches actual PS4 gameplay with
 image, audio and controller input on host RADV/Wayland. The configured
 Guide+Start chord returns launcher status 0 to the same frontend PID; the
 provider process and AppImage mount are gone, followed by normal frontend
 quit. Source AppImage, game executable and normal host profile fingerprints
-are unchanged. This permits MainRig PS4 **READY**, not universal PS4/title
+are unchanged. This permits Garuda PS4 **READY**, not universal PS4/title
 compatibility. Title-specific fonts, modules, keys, firmware and patches remain
 user-supplied requirements; warnings do not imply that those files are bundled.
 The known initial invalid GPU index came from an incorrectly isolated test
 fixture, not the user's host profile; fixture isolation is now regression-tested.
 
-The WohnzimmerPC received the same user-approved AppImage via SSH and the
+The CachyOS Handheld received the same user-approved AppImage via SSH and the
 same managed importer; its identity/hash/runtime dependencies pass. Actual
 Bloodborne gameplay, image, audio and controller input are user-confirmed in
 the real interactive Steam/Gamescope session. Select+Start returns status 0 to
@@ -1949,17 +1949,17 @@ Hyprland uses a native input-transparent layer tied to focus/workspace events.
 Gamescope is a required target and has its own external-overlay-plane backend;
 its physical DRM output size is separate from the Xwayland game resolution.
 The latter distinction was exposed by a 1080p game on the second host's 4K TV.
-MainRig's PCSX2/Xemu Hyprland prototypes were visually accepted, including
+Garuda's PCSX2/Xemu Hyprland prototypes were visually accepted, including
 workspace binding and cleanup. On 2026-09-27 both integrated production routes
 were visually accepted on the second host under Gamescope, including fresh
 PCSX2 startup and Xemu's SDL surface without an EWMH fullscreen atom. The
 external overlay uses the physical 4K surface while the game remains at its
 logical 1080p resolution. The final Xemu run returned launcher status 0;
 emulator and decoration helper were gone while the same frontend remained.
-The MainRig's later missing Xemu frame was traced to its preserved `Auto`
+The Garuda's later missing Xemu frame was traced to its preserved `Auto`
 aspect setting: the helper reserves a possible 16:9 game frame and cannot
 draw safe side art on a 16:9 display. The second host had explicit 4x3.
-Choosing 4:3 on the MainRig restored the existing frame without changing the
+Choosing 4:3 on the Garuda restored the existing frame without changing the
 windowing code or decoration asset. The Dolphin extension uses the same helper,
 existing GameCube/Wii console art and Batocera's generated aspect/TV mode;
 wide/unknown modes fail closed. It neither moves Dolphin nor changes Wii
@@ -1969,11 +1969,11 @@ this is not a generic KDE or all-emulator bezel support claim. See
 session limitations and acceptance details.
 
 The GameCube/Wii extension and current Xemu 4:3 route now have visible
-production acceptance on both reference hosts. MainRig/Hyprland confirms
+production acceptance on both reference hosts. Garuda/Hyprland confirms
 GameCube and Wii frames, Xemu's restored frame, gamepad +/−/Home in emulated
-Wii mode, and Player-1 return. WohnzimmerPC's real Steam/Gamescope session
+Wii mode, and Player-1 return. CachyOS Handheld's real Steam/Gamescope session
 confirms Xemu, GameCube and Wii frames, native DolphinBar/Nunchuk/IR pointer,
-gamepad Select+Start and Quit Embercade back to Steam. GameCube on MainRig
+gamepad Select+Start and Quit Embercade back to Steam. GameCube on Garuda
 also passes the translated Bluetooth-Player-1 exit chord. Missing art,
 `Decoration=None` and unsupported aspect/compositor conditions remain
 non-blocking. The full 542-test suite, runtime/frontend-library/shader smokes,
@@ -2001,7 +2001,7 @@ separate from writable themes. No downloaded theme is rewritten or bundled.
 The Theme Library milestone passed 350 tests, including an actual Bubblewrap
 writable-theme/read-only-branding check and theme/selection reinstall coverage.
 Runtime, frontend-library and shader smokes, Production Stage and staged/
-installed MainRig Doctor pass. MainRig Hyprland acceptance confirms the real
+installed Garuda Doctor pass. Garuda Hyprland acceptance confirms the real
 AI-Hypertocera download/install, Carbon round trip, controller navigation,
 Xemu launch/return and complete restart with the unchanged Embercade splash.
 Theme selection persists across restart and Desktop/Steam artwork hashes stay
@@ -2048,7 +2048,7 @@ reject writable XDG roots inside the immutable prefix or `$APPDIR`. See
 [STATE_AND_SECRETS.md](STATE_AND_SECRETS.md). This is a state/security
 boundary, not a resolution of public-release licensing.
 
-MainRig and the real WohnzimmerPC Steam/Gamescope session both migrated the
+Garuda and the real CachyOS Handheld Steam/Gamescope session both migrated the
 personal account, passed a live single-title ScreenScraper check and a short
 emulator start/exit. Their installed Doctors are green, 541 tests and the
 runtime/library/shader smokes pass, and normal update plus identical no-op
@@ -2060,7 +2060,7 @@ Production retains read-only collection/BIOS mounts and grants only original
 system gamelist plus four upstream media destinations writable submounts. The
 upstream relative-media/XML model, provider UI, system mapping and quota/retry
 behavior remain in use, not a second scraper or database. Existing lists,
-media and normal update state are preserved. MainRig visibly validates two
+media and normal update state are preserved. Garuda visibly validates two
 individual 3DO games, descriptions/previews/images/video/manuals, controller
 launch/exit/return and original-system gamelist with relative, existing media.
 Non-purge reinstall and subsequent true no-op update preserve fingerprinted
@@ -2116,10 +2116,10 @@ numbering for Bluetooth pads with extra system keys, without changing the
 user's GameCube `Rotate Face Buttons` setting.
 The same translation now covers Dolphin's Player-1 `Hotkeys.ini` exit chord;
 the earlier Bluetooth case had working game controls but mismatched exit
-button slots. MainRig's installed Bluetooth-Player-1 GameCube launch generated
+button slots. Garuda's installed Bluetooth-Player-1 GameCube launch generated
 matching hotkey/gamepad slots and Guide+Start returned to the same frontend.
 
-Visible MainRig/Hyprland acceptance uses an Xbox 360 USB-receiver pad as P1 and
+Visible Garuda/Hyprland acceptance uses an Xbox 360 USB-receiver pad as P1 and
 an Xbox Series Bluetooth pad as P2. Both work in EmulationStation. NES Contra
 has independent P1/P2 input with correct D-pads/face buttons; reconnecting
 either player during gameplay restores both to their previous figures. P2
@@ -2129,18 +2129,18 @@ physical face-button behavior after the Dolphin correction. Single-player 3DO
 and Wii/gamepad start/control/exit regressions also passed. See
 [MULTI_CONTROLLER.md](MULTI_CONTROLLER.md) for the exact scope and limits.
 
-The WohnzimmerPC's real Steam/Gamescope session separately validates a generic
+The CachyOS Handheld's real Steam/Gamescope session separately validates a generic
 USB Xbox-style P1 pad and Xbox Series Bluetooth P2 pad in Contra and GameCube
 Mario Kart: Double Dash!!: independent input, correct face buttons, P2 live
 reconnect in Contra, P1 exit and return to the same frontend. Its normal offline
-update and the MainRig installation have the same verified Stage manifest;
+update and the Garuda installation have the same verified Stage manifest;
 installed Doctor is green on each host. PCSX2 and Xenia single-player
 launch/input/exit regressions passed there as well. Identical-model pad
 reconnect and standalone in-emulator reconnect remain unvalidated.
 
 Real Wiimote wireless reconnect inside Dolphin is E2E validated on both hosts
 as described above; RetroArch's two-player live reconnect is now separately
-validated on MainRig. Dolphin, PCSX2, RPCS3 and Xemu retain their native
+validated on Garuda. Dolphin, PCSX2, RPCS3 and Xemu retain their native
 in-game hotplug behavior, which this test does not certify. Embercade adds no
 second input daemon or global remapping layer.
 
@@ -2255,13 +2255,13 @@ cores/providers, PPSSPP assets, Steam metadata/artwork and external collection
 references. Purge remains separate and explicit. The updated installer does not
 download releases or implement version archives/general rollback. The verified
 `69da88c` offline payload (`bbfddb109650` Stage-manifest prefix; 9,658 files)
-passed changed-update and repeated-identical no-op on MainRig and WohnzimmerPC.
+passed changed-update and repeated-identical no-op on Garuda and CachyOS Handheld.
 Pre/post metadata inventories of all four Embercade XDG roots, excluding only
 the owned install manifest, were identical on both hosts immediately after
 update. Steam shortcut/artwork file hashes were also unchanged. Both installed
 Doctors passed. The user then confirmed branding, theme, controller, Xenia
-play/Select+Start/return and Quit Embercade on MainRig/Hyprland and from the
-real interactive WohnzimmerPC Steam/Gamescope session; both launcher traces
+play/Select+Start/return and Quit Embercade on Garuda/Hyprland and from the
+real interactive CachyOS Handheld Steam/Gamescope session; both launcher traces
 ended with status 0 and the second host retained no provider or AppImage mount.
 No SSH-only startup is counted as visible acceptance.
 
@@ -2277,7 +2277,7 @@ explicit choice. The installed `embercade wizard` command also permits a
 manual recheck; the CLI setup path remains available for headless use. The
 central Embercade icon and `EMBERCADE 1.0` label now identify the wizard;
 the earlier development label was `EMBERCADE 0.5`. Packaging remains `0.1.dev0`.
-The subsequent MainRig clean-install acceptance expanded that same wizard with
+The subsequent Garuda clean-install acceptance expanded that same wizard with
 a dedicated PSP/Xemu system-files step. It validates the user-selected official
 PPSSPP assets (`ppge_atlas.zim`, `lang/`, `flash0/`) with the runtime validator
 and stores a read-only source path; Xemu's existing preparation backend makes
@@ -2289,7 +2289,7 @@ configured PSP path and read-only status for managed cores, Xenia and Xemu;
 import source fields deliberately remain blank because the sources are not
 persisted. Back/forward navigation retains unsubmitted field values.
 
-The user completed a true zero-installed MainRig setup, including external
+The user completed a true zero-installed Garuda setup, including external
 ROM/BIOS roots, controller shortcut, managed cores/Xenia, PSP assets, Xemu
 files and optional Steam registration. Installed Doctor passed all checks;
 real Xenia and Libretro-PPSSPP games had image, sound, controller exit and
@@ -2298,12 +2298,12 @@ and Quit-to-desktop were confirmed. The subsequent changed-payload user-local
 update preserved the configuration and managed Xenia/Xemu file hashes and the
 config/data inventories; an identical-payload update preview was a no-op. The
 445-test suite, runtime/frontend-library/shader smokes and Production Stage
-passed for this change. The WohnzimmerPC was deliberately not modified or
-revalidated in this MainRig-only follow-up; prior two-host wizard evidence
+passed for this change. The CachyOS Handheld was deliberately not modified or
+revalidated in this Garuda-only follow-up; prior two-host wizard evidence
 below is for the earlier feature revision.
-The installed MainRig build confirmed the branded window, controller
+The installed Garuda build confirmed the branded window, controller
 navigation, existing-setup/Doctor completion and normal frontend splash,
-theme, controller menu and quit-to-desktop. On the WohnzimmerPC, the installed
+theme, controller menu and quit-to-desktop. On the CachyOS Handheld, the installed
 wizard's same controller/Doctor route was visibly accepted in KDE Wayland;
 the existing Steam shortcut then passed splash, theme, controller menu and
 quit-back-to-Steam in the real interactive Gamescope session. This does not
@@ -2312,7 +2312,7 @@ claim that the wizard itself was tested inside Gamescope. The implementation's
 build and Stage Doctor passed. Both installed Doctors passed. Both hosts have
 the same `d521c0557eb7` Stage-manifest SHA-256 prefix. The normal second-host
 update retained the pre-update config hashes and file counts for config,
-saves, themes, providers and PPSSPP assets; MainRig's normal update likewise
+saves, themes, providers and PPSSPP assets; Garuda's normal update likewise
 retained its inventoried user data. The source checkout remains private.
 
 HTPC/External Apps and the Batocera-ES GLES3 renderer optimization are not 0.5 blockers.
@@ -2370,8 +2370,8 @@ See [STEAM_INTEGRATION.md](STEAM_INTEGRATION.md) for file names, account selecti
 recovery, offline-format references and limits.
 
 Automatic native Steam registration is now validated on both reference hosts.
-MainRig passed its normal reinstall and user-operated Steam launch. The
-WohnzimmerPC, running CachyOS Handheld Edition with Steam/Gamescope, received the
+Garuda passed its normal reinstall and user-operated Steam launch. The
+CachyOS Handheld, running CachyOS Handheld Edition with Steam/Gamescope, received the
 normal offline update built from `9ebdca3`. It has no Embercade Git checkout;
 the user explicitly chose payload/manifest verification rather than a new clone.
 Both installed payloads were fully hash-verified against the same stage manifest
@@ -2405,8 +2405,8 @@ The apparent missing bezels did not require a code fix: the checked PCSX2
 selections retained `ps2.bezel=none`, while Steam's visible MangoApp performance
 overlay occupied Gamescope's external-overlay slot during Xemu. Turning that
 performance overlay off and relaunching Xemu restored the bezel. Embercade does
-not displace another overlay or override Decoration=None. MainRig's user also
-reported the bezel concern resolved; no fresh MainRig emulator-matrix acceptance
+not displace another overlay or override Decoration=None. Garuda's user also
+reported the bezel concern resolved; no fresh Garuda emulator-matrix acceptance
 is implied. See [STANDALONE_DECORATIONS.md](STANDALONE_DECORATIONS.md).
 
 The full 345-test suite, including the Steam/first-run tests, runtime and
@@ -2591,9 +2591,9 @@ configuration and its private XDG runtime remain isolated. The transient
 provider unit uses `KillMode=mixed`: on a requested stop the host runner first
 stops only its owned Xenia process group, then completes its existing scoped
 AppImage/FUSE cleanup before the unit exits. An earlier control-group stop
-could time out and leave an AppImage mount; the MainRig retest with the updated
+could time out and leave an AppImage mount; the Garuda retest with the updated
 runner returned launcher status 0, kept the same frontend process and left no
-Xenia process or mount. The real WohnzimmerPC Steam/Gamescope test also returned
+Xenia process or mount. The real CachyOS Handheld Steam/Gamescope test also returned
 launcher status 0, kept the same frontend process, left no mount and quit back
 to Steam normally.
 
@@ -2623,11 +2623,11 @@ it adds no provider framework, downloads, links or emulator binaries. Safe
 copy publication remains atomic/exclusive, and changed sources cannot leave a
 partial target. A normal install/update/uninstall preserves imported provider
 and config bytes, modes and mtimes, covered by a direct regression test. The
-reference-host metadata probes pass using unsquashfs on MainRig and existing
-7z on WohnzimmerPC. Both hosts passed normal committed-payload updates, setup
+reference-host metadata probes pass using unsquashfs on Garuda and existing
+7z on CachyOS Handheld. Both hosts passed normal committed-payload updates, setup
 reuse and Doctor without reimporting the byte-identical managed Xenia provider.
 Visible Xenia play, controller exit and return to the same frontend passed on
-MainRig/Hyprland and in the WohnzimmerPC's real Steam/Gamescope session.
+Garuda/Hyprland and in the CachyOS Handheld's real Steam/Gamescope session.
 Provider, theme, core and PPSSPP resource metadata survived the second-host
 update; subsequent game-generated config/save writes are not attributed to the
 installer. No compatibility/READY status is changed by this provider-polish
@@ -2790,7 +2790,7 @@ The complete console-decoration provenance evidence is now durable in
 [BEZEL_PROVENANCE.json](BEZEL_PROVENANCE.json): 302 exact shipped paths,
 150 PNG / 151 INFO / one LAY, 33 retained links and 187 resolved content blobs.
 Recipe overlay winners and final symlink targets match the captured reference,
-existing stage and MainRig installation. Pinned histories cover 466 source
+existing stage and Garuda installation. Pinned histories cover 466 source
 paths and 89 commits, with introductions, changes, heuristic copy/rename
 boundaries and separate author/committer metadata. Contributions/specific
 credits associate 231 paths with Duimon, 10 with Mikael42 and 17 with

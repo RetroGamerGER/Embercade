@@ -31,8 +31,8 @@ The same translation is used for Dolphin's Player-1 `Hotkeys.ini` exit chord;
 otherwise a Bluetooth pad with an extra system key could steer the game but
 fail to exit. If the OS still reports another pad as connected, it can be
 selected as Player 1 at launch even when the user intends to use a different
-pad. The WohnzimmerPC reported an Xbox Bluetooth pad while the user was using
-one at MainRig; whether this was a stale link or another same-named device was
+pad. The CachyOS Handheld reported an Xbox Bluetooth pad while the user was using
+one at Garuda; whether this was a stale link or another same-named device was
 not established. Embercade does not rewrite or disconnect the host device;
 check the actual live Player-1 assignment if another pad's exit chord fails.
 When the bitmap is unavailable or inconsistent, generation falls back to the
@@ -45,7 +45,7 @@ native Real Wiimote path and its existing Auto/gamepad fallback stay separate.
 
 ## Visible acceptance and limits
 
-On MainRig/Hyprland, the tested pair is an Xbox 360 controller through its USB
+On Garuda/Hyprland, the tested pair is an Xbox 360 controller through its USB
 receiver (Player 1) and an Xbox Series controller over Bluetooth (Player 2).
 Both navigate the frontend. NES Contra has independently working two-player
 controls, D-pads and face buttons. Either player's disconnect/reconnect during
@@ -73,7 +73,7 @@ sessions. No global SDL reorder or host-profile workaround is applied; the
 validated single-controller Bloodborne route is unaffected. See
 `PROJECT_STATE.md` for the exact upstream revision and scope.
 
-On WohnzimmerPC/CachyOS Handheld Edition, the tested pair is a generic
+On CachyOS Handheld/CachyOS Handheld Edition, the tested pair is a generic
 USB Xbox-style pad (Player 1) and an Xbox Series Bluetooth pad (Player 2).
 The user launched Embercade in the real Steam/Gamescope session. NES Contra
 again had two independent players with correct D-pad/face buttons, and both

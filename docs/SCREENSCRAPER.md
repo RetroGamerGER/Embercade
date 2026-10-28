@@ -47,7 +47,7 @@ for credential-bearing requests, private account persistence and disabled
 process dumps are retained. URLs/raw response bodies are not logged. Access,
 quota, account and network errors remain truthful with value-free user messages.
 
-The October 10 owner-confirmed MainRig scraper success and earlier two-host
+The October 10 owner-confirmed Garuda scraper success and earlier two-host
 records below describe the old runtime-file deployment. They are historical;
 they do not establish the new image's clean personal-account/media/restart
 acceptance, which remains a separate laptop check.
@@ -101,9 +101,9 @@ of a credential file in Stage. They use invented fixture values only.
 ### Historical two-host evidence
 
 The detailed checks below describe earlier working installations. The current
-MainRig confirmation and its scope are recorded at the top of this document.
+Garuda confirmation and its scope are recorded at the top of this document.
 
-MainRig acceptance covers two individual 3DO titles, `Alone In The Dark 2`
+Garuda acceptance covers two individual 3DO titles, `Alone In The Dark 2`
 and `Road Rash (Europe).cue`: description, preview, selected images, video and
 manual are confirmed visible. Both saved entries have relative media paths;
 all 14 media files exist. Game launch, controller exit and return also pass.
@@ -131,9 +131,9 @@ content-hash claim is inferred from it. Both hosts receive the final documented
 revision through the supported installer, with manifest/file-hash verification.
 
 The two reference hosts currently share the external collection. The second
-host's successful scrape therefore also updates the MainRig-visible gamelist
+host's successful scrape therefore also updates the Garuda-visible gamelist
 and media. The final preservation baseline is taken after both tests, not
-before that intended metadata change; all 14 earlier MainRig media files and
+before that intended metadata change; all 14 earlier Garuda media files and
 nine selected ROM/CUE fingerprints still match. Do not run simultaneous
 scrapes/frontend sessions writing the same system gamelist from different hosts:
 upstream saves its session's list, without a cross-host merge or locking layer.

@@ -69,14 +69,14 @@ retained below; the current product and image use `EMBERCADE 1.0`.
   Doctor output and isolated RPCS3 firmware-install handoff. This is not a
   public-release claim.
 - Branding integration implemented: Embercade hicolor application icon, native
-  4K startup splash and local Steam artwork. MainRig install checks and the
-  WohnzimmerPC normal offline update pass. Optional native Steam shortcut/artwork
+  4K startup splash and local Steam artwork. Garuda install checks and the
+  CachyOS Handheld normal offline update pass. Optional native Steam shortcut/artwork
   registration is now integrated into interactive first run and the explicit
   `embercade steam` command, with account selection, backups and idempotent
   preservation of foreign entries. Flatpak Steam host-launcher integration
   remains deferred. Fresh automatic registration, byte-identical repeat runs
   and user-confirmed interactive Steam launches are accepted on both reference
-  hosts, including the WohnzimmerPC's real Gamescope session. At that milestone,
+  hosts, including the CachyOS Handheld's real Gamescope session. At that milestone,
   both installed runtimes matched the verified `9ebdca3` payload. User state was
   preserved by the normal update, and Xemu/bezel exit returned to the same
   frontend process without a remaining decoration helper. Normal frontend quit
@@ -85,27 +85,27 @@ retained below; the current product and image use `EMBERCADE 1.0`.
   catalogue/preview/download/install/activation, with persistent writable XDG
   themes and no separate downloader. AI-Hypertocera/Carbon switches, controller
   navigation, emulator return, full restart and normal reinstall are accepted
-  on MainRig Hyprland and real WohnzimmerPC Steam/Gamescope. Downloaded themes
+  on Garuda Hyprland and real CachyOS Handheld Steam/Gamescope. Downloaded themes
   and active selection survive reinstall. Product splash, icons and Steam
   artwork remain independent of the selected theme. Third-party theme license
   and compatibility guarantees are not implied; the project remains PRIVATE.
 - Global frontend product text completed: `EMBERCADE 0.5` was centrally
   supplied at build time, not patched into themes. Carbon and AI-Hypertocera
-  display the same text with their own styling on MainRig/Hyprland and real
-  WohnzimmerPC Steam/Gamescope. This visible product version does not change
+  display the same text with their own styling on Garuda/Hyprland and real
+  CachyOS Handheld Steam/Gamescope. This visible product version does not change
   the packaging identifier or constitute a public release.
 - Provider-management polish implemented in the existing setup/import/resolver:
   embedded AppImage identity, content-based reuse, safe conflict/ambiguity
   handling and explicit Doctor diagnoses. No provider downloads, binaries or
   parallel selection framework. Normal committed-payload updates preserved the
-  managed provider and user configuration on MainRig and WohnzimmerPC; Doctor,
+  managed provider and user configuration on Garuda and CachyOS Handheld; Doctor,
   visible Xenia launch, Select+Start cleanup and return to the same frontend
   passed on both, including the real Steam/Gamescope session. This milestone is
   complete without changing compatibility/READY status.
 - Update UX is complete on the existing verified Production Stage/offline
   installer: read-only preview, current/incoming payload identity, true no-op
   for an identical payload, post-activation verification and preserved-state
-  guidance. The MainRig and WohnzimmerPC passed changed-update, repeat no-op,
+  guidance. The Garuda and CachyOS Handheld passed changed-update, repeat no-op,
   Doctor and visible emulator/frontend acceptance; both installed the same
   9,658-file Stage payload. Automatic internet updates and full
   rollback/migration remain later work.
@@ -113,7 +113,7 @@ retained below; the current product and image use `EMBERCADE 1.0`.
 **Historical 0.5 status: feature-complete / feature freeze (private).** Its
 verified foundations carry into 1.0. The first 1.0 development feature was a
 graphical first-run wizard that delegates to the existing setup and Doctor
-backends. Its installed UI passed on MainRig/Hyprland and WohnzimmerPC/KDE;
+backends. Its installed UI passed on Garuda/Hyprland and CachyOS Handheld/KDE;
 the normal frontend path passed again from the latter's real Steam/Gamescope
 session. HTPC / External Apps and the Batocera-ES GLES3 renderer optimization
 are deferred. This is not permission to publish: unresolved asset licensing
@@ -124,8 +124,8 @@ are not stripped to force a public build.
 
 **Embercade 1.0 feature freeze reached.** Private AppImage packaging and central
 `EMBERCADE 1.0` branding are implemented. Both reference hosts have confirmed
-the requested real AppImage E2E. The caption-free splash is confirmed on MainRig
-and its matching WohnzimmerPC update passes Doctor/preservation checks.
+the requested real AppImage E2E. The caption-free splash is confirmed on Garuda
+and its matching CachyOS Handheld update passes Doctor/preservation checks.
 Two fresh full packaging builds with identical inputs produce byte-identical
 images/manifests. Private functional GO applies to the two tested AMD/CachyOS
 reference hosts; no additional features are accepted for 1.0.
@@ -133,12 +133,12 @@ The classic Production install is the golden reference. Public release stays
 blocked independently by the unresolved licensing/attribution gates.
 
 Current verification: 578 full-suite tests and runtime/frontend-library/shader/
-Stage Doctor smokes pass. MainRig has confirmed image startup/menu branding,
+Stage Doctor smokes pass. Garuda has confirmed image startup/menu branding,
 the active external theme, ScreenScraper, Libretro and Xemu 4:3 bezel/exit.
-The owner confirmed the complete requested image E2E in the WohnzimmerPC's
-real interactive Steam/Gamescope session; the classic MainRig regression passes
+The owner confirmed the complete requested image E2E in the CachyOS Handheld's
+real interactive Steam/Gamescope session; the classic Garuda regression passes
 as well. The final normal updates preserve the inventoried user state. The
-WohnzimmerPC cosmetic update had no additional visible run at the owner's
+CachyOS Handheld cosmetic update had no additional visible run at the owner's
 request. See [APPIMAGE.md](docs/APPIMAGE.md) for the supported-host private GO,
 packaging reproducibility and independent public-release blockers.
 
@@ -160,18 +160,18 @@ packaging reproducibility and independent public-release blockers.
   its original embedded logo/native loading text remains without an extra
   generated version line;
 - 3DO enabled through the existing generic Libretro/Opera route, with read-only
-  BIOS diagnostics and CUE/BIN catalog semantics; two-game MainRig acceptance
+  BIOS diagnostics and CUE/BIN catalog semantics; two-game Garuda acceptance
   and real interactive Steam/Gamescope second-host acceptance pass
   (see `docs/COMPATIBILITY_1_0.md`);
 - stable installer and upgrade contract;
 - native Wii Remote/Nunchuk/IR support through existing Dolphin/Batocera
-  settings (MainRig and interactive Steam/Gamescope DolphinBar-mode-4 gameplay,
+  settings (Garuda and interactive Steam/Gamescope DolphinBar-mode-4 gameplay,
   wireless reconnect and configured gamepad exit accepted;
   MotionPlus, direct Bluetooth/passthrough and multiplayer remain unvalidated;
   see `docs/WII_CONTROLLERS.md`);
 - multi-controller foundation using existing EmulationStation player preferences
   and Batocera generators, with real two-player NES/RetroArch and
-  GameCube/Dolphin acceptance on MainRig and in the second host's real
+  GameCube/Dolphin acceptance on Garuda and in the second host's real
   Steam/Gamescope session. RetroArch's tested unique-device live reconnect
   restores both players; P3/P4 hardware, identical-model
   reconnect and standalone hotplug remain open (see `docs/MULTI_CONTROLLER.md`);
@@ -180,14 +180,14 @@ packaging reproducibility and independent public-release blockers.
   physical hardware; wheel calibration/FFB, pointer focus and real hotplug
   need later device-specific acceptance (see `docs/SPECIAL_CONTROLLERS.md`);
 - optional user-supplied shadPS4 AppImage import and pinned PS4 launch route
-  (implemented; gameplay/input/audio/exit accepted on MainRig and the real
+  (implemented; gameplay/input/audio/exit accepted on Garuda and the real
   second-host Steam/Gamescope session; no downloads or native PATH fallback);
 - existing Batocera ES ScreenScraper integration with private runtime developer
   access and narrow gamelist/media writes (implemented; real two-host scrape,
   non-purge reinstall and no-op acceptance pass, see `docs/SCREENSCRAPER.md`);
 - polished controller-first setup and settings experience;
 - graphical first-run setup (implemented and accepted on both reference hosts),
-  now including MainRig clean-install PSP/Xemu source selection and retained
+  now including Garuda clean-install PSP/Xemu source selection and retained
   import status; clearer recovery and frontend emulator/core selection remain;
 - clearer per-theme license/compatibility presentation;
 - standalone Dolphin GameCube/Wii console bezels through the existing

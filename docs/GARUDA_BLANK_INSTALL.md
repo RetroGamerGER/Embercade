@@ -5,7 +5,7 @@ is superseded by task 10 in [GLOBAL_GARUDA_AUDIT.md](GLOBAL_GARUDA_AUDIT.md);
 use that report for current bilingual setup and terminal acceptance.
 
 Status on 2026-10-10: implementation and automated checks complete; new
-Garuda MainRig and WohnzimmerPC interactive acceptance remains OPEN.
+Garuda Garuda and CachyOS Handheld interactive acceptance remains OPEN.
 No host emulator was installed by this sprint. The owner explicitly approved
 and installed the missing build-host `pugixml` library after the first Stage
 attempt rejected it; package bootstrap itself has only been run in dry-run.
@@ -213,7 +213,7 @@ repositories, change the OS ID or reset configuration.
    delete the existing production profile to manufacture a blank install.
    Supply real flash/MCPX/HDD sources, deliberately no EEPROM and no normal
    Xemu profile. Record Xemu version, image SHA-256 and package sources.
-3. Start the image from the visible MainRig KDE/Wayland desktop. Complete the
+3. Start the image from the visible Garuda KDE/Wayland desktop. Complete the
    wizard; confirm Xbox setup advances without EEPROM, and reopening shows
    it prepared. Before a real Xbox start there should be no fabricated EEPROM.
 4. Click optional host installation. Observe a persistent confirmation. Test
@@ -228,7 +228,7 @@ repositories, change the OS ID or reset configuration.
    classic reinstall, verify EEPROM/HDD hashes before another launch, then
    repeat gameplay. Compare external content and normal host-profile hashes.
 7. Repeat the existing representative Libretro/standalone, controller exit,
-   frontend return and Quit regression on MainRig and the WohnzimmerPC's real
+   frontend return and Quit regression on Garuda and the CachyOS Handheld's real
    interactive Steam/Gamescope session. No SSH-only or signal-driven run
    counts as visible acceptance. Both host results remain OPEN for this revision.
 8. If the confirmation still flashes before any answer, retain terminal stderr
