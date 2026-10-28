@@ -1,5 +1,18 @@
 # Embercade Project State
 
+## Public release authorization — 28 October 2026
+
+The owner authorizes publishing the sanitized stand and Embercade 1.0 release
+under [RetroGamerGER/Embercade](https://github.com/RetroGamerGER/Embercade). The original repository has been renamed
+Embercade-Privat and remains private. Only the clean build root cb00b093 and
+a publication-documentation update belong in public history. AppImage and
+complete matching source archive stay byte-identical to the verified candidate;
+release notes, download links, publication metadata and checksums are updated.
+The release tag is v1.0.0. Historical preparation holds below are superseded
+only for this authorized public release. Private history, old builds and user
+profiles must remain separate. No new AppImage build or host deployment.
+
+
 ## Installer support made explicit — 28 October 2026
 
 The current installer supports Arch Linux, CachyOS and Garuda only. Pacman

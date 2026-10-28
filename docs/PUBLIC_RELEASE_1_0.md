@@ -5,8 +5,9 @@ existing Linux desktop. It uses Batocera's EmulationStation and configuration
 system while keeping emulator profiles, settings and saves in its own user
 folders. Your Linux installation stays your Linux installation.
 
-This is the prepared first public release. The files have not been uploaded
-and publication still requires the project owner's approval.
+This is the first public release of Embercade.
+[Downloads, matching sources and checksums](https://github.com/RetroGamerGER/Embercade/releases/tag/v1.0.0)
+are provided together.
 
 ## What is included
 
@@ -46,13 +47,14 @@ The command-line package runner independently rejects unsupported distro IDs.
 
 ## Download files
 
-The prepared release directory contains:
+The release assets contain:
 
 - `Embercade-1.0-x86_64.AppImage`
 - `Embercade-1.0-x86_64.AppImage.sha256` and `Embercade-1.0-x86_64.manifest.json`
 - `Embercade-1.0-sources-and-notices.tar.gz` with complete matching covered sources
 - `Embercade-1.0-public-source.bundle` with the clean, standalone project history
-- `BUILD_INFO.json`, `RELEASE_NOTES.md`, `PUBLICATION_HANDOFF.md` and `SHA256SUMS`
+- `Embercade-1.0-sources.manifest.json`, `BUILD_INFO.json`, `RELEASE_NOTES.md`,
+  `PUBLICATION_HANDOFF.md` and `SHA256SUMS`
 
 Check the downloaded files, then run the AppImage:
 
@@ -83,7 +85,7 @@ and the documented optional host components. This is not a generic bundled
 Linux runtime. The optional package installer supports configured Arch-family
 repositories; it does not enable third-party repositories for you.
 
-The public candidate updates privacy, release documentation, packaging and the
+The public build updates privacy, release documentation, packaging and the
 visible installer platform notice. Package commands and emulator behavior are
 unchanged. The final build report records the exact source, payload comparison and package
 checks against the accepted functional candidate. It does not claim a new
@@ -101,3 +103,14 @@ open-source license.
 Keep the matching source/notice archive available beside the binary. The
 automatic project-only GitHub source archive does not replace it. Full license
 routing, original texts and rebuild/replacement instructions are included.
+
+## Build identity
+
+The AppImage and its complete corresponding source archive remain the verified
+candidate built from [`cb00b093`](https://github.com/RetroGamerGER/Embercade/tree/cb00b093ff0e87d2462ee060bb4b7717afda43dc).
+The release tag also includes the final publication-documentation update;
+no runtime, emulator, shader, bezel or installer behavior changed after the
+recorded 849 passing tests (five expected opt-in skips). The source bundle
+contains the exact clean build source; BUILD_INFO records the separate
+publication-documentation commit. Build/source manifests retain their original
+preparation-time state as an immutable build record.

@@ -1,8 +1,9 @@
 # Getting started with Embercade
 
-Embercade 1.0 is prepared locally for public release. There is no public download or
-automatic internet updater. This guide covers the existing AppImage and
-user-local checkout installation, not a public release announcement.
+Download the AppImage, complete matching sources and checksums from the
+[Embercade 1.0 release](https://github.com/RetroGamerGER/Embercade/releases/tag/v1.0.0).
+There is no automatic internet updater. This guide covers the AppImage and
+user-local checkout installation.
 
 ## Before you start
 

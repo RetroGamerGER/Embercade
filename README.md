@@ -12,8 +12,10 @@ applications stay where they are, without a separate gaming OS or dual boot.
 I started Embercade because I missed the simplicity of RetroBat after switching
 to Linux.
 
-**Embercade 1.0 is prepared for public release, with no public download yet.** See
-[licensing](#credits-and-licensing) for the current release status.
+**Embercade 1.0 is available for Arch Linux, CachyOS and Garuda.**
+[Download the AppImage and matching sources](https://github.com/RetroGamerGER/Embercade/releases/tag/v1.0.0),
+or read the [setup guide](docs/GETTING_STARTED.md). See
+[licensing](#credits-and-licensing) for the component license terms.
 
 ## What you can do
 
@@ -131,23 +133,20 @@ MIT EmulationStation and every other third-party component retain their actual
 licenses and commercial permissions. The AppImage has no single blanket NC
 license. See the [Batocera component distinction](docs/BATOCERA_COMPONENT_LICENSES.md).
 
-The current private image uses the official RetroBat decoration collection,
+The AppImage uses the official RetroBat decoration collection,
 with its published project basis and individual credits/notices preserved.
 The full Libretro shader collection comes from the optional official
 `libretro-shaders-slang` host package under its original terms; effects stay
 off until selected. Only Carbon is bundled; downloaded themes retain their
 own terms. See [resources and coverage](docs/RETROBAT_AND_HOST_SHADERS.md).
 
-The current private candidate has been accepted by the owner on MainRig,
+The functional build has been accepted by the owner on MainRig,
 EmbercadeLaptop and WohnzimmerPC. The known laptop 16:10 bezel cropping/proportion
 issue remains; see [acceptance and limitations](docs/PRIVATE_DEPLOYMENT_2026_10_28.md#owner-acceptance--28-october-2026).
-[Prepared release notes](docs/PUBLIC_RELEASE_1_0.md) describe the downloadable
-files, requirements and known limits. Public delivery still requires explicit
-publication approval. Matching
-sources and notices are [prepared locally](docs/THIRD_PARTY_DELIVERY.md); the
-eventual public build must include them and be offered with its matching source
-kit. [Personal RetroAchievements Web API keys](docs/RETROACHIEVEMENTS_USER_KEYS.md)
-are optional for frontend views; normal emulator login is retained. The earlier
-missing branding-origin entry is resolved.
-No public release or push has occurred. See [third-party notices](THIRD_PARTY_NOTICES.md),
-[source access](docs/SOURCE_ACCESS.md) and the [current release audit](docs/PUBLIC_RELEASE_AUDIT.md).
+[Release notes](docs/PUBLIC_RELEASE_1_0.md) describe the downloads, requirements
+and known limits. The complete matching source and notice archive is supplied
+alongside the AppImage; see [source access](docs/SOURCE_ACCESS.md).
+[Personal RetroAchievements Web API keys](docs/RETROACHIEVEMENTS_USER_KEYS.md)
+are optional for frontend views; normal emulator login is retained. See the
+[third-party notices](THIRD_PARTY_NOTICES.md) and
+[license assignment](docs/LICENSING_1_0.md) for the component terms.

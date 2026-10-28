@@ -1,21 +1,28 @@
 # Source access and redistribution
 
-## Current public preparation
+## Embercade 1.0 public source delivery
 
-The separate public candidate and complete matching source/notice kit are
-prepared locally from a sanitized, parentless public Git export. Its source
-identity, checksums and publication bundle are recorded in the delivered
-`BUILD_INFO.json` and image/source manifests. The original private history,
-all older builds and installed copies remain untouched. The export has no
-remote, old private branches or tags; no upload or publication has occurred.
+The [public release](https://github.com/RetroGamerGER/Embercade/releases/tag/v1.0.0) provides the AppImage together with
+`Embercade-1.0-sources-and-notices.tar.gz`, its manifest, checksums and a clean
+project Git bundle. The complete archive includes covered upstream sources,
+actual modifications, build/install inputs, notices and LGPL replacement
+instructions; the automatic GitHub source ZIP alone is insufficient.
 
-The current frontend uses protected per-user RetroAchievements Web API keys
-and the owner has accepted the functional build on all three reference hosts,
-with the known laptop 16:10 bezel limitation. No further shared-key provider
-clearance is assumed or needed by that removed design. Public preparation does
-not itself authorize publishing the files. See [release notes](PUBLIC_RELEASE_1_0.md).
+The binary's exact project source is
+[`cb00b093`](https://github.com/RetroGamerGER/Embercade/tree/cb00b093ff0e87d2462ee060bb4b7717afda43dc).
+The release tag also contains the final publication-documentation update.
+Image/source manifests retain the original preparation-time state; the release
+BUILD_INFO identifies the publication separately. No shared personal
+RetroAchievements key is distributed. The known laptop 16:10 bezel limitation
+remains documented.
+
+The original private repository and older private builds remain separate.
+Only the sanitized root and publication documentation appear in public history.
 
 ## Existing source-delivery contract and historical receipts
+
+The following records describe earlier private preparation, not the current
+public release. Its complete matching source delivery is linked above.
 
 The matching source kit and supplemental notices are prepared locally for the
 frozen private adapter candidate. This is not an issued three-year written

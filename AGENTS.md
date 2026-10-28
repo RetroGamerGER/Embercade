@@ -1,5 +1,18 @@
 # Embercade Agent Instructions
 
+## Public release authorization — 28 October 2026
+
+The owner now authorizes pushing the sanitized public stand and publishing
+v1.0.0 under RetroGamerGER/Embercade. The renamed Embercade-Privat repository,
+its original refs/history/releases and all old builds remain private. Use only
+the clean build root cb00b093 and the publication-documentation follow-up;
+never push from the original development checkout or expose its refs.
+Keep the accepted AppImage and complete matching sources byte-identical.
+Update publication prose/links and release-envelope checksums; no runtime
+changes, new build, host deployment or new provider authorization is needed.
+Older no-publication entries below are historical for this specific release.
+
+
 ## Installer platform clarification (28 October 2026)
 
 The owner emphasizes that the current installer supports Arch-family systems
