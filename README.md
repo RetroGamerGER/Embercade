@@ -1,151 +1,159 @@
-# Embercade
+<p align="center">
+  <img src="resources/branding/icon/embercade-256.png" width="112" alt="Embercade logo">
+</p>
 
-![Embercade — retro consoles against an orange sunset](docs/images/embercade-poster.jpg)
+<h1 align="center">Embercade</h1>
 
-**A console-style home for your retro games, right on your Linux desktop.**
+![Embercade – classic consoles against an orange sunset](docs/images/embercade-poster.jpg)
 
-Embercade brings Batocera's EmulationStation frontend and launcher to your
-existing Linux installation. Pick a game with your controller, play it in an
-emulator, and return to your library when you're done. Your desktop and usual
-applications stay where they are, without a separate gaming OS or dual boot.
+<p align="center"><strong>Your retro games. Your Linux desktop.</strong></p>
 
-I started Embercade because I missed the simplicity of RetroBat after switching
-to Linux.
+Embercade brings the console-style experience of Batocera and RetroBat to your existing Linux desktop. Browse your collection with a controller, launch a game and return to your library or desktop when you're done. No separate gaming operating system or dual boot required.
 
-**Embercade 1.0 is available for Arch Linux, CachyOS and Garuda.**
-[Download the AppImage and matching sources](https://github.com/RetroGamerGER/Embercade/releases/tag/v1.0.0),
-or read the [setup guide](docs/GETTING_STARTED.md). See
-[licensing](#credits-and-licensing) for the component license terms.
+**[Download Embercade 1.0](https://github.com/RetroGamerGER/Embercade/releases/tag/v1.0.0)** · [Getting started](docs/GETTING_STARTED.md) · [Supported systems](docs/COMPATIBILITY_1_0.md)
 
-## What you can do
+## Why I created Embercade
 
-- Browse a controller-friendly library with descriptions, artwork and videos
-  through ScreenScraper.
-- Already using RetroBat or Batocera? Reuse compatible `gamelist.xml` files,
-  game metadata and artwork without scraping everything again, as long as the
-  referenced paths remain valid on Linux. See [library reuse](docs/GETTING_STARTED.md#reuse-a-retrobat-or-batocera-library).
-- Use RetroArch/Libretro or standalone emulators, including Dolphin, PCSX2,
-  RPCS3 and Xemu, on the supported system routes.
-- Choose shaders, including NewPixie, and console bezels where supported.
-- Browse, preview and install themes through the Theme Library.
-- Set up game folders, BIOS paths and optional imports with an English or
-  German setup wizard.
-- Choose Back/Select + Start or Guide + Start to leave a game and return to
-  the frontend, subject to your controller setup.
-- Add Embercade to Steam with matching library artwork.
-- Keep Embercade settings and saves separate from your usual emulator profiles.
+After switching from Windows to Linux, there was one thing I really missed: **RetroBat**.
 
-You supply your own legally obtained games, BIOS/system files and separately
-installed emulators or cores. None of those files are bundled. Embercade does
-not modify the ROM or BIOS files themselves. It can update `gamelist.xml` and
-save scraped media in the designated folders within your game collection.
+I loved having my games, artwork, videos and emulators together in one place. Batocera offered much of that experience, but I wanted to use it without leaving my regular Linux desktop.
 
-## Where it runs
+So I started building Embercade.
 
-Embercade is developed and tested on **x86-64 Linux**:
+What began as something I wanted for my own computer eventually became a project I wanted to share with other Linux users.
 
-- **Garuda Linux, KDE Plasma / Wayland**.
-- **CachyOS Handheld Edition, Steam / Gamescope**.
+**Embercade isn't intended to replace Batocera, RetroBat or ES-DE.** It's another way to enjoy retro gaming on Linux, built on work from the communities behind these projects.
 
-The listed environments have been tested. The known 16:10 bezel limitation
-below remains; these results do not establish support for every GPU or Linux
-distribution.
+## What Embercade offers
 
-**The current installer supports Arch Linux, CachyOS and Garuda only.** It uses
-`pacman` for automatic host-software installation. Other distributions are not
-currently supported; other Arch derivatives are not automatically enabled.
+### 🎮 Your games in one place
 
-The current AppImage requires **CPython 3.14 at `/usr/bin/python`** from your
-Linux installation, plus compatible desktop libraries. Python is not bundled;
-see the [host requirements](docs/APPIMAGE.md#bundle-and-host-boundary).
+Browse your collection through Batocera's EmulationStation frontend using a controller. Embercade supports RetroArch/Libretro and a range of standalone emulator routes, including Dolphin, PCSX2, RPCS3 and Xemu. Actual compatibility depends on the game, emulator and your installed software.
 
-Game compatibility depends on the emulator, core and title. The
-[compatibility notes](docs/COMPATIBILITY_1_0.md) show what has been tested
-and what still needs checking.
+### 🖼️ ScreenScraper integration
 
-**Bezels on 16:10 displays:** Some of the current 16:9 artwork can be cropped
-or fail to line up with the game area. This was observed at 2560×1600 on the
-test laptop in both RetroArch and standalone Xbox/PS2 emulators. Correct 16:10
-bezel presentation is not yet validated. You can disable the frame using the
-existing **Decoration → None** setting. This limitation does not invalidate
-the working 16:9 setups. See the [investigation](docs/LAPTOP_STANDALONE_BEZELS.md).
+A game library feels better when it's more than a list of filenames. ScreenScraper can add artwork, descriptions, screenshots, videos and other information right from the frontend.
 
-## Getting started
+Already using RetroBat or Batocera? Embercade can reuse compatible `gamelist.xml` files and their existing media, provided the referenced paths remain accessible on Linux. **You don't have to scrape everything again.**
 
-Place the AppImage in a local folder, make it executable and
-open it. The wizard walks through game and BIOS folders, emulator requirements,
-controller shortcuts and optional desktop or Steam integration.
+### 🏆 RetroAchievements
 
-Embercade installs in your user account. Optional host package installation is
-a separate step that asks for confirmation; it supports Arch, CachyOS and
-Garuda. Doctor helps you check what is missing.
+Sign in with your RetroAchievements account to earn achievements in supported emulators. You can also view your profile, achievement lists and progress directly in the frontend by entering your **own optional Web API key**.
 
-See [Getting started](docs/GETTING_STARTED.md) for commands, checkout
-installation, updates and removal, or [AppImage details](docs/APPIMAGE.md)
-for build requirements.
+Emulator achievements continue to use the normal player login; a Web API key is only needed for the additional frontend views. Embercade doesn't distribute a shared personal key.
 
-## See it in action
+### 🎨 Themes, bezels and shaders
 
-*Demo video: to be added after recording.*
+- **Theme Downloader:** Browse, preview and install community themes from within EmulationStation.
+- **Console decorations:** Select from the official RetroBat bezel collection where supported.
+- **Shaders:** Choose optional effects from your host's `libretro-shaders-slang` package. Effects are off by default.
 
-*Screenshots: library view, setup wizard and an in-game view to be added.*
+Embercade includes **Carbon** as its default theme. You can download another look whenever you like.
 
-<!-- Replace these notes with actual screenshots and the recorded demo link. -->
+### 🖥️ Stay on your Linux desktop
 
-## A simple rule
+Start Embercade from your desktop or add it to Steam, complete with library artwork. Play with a controller and return to EmulationStation when you're done. Embercade keeps its managed settings and saves separate from your normal emulator profiles where supported.
 
-> If you can still walk into a store and buy the console new, Embercade is not meant to replace it.
+### 🛠️ Guided setup
 
-The focus is older consoles and computers, preservation, and your legally
-obtained classics. This is the project's philosophy, not a legal classification.
+The English/German setup wizard helps you configure game and BIOS folders, controller shortcuts, optional host software and desktop integration. You supply your own legally obtained games, firmware, emulators and Libretro cores; Embercade does not bundle them.
 
-## More details
+## Screenshots
 
-- [System compatibility](docs/COMPATIBILITY_1_0.md) and the
-  [historical 0.1 matrix](docs/COMPATIBILITY_0_1.md)
-- [Controller setup](docs/CONTROLLER_SETUP.md) and
-  [Steam integration](docs/STEAM_INTEGRATION.md)
-- [ScreenScraper setup](docs/SCREENSCRAPER.md), the
-  [production-build fix](docs/SCREENSCRAPER_PRODUCTION_FIX.md) and the
-  [RetroArch startup fix](docs/RETROARCH_STARTUP_FIX.md)
-- [Architecture](docs/ARCHITECTURE.md), [installation internals](docs/PRODUCTION.md)
-  and [pinned upstream components](docs/UPSTREAM.md)
-- [Roadmap](ROADMAP.md) and [technical project state](docs/PROJECT_STATE.md)
+These are screenshots from a real Embercade 1.0 installation — not mockups.
 
-## Credits and licensing
+**Theme shown:** Most frontend screenshots use **AI-Hypertocera**, an optional community theme available through Embercade's built-in **Theme Downloader**. The included default theme is **Carbon**.
 
-Thanks to Batocera, EmulationStation, Libretro and the emulator, theme and
-artwork authors whose work makes this possible. Embercade is independent,
-with no affiliation or endorsement from those projects or console manufacturers.
+### Browse consoles and games
 
-Embercade is intended to stay a **free, noncommercial community project with
-publicly readable source**, without paid editions or a separate commercial
-license. The original independent Embercade client is licensed under
-**PolyForm Noncommercial 1.0.0**; original documentation uses **CC BY-NC-SA 4.0**.
-This is a **non-commercial source-available** software model. The exact grant
-and exclusions are in [LICENSE](LICENSE) and the [license assignment](docs/LICENSING_1_0.md).
-The owner-created Canva AI branding has a [documented origin](docs/BRANDING_ORIGIN.md);
-its CC grant covers rights actually held, without claiming exclusive AI copyright.
+![Mega Drive system selection using AI-Hypertocera](docs/images/showcase/console-selection.jpg)
 
-The separately executed backend and original upstream integration contributions
-use MIT-compatible terms. Batocera-team LGPLv3 code, explicitly GPL Configgen,
-MIT EmulationStation and every other third-party component retain their actual
-licenses and commercial permissions. The AppImage has no single blanket NC
-license. See the [Batocera component distinction](docs/BATOCERA_COMPONENT_LICENSES.md).
+*Choose a system with your controller.*
 
-The AppImage uses the official RetroBat decoration collection,
-with its published project basis and individual credits/notices preserved.
-The full Libretro shader collection comes from the optional official
-`libretro-shaders-slang` host package under its original terms; effects stay
-off until selected. Only Carbon is bundled; downloaded themes retain their
-own terms. See [resources and coverage](docs/RETROBAT_AND_HOST_SHADERS.md).
+![Super Nintendo game library with information and a video preview](docs/images/showcase/game-library.jpg)
 
-The functional build has been accepted on Garuda and CachyOS Handheld. The known laptop 16:10 bezel cropping/proportion
-issue remains; see [acceptance and limitations](docs/PRIVATE_DEPLOYMENT_2026_10_28.md#owner-acceptance--28-october-2026).
-[Release notes](docs/PUBLIC_RELEASE_1_0.md) describe the downloads, requirements
-and known limits. The complete matching source and notice archive is supplied
-alongside the AppImage; see [source access](docs/SOURCE_ACCESS.md).
-[Personal RetroAchievements Web API keys](docs/RETROACHIEVEMENTS_USER_KEYS.md)
-are optional for frontend views; normal emulator login is retained. See the
-[third-party notices](THIRD_PARTY_NOTICES.md) and
-[license assignment](docs/LICENSING_1_0.md) for the component terms.
+*Browse your games with artwork, descriptions, videos and metadata.*
+
+### Console decorations
+
+![Great Giana Sisters running with a Commodore 64 bezel](docs/images/showcase/c64-gameplay.jpg)
+
+*Great Giana Sisters with a Commodore 64 decoration from the RetroBat collection.*
+
+### Themes and achievements
+
+| Theme Downloader | RetroAchievements |
+| --- | --- |
+| <img src="docs/images/showcase/theme-downloader.jpg" alt="Embercade Theme Downloader" width="470"> | <img src="docs/images/showcase/retroachievements.jpg" alt="RetroAchievements settings with personal Web API key" width="470"> |
+| Download and switch community themes. | Use your account and optionally add your own Web API key for frontend progress views. |
+
+### Setup wizard
+
+| Host-software checks | Optional Xbox setup |
+| --- | --- |
+| <img src="docs/images/showcase/host-software.jpg" alt="Host software readiness checks" width="470"> | <img src="docs/images/showcase/xbox-setup.jpg" alt="Xbox setup options in the Embercade wizard" width="470"> |
+| Check host requirements and offer optional software. | Configure a separate Xbox profile and import or create EEPROM data. |
+
+## Download and installation
+
+**[Get Embercade 1.0 and matching sources](https://github.com/RetroGamerGER/Embercade/releases/tag/v1.0.0)**
+
+Embercade currently supports **x86-64 Linux**. The **installer** supports **Arch Linux, CachyOS and Garuda**. It uses `pacman` for optional host software and does not currently support Fedora, Debian, Ubuntu or other Arch derivatives automatically.
+
+The tested environments include **Garuda KDE Plasma/Wayland** and **CachyOS Handheld Edition with Steam/Gamescope**. This is not a guarantee of compatibility with every GPU, distribution or game.
+
+The AppImage requires **CPython 3.14 at `/usr/bin/python`** and compatible host libraries. Please check the [system requirements](docs/APPIMAGE.md#bundle-and-host-boundary) before starting.
+
+Download the AppImage, then run:
+
+```sh
+chmod +x Embercade-1.0-x86_64.AppImage
+./Embercade-1.0-x86_64.AppImage
+```
+
+For first-time setup, checksums, updates and uninstall instructions, see [Getting Started](docs/GETTING_STARTED.md).
+
+### Known limitation: 16:10 bezels
+
+Some decorations designed for 16:9 displays may be cropped or incorrectly aligned on 16:10 screens. This was observed on the test laptop in both RetroArch and standalone emulators. The issue is documented and isn't yet fixed. You can disable the decoration using **Decoration → None**.
+
+For detailed system coverage, see [Compatibility 1.0](docs/COMPATIBILITY_1_0.md).
+
+## A special thank you to the community ❤️
+
+Embercade wouldn't exist without the developers, artists and communities who have spent years making retro gaming possible. I want to give special thanks to:
+
+**Batocera** — For EmulationStation, the launcher, the configuration system and the incredible amount of work behind the project.
+
+**RetroBat** — For inspiring Embercade, sharing its console decoration collection and creating the experience I missed after moving to Linux.
+
+**EmulationStation, Libretro and RetroArch** — For their contributions to bringing different emulators and classic games together.
+
+**ScreenScraper** — For the artwork, videos and game information that bring game libraries to life.
+
+**RetroAchievements** — For adding achievements, challenges and progress tracking to the games we grew up with.
+
+**The artists behind the bezels 🎨** — A very special thank you to the people who created console decorations for the retro gaming community. This includes artists such as **Duimon**, along with many other talented contributors. Not every original artist can be identified by name from the available historical records, but that makes their contribution no less valuable. Embercade preserves existing credits, watermarks and applicable notices. If your work is missing proper attribution, please [open an issue](https://github.com/RetroGamerGER/Embercade/issues) so it can be reviewed and corrected.
+
+**Theme creators, emulator developers and community contributors** — Thank you to everyone who shares themes, builds emulators, tests software, writes documentation and helps others enjoy retro gaming.
+
+**Embercade may be my project, but it wouldn't be possible without all of you. Thank you! ❤️**
+
+## Licensing and source code
+
+Embercade is a **free, non-commercial, source-available community project**. Its independently developed client code uses **PolyForm Noncommercial 1.0.0**. Original Embercade documentation and branding use **CC BY-NC-SA 4.0** for rights held by the project owner.
+
+Third-party software and artwork retain their own licenses and permissions. The AppImage does not have a single blanket non-commercial license, and the project's terms do not change the commercial-use rights granted by GPL, LGPL, MIT or other upstream licenses. PolyForm Noncommercial is **not** an OSI-approved open-source license.
+
+The complete matching source and third-party notice archive is available alongside the AppImage download.
+
+- [License assignment](docs/LICENSING_1_0.md)
+- [Third-party credits and notices](THIRD_PARTY_NOTICES.md)
+- [Sources and rebuild information](docs/SOURCE_ACCESS.md)
+- [Development roadmap](ROADMAP.md)
+
+Embercade is independent and is not affiliated with or officially endorsed by Batocera, RetroBat, RetroAchievements or the other projects mentioned here.
+
+---
+
+*Made with a love for retro gaming and Linux.* 🐧
