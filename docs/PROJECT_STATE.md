@@ -1,5 +1,29 @@
 # Embercade Project State
 
+## Getting Started update and v1.0.1 — 29 October 2026
+
+The owner authorizes integrating their beginner-oriented English guide and 13
+unaltered screenshots, then publishing a matching updated AppImage as a separate
+v1.0.1 release titled "Embercade 1.0.1 – Guided Setup Update". The guide targets
+that version explicitly. Existing checkout/CLI/diagnostic/removal/development
+instructions remain linked in ADVANCED_USAGE.md. No screenshot or media content
+is edited. The new download includes optional PSP/Xbox source selection, Skip
+for now, guarded Arch ancestry/Pacman checks and the short installer notice.
+
+The original v1.0.0 tag/assets and private history/builds remain preserved.
+Existing native/runtime/resources are reused; no emulator, package, driver,
+profile or host deployment changes are requested. Complete corresponding
+sources/notices and exact artifact checksums accompany the new binary.
+User-reported Skip acceptance is distinct from full real-host installation or
+EndeavourOS/GPU compatibility. The known 16:10 bezel limitation remains.
+
+The final isolated v1.0.1 source regression runs 864 tests: 859 pass and five
+expected opt-in session/native cases are skipped. All 52 structural routes,
+German/English GTK flows, runtime smoke and public-tree audit pass. The guide's
+13 screenshots are byte-identical to the owner ZIP; 74 relative documentation
+links resolve, all 13 images load in the browser preview and the layout has no
+horizontal overflow. All 33 source archives match the existing source lock.
+
 ## Short installer notice and source publication — 29 October 2026
 
 The owner approves publishing the current installer source changes after

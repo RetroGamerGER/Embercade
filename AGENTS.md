@@ -1,5 +1,29 @@
 # Embercade Agent Instructions
 
+## Getting Started and v1.0.1 release authorized — 29 October 2026
+
+The owner supplies the beginner guide and 13 original screenshots and explicitly
+authorizes the matching new GitHub AppImage. They choose a separate v1.0.1 update
+release titled "Embercade 1.0.1 – Guided Setup Update". This supersedes earlier
+no-release/no-tag holds for this update only. Preserve v1.0.0, all older/private
+builds, private history, user profiles and collections. Do not deploy to hosts.
+Use the latest short installer notice, optional PSP/Xbox files/Skip and guarded
+Arch-family recognition. UI product branding remains Embercade 1.0; v1.0.1 is
+this update's release/tag/download identity, not a request for a native rebuild.
+
+Review screenshots without editing them. Keep the supplied handoff file out of
+Git; retain advanced installation/diagnostic/removal/developer content in
+ADVANCED_USAGE.md. The new guide explicitly targets v1.0.1 rather than claiming
+these features in v1.0.0. Build and verify the corresponding public AppImage,
+complete source/notice kit, manifests and checksums before final publication.
+Reuse previous licensing/source analysis and verified native/runtime inputs;
+never include loose secrets, profiles, ROMs/BIOS or private history.
+
+Final pre-build regression: 864 tests (859 passed/five expected skips), 52
+structural routes, bilingual GTK flows, runtime smoke and public-tree audit.
+The 13 unedited images, 74 relative links and 33 locked source archives verify;
+keep the handoff document/preview/test controls outside the publication tree.
+
 ## Installer wording and source push approved — 29 October 2026
 
 The owner now approves pushing the current optional-files/Arch-family installer

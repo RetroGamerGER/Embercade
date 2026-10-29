@@ -96,13 +96,13 @@ These are screenshots from a real Embercade 1.0 installation — not mockups.
 
 ## Download and installation
 
-**[Get Embercade 1.0 and matching sources](https://github.com/RetroGamerGER/Embercade/releases/tag/v1.0.0)**
+**[Get Embercade 1.0.1 and matching sources](https://github.com/RetroGamerGER/Embercade/releases/tag/v1.0.1)**
 
 Embercade targets **x86-64 Linux**. **Installer supports Arch-based Linux distributions.**
 
 Optional host software uses your configured Pacman repositories and is installed only after your confirmation.
 
-**Installer update:** the source includes these changes; the linked public 1.0 release has not been replaced.
+The v1.0.1 update includes this installer behavior. The earlier v1.0.0 release remains available separately.
 
 PSP and Xbox system files are optional during general setup. Leave their fields empty or choose **Skip for now**; add complete system-specific files later when you want to use those systems. Existing working settings are kept.
 
@@ -113,8 +113,8 @@ The AppImage requires **CPython 3.14 at `/usr/bin/python`** and compatible host 
 Download the AppImage, then run:
 
 ```sh
-chmod +x Embercade-1.0-x86_64.AppImage
-./Embercade-1.0-x86_64.AppImage
+chmod +x Embercade-1.0.1-x86_64.AppImage
+./Embercade-1.0.1-x86_64.AppImage
 ```
 
 For first-time setup, checksums, updates and uninstall instructions, see [Getting Started](docs/GETTING_STARTED.md).

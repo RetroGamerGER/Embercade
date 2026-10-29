@@ -1,5 +1,15 @@
 # Source access and redistribution
 
+## Embercade 1.0.1 source delivery
+
+The [v1.0.1 update](https://github.com/RetroGamerGER/Embercade/releases/tag/v1.0.1)
+provides the matching `Embercade-1.0.1-sources-and-notices.tar.gz`, source
+manifest, project Git bundle and checksums alongside the new AppImage. The
+AppImage manifest and BUILD_INFO bind the binary to its exact source commit.
+Original covered upstream archives, complete patched sources, build/install
+inputs, notices and LGPL replacement/relinking instructions are included.
+The earlier v1.0.0 archive remains bound to its original binary below.
+
 ## Embercade 1.0 public source delivery
 
 The [public release](https://github.com/RetroGamerGER/Embercade/releases/tag/v1.0.0) provides the AppImage together with

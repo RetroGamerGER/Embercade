@@ -1,4 +1,4 @@
-# Private Embercade 1.0 AppImage
+# Embercade AppImage
 
 **Installer supports Arch-based Linux distributions.**
 
@@ -6,7 +6,7 @@ Automatic package installation recognizes `ID=arch` or an exact `arch` token in
 `ID_LIKE` and checks that Pacman is available. Existing repositories and optional
 existing AUR helpers are reused with explicit consent; no repositories or helpers
 are installed automatically. Non-Arch systems remain ineligible for automatic
-Pacman installation. Published 1.0 and earlier builds remain unchanged. Broader
+Pacman installation. The v1.0.1 update includes this installer behavior; v1.0.0 and earlier builds remain unchanged. Broader
 distro recognition does not establish new runtime, GPU or gameplay compatibility.
 
 PSP/Xbox source folders are optional for setup, with an explicit Skip for now
