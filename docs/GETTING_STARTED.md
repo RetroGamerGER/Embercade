@@ -7,14 +7,19 @@ user-local checkout installation.
 
 ## Before you start
 
-**The installer currently supports Arch Linux, CachyOS and Garuda only.**
-Automatic host-software installation uses `pacman`. Debian/Ubuntu, Fedora and
-other distributions are not supported by the current installer. Other
-Arch-derived distribution IDs are not automatically enabled either.
+The separate updated installer candidate supports automatic host-software
+installation on **Arch-based distributions with pacman**, including Arch Linux,
+CachyOS, Garuda and EndeavourOS. It recognizes `ID=arch` or an exact `arch` token
+in `ID_LIKE` from `/etc/os-release`, then checks that Pacman is available. Merely
+having Pacman on Debian/Ubuntu or Fedora does not enable automatic installation.
+These candidate changes have not replaced the public 1.0 download linked above.
 
-On unsupported systems the graphical installer explains the platform limit
-before opening an installation terminal or asking for package confirmation.
-The command-line package runner independently rejects unsupported distro IDs.
+On an ineligible system or with Pacman missing, the graphical installer explains
+why before opening a terminal or requesting package confirmation. The CLI
+independently checks the same conditions, including when given a prepared plan.
+Only existing package sources are queried. Missing packages are reported;
+Chaotic-AUR is neither required nor configured, and existing `paru`/`yay` helpers
+remain optional. All actual package installations require explicit confirmation.
 
 The current runtime targets x86-64 Linux and requires host CPython 3.14 at
 `/usr/bin/python`, Bubblewrap and compatible desktop libraries. The graphical
@@ -24,7 +29,7 @@ for the complete boundary; other distributions and GPUs are not yet confirmed.
 
 Provide your own legally obtained games, BIOS and system files, plus compatible
 emulators and Libretro cores. These are not included in Embercade. The optional
-package helper can propose host packages on Arch, CachyOS and Garuda; importing
+package helper can propose host packages on eligible Arch-based systems; importing
 known external AppImages always requires your own copy. See
 [provider requirements](PRODUCTION.md#known-appimage-safety).
 
@@ -117,7 +122,11 @@ result. It can also help with Xbox system files, isolated PS3 firmware setup
 and optional desktop/Steam entries. The [installer guide](FINAL_POLISH.md#installer-and-state-contracts)
 describes those steps and their limits.
 
-- For PSP, supply the complete official PPSSPP `assets/` folder.
+- PSP and Xbox system files are optional for general setup. Leave the fields
+  empty or choose **Skip for now**. A selected incomplete folder is rejected
+  with a correction/skip hint, without replacing existing working settings.
+- For PSP games, supply the complete official PPSSPP `assets/` folder. The
+  general BIOS folder is not automatically used as a PSP/Xbox source.
 - For Xemu, supply your flash/MCPX and HDD files. A pre-existing EEPROM is not
   required; Xemu can initialize Embercade's isolated copy.
 - Xenia Edge and shadPS4 use your own AppImages through the known-provider
@@ -133,7 +142,7 @@ Generated settings and saves use Embercade's own directories, separate from
 your usual emulator profiles. See [state and account storage](STATE_AND_SECRETS.md)
 and [scraper writes](SCREENSCRAPER.md#metadata-and-media-writes).
 
-On Arch, CachyOS and Garuda, you can preview and request a host package plan:
+On an eligible Arch-based system with Pacman, you can preview and request a host package plan:
 
 ```sh
 embercade bootstrap --dry-run

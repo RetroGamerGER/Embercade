@@ -131,6 +131,80 @@ class FirstRunTests(unittest.TestCase):
                 setup_arguments(root / "config.toml", roms=directory, bios=directory,
                                 exit_hotkey="back-start", xemu_files_from=str(xbox))
 
+    def test_blank_optional_sources_never_infer_the_general_bios_folder(self):
+        with TemporaryDirectory() as directory:
+            # Even a populated general BIOS folder is not an explicit selection.
+            with patch("embercade.first_run.validate_ppsspp_assets") as psp, \
+                 patch("embercade.first_run.xemu_source_environment") as xbox:
+                arguments = setup_arguments(Path(directory) / "fresh.toml", roms=directory,
+                    bios=directory, exit_hotkey="back-start")
+            self.assertNotIn("--ppsspp-assets-from", arguments)
+            self.assertNotIn("--xemu-files-from", arguments)
+            psp.assert_not_called()
+            xbox.assert_not_called()
+
+    def test_skip_assets_discards_unsubmitted_invalid_sources_only(self):
+        for existing in ("", "/saved PSP assets"):
+            with self.subTest(existing=existing):
+                wizard = Wizard.__new__(Wizard)
+                wizard.state = Mock(ppsspp_assets=existing)
+                wizard.ppsspp, wizard.xemu = "/incomplete PSP", "/general BIOS"
+                wizard.ppsspp_entry, wizard.xemu_entry = Mock(), Mock()
+                wizard._apply = Mock()
+                with patch("embercade.first_run_ui.validate_asset_sources") as validate:
+                    wizard._skip_assets()
+                self.assertEqual((wizard.ppsspp, wizard.xemu), (existing, ""))
+                wizard._apply.assert_called_once_with(next_page="host")
+                validate.assert_not_called()
+
+    def test_blank_asset_fields_advance_and_incomplete_choices_can_be_skipped(self):
+        with TemporaryDirectory() as directory:
+            wizard = Wizard.__new__(Wizard)
+            wizard.state = Mock(ppsspp_assets="")
+            wizard.language = "en"
+            wizard.ppsspp_entry = Mock(get_text=lambda: "")
+            wizard.xemu_entry = Mock(get_text=lambda: "")
+            wizard._apply, wizard._message = Mock(), Mock()
+            wizard._save_assets()
+            wizard._apply.assert_called_once_with(next_page="host")
+            wizard._message.assert_not_called()
+            for field in (wizard.ppsspp_entry, wizard.xemu_entry):
+                wizard._apply.reset_mock(); wizard._message.reset_mock()
+                field.get_text = lambda: directory
+                wizard._save_assets()
+                wizard._apply.assert_not_called()
+                self.assertIn("Skip for now", wizard._message.call_args.args[1])
+                field.get_text = lambda: ""
+            wizard._skip_assets()
+            wizard._apply.assert_called_once_with(next_page="host")
+
+    def test_unchanged_psp_configuration_is_not_reimported_when_other_paths_change(self):
+        with TemporaryDirectory() as directory:
+            from embercade.setup_flow import configure
+            from embercade.runtime import load_config
+            root = Path(directory)
+            roms, bios, assets = (root / name for name in ("ROMs", "BIOS", "PSP"))
+            for path in (roms, bios, assets): path.mkdir()
+            (assets / "ppge_atlas.zim").write_bytes(b"atlas")
+            for name in ("lang", "flash0"): (assets / name).mkdir()
+            config = root / "config.toml"
+            configure(config, roms_value=str(roms), bios_value=str(bios),
+                      ppsspp_assets_value=str(assets))
+            state = read_state(config, {"HOME": directory})
+            wizard = Wizard.__new__(Wizard)
+            wizard.state = state
+            wizard.roms, wizard.bios, wizard.hotkey = str(roms), str(bios), "guide-start"
+            wizard.ppsspp, wizard.xemu = "/bad draft", "/bad draft"
+            wizard.cores = wizard.providers = wizard.shadps4 = ""
+            wizard._run_arguments = Mock()
+            wizard._skip_assets()
+            argv = wizard._run_arguments.call_args.args[0]
+            self.assertNotIn("--ppsspp-assets-from", argv)
+            self.assertNotIn("--xemu-files-from", argv)
+            # The existing writer's omitted-source contract preserves the value.
+            configure(config, roms_value=str(roms), bios_value=str(bios), exit_hotkey="guide-start")
+            self.assertEqual(load_config(config)["libretro"]["ppsspp_assets"], str(assets))
+
     def test_backend_actions_are_existing_cli_commands(self):
         config = Path("/tmp/example settings/embercade.toml")
         self.assertEqual(action_arguments(config, "doctor"),
@@ -231,14 +305,14 @@ class FirstRunTests(unittest.TestCase):
                     wizard.busy,wizard.message_dialog,wizard.language=False,None,language
                     wizard._question=Mock(side_effect=AssertionError('No install confirmation on unsupported systems'))
                     wizard._message=Mock()
-                    with patch('embercade.first_run_ui.read_os_release',return_value=DistroInfo(distro,distro,('arch',))), patch('embercade.first_run_ui.TerminalInstallation.start') as launch:
+                    with patch('embercade.first_run_ui.read_os_release',return_value=DistroInfo(distro,distro,('debian',) if distro=='ubuntu' else ())), patch('embercade.first_run_ui.TerminalInstallation.start') as launch:
                         wizard._bootstrap()
                         launch.assert_not_called()
                     wizard._question.assert_not_called()
                     wizard._message.assert_called_once()
                     title,body=wizard._message.call_args.args
                     self.assertEqual(title,'Unsupported distribution')
-                    for text in (distro,'pacman','Arch Linux','CachyOS','Garuda'):
+                    for text in (distro,'pacman','Arch'):
                         self.assertIn(text,body)
                     self.assertIn('keine Pakete' if language=='de' else 'No packages',body)
                     self.assertFalse(wizard.busy)
@@ -259,6 +333,19 @@ class FirstRunTests(unittest.TestCase):
             self.assertEqual(launch.call_args.args[-1], "en")
             self.assertTrue(wizard.busy)
             wizard.GLib.timeout_add.assert_any_call(150, wizard._host_poll, launch.return_value)
+
+    def test_missing_pacman_explained_before_confirmation_or_terminal(self):
+        wizard = Wizard.__new__(Wizard)
+        wizard.busy, wizard.message_dialog, wizard.language = False, None, "de"
+        wizard._message, wizard._question = Mock(), Mock()
+        with patch("embercade.first_run_ui.read_os_release", return_value=DistroInfo("endeavouros", "EndeavourOS", ("arch",))), \
+             patch("embercade.first_run_ui.Pacman.is_available", return_value=False), \
+             patch("embercade.first_run_ui.TerminalInstallation.start") as launch:
+            wizard._bootstrap()
+        wizard._question.assert_not_called()
+        launch.assert_not_called()
+        self.assertEqual(wizard._message.call_args.args[0], "Pacman unavailable")
+        self.assertFalse(wizard.busy)
 
     def test_bootstrap_without_terminal_does_not_install_or_close_wizard(self):
         wizard = Wizard.__new__(Wizard)

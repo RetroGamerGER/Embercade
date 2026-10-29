@@ -21,7 +21,7 @@ from embercade.elf_runtime import direct_elf_sonames, inspect_elf_runtime
 from embercade.rom_inventory import BatoceraSystem, load_batocera_systems
 
 
-SUPPORTED_DISTRO_IDS = frozenset({"arch", "cachyos", "garuda"})
+PACMAN_UNAVAILABLE = "Pacman is not available. Install host software manually or make pacman available on your Arch-based system. No packages have been installed."
 
 
 @dataclass(frozen=True, slots=True)
@@ -32,7 +32,7 @@ class DistroInfo:
 
     @property
     def supports_automatic_install(self) -> bool:
-        return self.distro_id in SUPPORTED_DISTRO_IDS
+        return self.distro_id == "arch" or "arch" in self.id_like
 
 
 @dataclass(frozen=True, slots=True)
@@ -131,6 +131,7 @@ class BootstrapPlan:
     unavailable_packages: tuple[str, ...] = ()
     aur_packages: tuple[str, ...] = ()
     aur_helper: str | None = None
+    blocked_reason: str | None = None
 
     @property
     def command(self) -> tuple[str, ...]:
@@ -631,7 +632,13 @@ class Pacman:
     def __init__(self, runner: Callable[..., subprocess.CompletedProcess[str]] = subprocess.run):
         self.runner = runner
 
+    @staticmethod
+    def is_available() -> bool:
+        return shutil.which("pacman") is not None
+
     def available(self, package: str) -> bool:
+        if not self.is_available():
+            return False
         completed = self.runner(
             ["pacman", "-Si", "--", package],
             check=False,
@@ -644,6 +651,8 @@ class Pacman:
     def install(self, packages: Sequence[str]) -> int:
         if not packages:
             return 0
+        if not self.is_available():
+            return 127
         completed = self.runner(
             ["sudo", "pacman", "-S", "--needed", *packages],
             check=False,
@@ -702,6 +711,9 @@ def create_bootstrap_plan(
     if not assessment.distro.supports_automatic_install:
         return BootstrapPlan(assessment, ())
     adapter = pacman or Pacman()
+    if not adapter.is_available():
+        return BootstrapPlan(assessment, (), assessment.missing_packages,
+                             blocked_reason=PACMAN_UNAVAILABLE)
     packages: list[str] = []
     unavailable: list[str] = []
     aur_packages: list[str] = []
@@ -787,7 +799,7 @@ def render_host_summary(
         print(f"Xemu HDD:                 {assessment.xemu_hdd}", file=stream)
     if not assessment.distro.supports_automatic_install:
         print(
-            "Automatic dependency installation is currently supported on Arch/CachyOS/Garuda. "
+            "Automatic dependency installation requires an Arch-based distribution and pacman. "
             "Run 'embercade doctor' to see the required host components. "
             f"Detected distro ID: {assessment.distro.distro_id}. No packages will be installed.",
             file=stream,
@@ -799,6 +811,8 @@ def render_bootstrap_plan(
 ) -> None:
     render_host_summary(plan.assessment, stream, verbose=verbose)
     print("", file=stream)
+    if plan.blocked_reason:
+        print(plan.blocked_reason, file=stream)
     if plan.packages:
         print("Can be installed automatically:", file=stream)
         package_set = set(plan.packages)
@@ -855,6 +869,7 @@ def run_bootstrap(
     from embercade.i18n import Translator
     t = Translator(language or "en")
     announce = progress or (lambda _phase: None)
+    adapter = pacman or Pacman()
     if language:
         print(t("Host package installation"), file=stream)
         for key, message in (("packages", "Installable repository packages: {packages}"),
@@ -863,7 +878,9 @@ def run_bootstrap(
             packages = getattr(plan, key)
             if packages:
                 print(t(message, packages=", ".join(packages)), file=stream)
-        if not plan.packages and not plan.aur_packages:
+        if plan.blocked_reason:
+            print(t(plan.blocked_reason), file=stream)
+        elif not plan.packages and not plan.aur_packages:
             print(t("No packages to install."), file=stream)
         if not plan.assessment.distro.supports_automatic_install:
             print(t("Automatic installation is unavailable on this distribution."), file=stream)
@@ -874,6 +891,12 @@ def run_bootstrap(
         print(t("No changes made.") if language else "NO CHANGES MADE", file=stream)
         return 0
     if not plan.assessment.distro.supports_automatic_install:
+        return 2
+    # Recheck at execution time as well: a precomputed plan is not authority
+    # to invoke a missing package manager or to bypass host eligibility.
+    if plan.blocked_reason or not adapter.is_available():
+        if not plan.blocked_reason:
+            print(t(PACMAN_UNAVAILABLE), file=stream)
         return 2
     if plan.unavailable_packages and not plan.packages and not plan.aur_packages:
         return 1
@@ -892,7 +915,7 @@ def run_bootstrap(
         answer = input_function(t("Install available repository packages? [y/N] ")).strip().casefold()
         if answer in {"y", "yes", "j", "ja"}:
             announce("repository")
-            result = (pacman or Pacman()).install(stable_packages)
+            result = adapter.install(stable_packages)
         else:
             print(t("No repository packages installed."), file=stream)
             return 130

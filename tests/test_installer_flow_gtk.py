@@ -49,7 +49,7 @@ class BilingualInstallerFlowTests(unittest.TestCase):
                     self.assertEqual(wizard.page, expected)
                     visited.append(expected)
                     if expected in ('welcome','host'):
-                        notice='This installer currently supports Arch Linux, CachyOS and Garuda only. Host software is installed with pacman.'
+                        notice='Automatic host-software installation supports Arch-based distributions with pacman, including Arch Linux, CachyOS, Garuda and EndeavourOS.'
                         labels=[child.get_text() for child in wizard.root.get_children() if isinstance(child,self.Gtk.Label)]
                         self.assertIn(Translator(language)(notice),labels)
                 def begin():
@@ -70,7 +70,23 @@ class BilingualInstallerFlowTests(unittest.TestCase):
                         wizard._save_paths(); visit("sources")
                         wizard._save_sources(); visit("shadps4")
                         wizard._save_shadps4(); visit("assets")
-                        wizard._save_assets(); visit("host")
+                        self.assertEqual(wizard.ppsspp_entry.get_text(), "")
+                        self.assertEqual(wizard.xemu_entry.get_text(), "")
+                        self.assertTrue(any(isinstance(child, self.Gtk.Button) and
+                            child.get_label() == Translator(language)("Skip for now")
+                            for child in wizard.root.get_children()))
+                        if language == "en":
+                            # A general BIOS folder is not valid system-specific
+                            # input. Rejection stays on the page and Skip recovers.
+                            wizard.ppsspp_entry.set_text(str(bios))
+                            wizard.xemu_entry.set_text(str(bios))
+                            wizard._save_assets()
+                            self.assertEqual(wizard.page, "assets")
+                            self.assertIn("Skip for now", messages[-1][1])
+                            wizard._skip_assets()
+                        else:
+                            wizard._save_assets()
+                        visit("host")
                         result_dir = root / "transaction"; result_dir.mkdir(mode=0o700)
                         result_file = result_dir / "result.json"
                         run_installation(result_file, [sys.executable, "-c", "print('fake post-transaction hooks complete')"],

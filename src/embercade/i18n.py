@@ -5,9 +5,17 @@ import os
 
 SUPPORTED_LANGUAGES = ("de", "en")
 GERMAN = {
+ 'Pacman unavailable': 'Pacman nicht verfügbar',
+ 'Pacman is not available. Install host software manually or make pacman available on your Arch-based system. No packages have been installed.': 'Pacman ist nicht verfügbar. Installiere Host-Software manuell oder stelle pacman auf deinem Arch-basierten System bereit. Es wurden keine Pakete installiert.',
+ 'PSP and Xbox system files are optional for Embercade setup. Leave these fields empty or skip this step if you do not need these systems yet.': 'PSP- und Xbox-Systemdateien sind für die Embercade-Einrichtung optional. Lass die Felder leer oder überspringe diesen Schritt, wenn du diese Systeme noch nicht benötigst.',
+ 'Choose a complete system-specific folder. The general BIOS folder is not used automatically.': 'Wähle einen vollständigen Ordner für das jeweilige System. Der allgemeine BIOS-Ordner wird nicht automatisch verwendet.',
+ 'PSP assets (optional for setup; required for PSP games)': 'PSP-Zusatzdateien (optional für die Einrichtung; für PSP-Spiele erforderlich)',
+ 'Skip for now': 'Vorerst überspringen',
+ 'The selected PSP or Xbox folder is incomplete. Choose the matching system files, clear the field, or select Skip for now. Your existing configuration and files are preserved.': 'Der ausgewählte PSP- oder Xbox-Ordner ist unvollständig. Wähle die passenden Systemdateien, leere das Feld oder wähle Vorerst überspringen. Deine bestehende Konfiguration und Dateien bleiben erhalten.',
+
  'Unsupported distribution': 'Nicht unterstützte Distribution',
- 'Detected system: {distribution}. Automatic host-software installation with pacman is supported only on Arch Linux, CachyOS and Garuda. No packages have been installed.': 'Erkanntes System: {distribution}. Die automatische Host-Software-Installation mit pacman wird nur auf Arch Linux, CachyOS und Garuda unterstützt. Es wurden keine Pakete installiert.',
- 'This installer currently supports Arch Linux, CachyOS and Garuda only. Host software is installed with pacman.': 'Dieser Installer unterstützt derzeit nur Arch Linux, CachyOS und Garuda. Host-Software wird mit pacman installiert.',
+ 'Detected system: {distribution}. Automatic host-software installation requires an Arch-based distribution and pacman. No packages have been installed.': 'Erkanntes System: {distribution}. Die automatische Host-Software-Installation benötigt eine Arch-basierte Distribution und pacman. Es wurden keine Pakete installiert.',
+ 'Automatic host-software installation supports Arch-based distributions with pacman, including Arch Linux, CachyOS, Garuda and EndeavourOS.': 'Die automatische Host-Software-Installation unterstützt Arch-basierte Distributionen mit pacman, darunter Arch Linux, CachyOS, Garuda und EndeavourOS.',
  "RetroArch shader collection": "RetroArch-Shader-Sammlung",
  "Library video playback": "Videowiedergabe der Spielebibliothek",
  'Opening the host installation…': 'Host-Installation wird geöffnet…',

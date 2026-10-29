@@ -32,7 +32,7 @@ class VideoRuntimeTests(unittest.TestCase):
         with patch('embercade.video_runtime.video_runtime_failures',return_value=('Missing decoder',)):
             status=_probe_requirement(req,Mock(),{})
         self.assertFalse(status.installed)
-        plan=create_bootstrap_plan(HostAssessment(DistroInfo('garuda','Garuda',()),(status,),(),()),Mock(available=lambda _:True))
+        plan=create_bootstrap_plan(HostAssessment(DistroInfo('garuda','Garuda',('arch',)),(status,),(),()),Mock(available=lambda _:True))
         self.assertEqual(plan.packages,('vlc-plugin-ffmpeg',))
         self.assertTrue(req.required)
 

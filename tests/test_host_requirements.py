@@ -43,7 +43,7 @@ PROVIDER_METADATA = {
 def _assessment(*, distro: str = "cachyos", installed: bool = False) -> HostAssessment:
     requirement = HostRequirement("retroarch", "RetroArch", "retroarch", emulator="retroarch")
     return HostAssessment(
-        DistroInfo(distro, distro, ("arch",)),
+        DistroInfo(distro, distro, ("arch",) if distro in {"cachyos", "garuda", "endeavouros"} else ()),
         (RequirementStatus(requirement, installed, "test"),),
         (),
         (),
@@ -58,7 +58,7 @@ class HostRequirementTests(unittest.TestCase):
             status = _probe_requirement(requirement, Mock(), {"PATH": ""})
         self.assertFalse(status.installed)
         self.assertFalse(requirement.required)
-        assessment = HostAssessment(DistroInfo("garuda", "Garuda", ()), (status,), (), ())
+        assessment = HostAssessment(DistroInfo("garuda", "Garuda", ("arch",)), (status,), (), ())
         plan = create_bootstrap_plan(assessment, Mock(available=lambda _: True))
         self.assertEqual(plan.packages, ("vulkan-tools",))
 
@@ -68,7 +68,7 @@ class HostRequirementTests(unittest.TestCase):
         with patch("embercade.host_requirements.shutil.which", return_value=None):
             status = _probe_requirement(requirement, Mock(), {"PATH":""})
         self.assertFalse(status.installed)
-        assessment = HostAssessment(DistroInfo("garuda","Garuda",()),(status,),(),())
+        assessment = HostAssessment(DistroInfo("garuda","Garuda",("arch",)),(status,),(),())
         plan = create_bootstrap_plan(assessment, Mock(available=lambda _: True))
         self.assertEqual(plan.packages,("binutils",))
         self.assertTrue(requirement.required)
@@ -97,7 +97,7 @@ class HostRequirementTests(unittest.TestCase):
                  patch("embercade.host_requirements.inspect_appimage_provider", return_value=optional), \
                  patch("embercade.host_requirements._probe_requirement", side_effect=lambda r, *_: RequirementStatus(r, r.key != "gtk-layer-shell", "fixture")):
                 assessment = assess_host(resolver=Mock(), core_resolver=Mock(), environment=env, rom_root=Path("/roms"),
-                    systems_config=Path("/systems"), default_config=Path("/defaults"), user_config=Path("/user"), distro=DistroInfo("garuda", "Garuda", ()))
+                    systems_config=Path("/systems"), default_config=Path("/defaults"), user_config=Path("/user"), distro=DistroInfo("garuda", "Garuda", ("arch",)))
             plan = create_bootstrap_plan(assessment, Mock(available=lambda _: True))
             self.assertEqual("gtk-layer-shell" in plan.packages, not gamescope)
 
@@ -119,7 +119,7 @@ class HostRequirementTests(unittest.TestCase):
                  patch("embercade.host_requirements._probe_requirement", side_effect=lambda r, *_: RequirementStatus(r, r.key != "python-cairo", "fixture")):
                 assessment = assess_host(resolver=Mock(), core_resolver=Mock(), environment=environment,
                     rom_root=Path("/roms"), systems_config=Path("/systems"), default_config=Path("/defaults"),
-                    user_config=Path("/user"), distro=DistroInfo("garuda", "Garuda", ()))
+                    user_config=Path("/user"), distro=DistroInfo("garuda", "Garuda", ("arch",)))
                 plan = create_bootstrap_plan(assessment, Mock(available=lambda _: True))
                 self.assertEqual(plan.packages, ("python-cairo",) if supported else ())
                 if supported:
@@ -168,7 +168,7 @@ class HostRequirementTests(unittest.TestCase):
             self.assertEqual(code,result)
             self.assertEqual(events,['confirmation','repository','install-returning'])
 
-    def test_os_release_support_is_exactly_arch_cachyos_and_garuda(self) -> None:
+    def test_os_release_recognizes_arch_ancestry_without_a_name_allowlist(self) -> None:
         with TemporaryDirectory() as directory:
             release = Path(directory) / "os-release"
             release.write_text('ID=cachyos\nNAME="CachyOS Linux"\nID_LIKE=arch\n')
@@ -183,7 +183,11 @@ class HostRequirementTests(unittest.TestCase):
                              ("garuda", "Garuda Linux", ("arch",)))
             self.assertTrue(garuda.supports_automatic_install)
             release.write_text("ID=unvalidated-derivative\nID_LIKE=arch\n")
-            self.assertFalse(read_os_release(release).supports_automatic_install)
+            self.assertTrue(read_os_release(release).supports_automatic_install)
+            release.write_text("ID=endeavouros\nID_LIKE=arch\n")
+            self.assertTrue(read_os_release(release).supports_automatic_install)
+            release.write_text("ID=custom\nID_LIKE=\"arch other\"\n")
+            self.assertTrue(read_os_release(release).supports_automatic_install)
             release.write_text("ID=ubuntu\nID_LIKE=debian\n")
             self.assertFalse(read_os_release(release).supports_automatic_install)
 
@@ -192,6 +196,68 @@ class HostRequirementTests(unittest.TestCase):
         plan = create_bootstrap_plan(_assessment(distro="ubuntu"), pacman)
         self.assertEqual(plan.packages, ())
         pacman.available.assert_not_called()
+
+    def test_ancestry_uses_exact_tokens_and_never_pacman_presence_alone(self):
+        for distro in (DistroInfo("ubuntu", "Ubuntu", ("debian",)),
+                       DistroInfo("fedora", "Fedora", ()),
+                       DistroInfo("custom", "Custom", ("archlinux",)),
+                       DistroInfo("unknown", "Unknown", ())):
+            with self.subTest(distro=distro):
+                self.assertFalse(distro.supports_automatic_install)
+                pacman = Mock(is_available=Mock(return_value=True))
+                plan = create_bootstrap_plan(HostAssessment(distro, (), (), ()), pacman)
+                self.assertEqual(plan.packages, ())
+                self.assertFalse(pacman.mock_calls)
+
+    def test_endeavouros_keeps_repository_and_explicit_confirmation_contract(self):
+        assessment = _assessment(distro="endeavouros")
+        pacman, helper = Mock(), Mock()
+        pacman.available.return_value = True
+        pacman.install.return_value = 0
+        plan = create_bootstrap_plan(assessment, pacman, helper)
+        self.assertEqual(plan.packages, ("retroarch",))
+        output = StringIO()
+        self.assertEqual(run_bootstrap(plan, dry_run=False, input_function=lambda _: "",
+                                      stream=output, pacman=pacman), 130)
+        pacman.install.assert_not_called()
+        self.assertEqual(run_bootstrap(plan, dry_run=False, input_function=lambda _: "yes",
+                                      stream=output, pacman=pacman), 0)
+        pacman.install.assert_called_once_with(("retroarch",))
+        helper.install.assert_not_called()
+
+    def test_missing_pacman_blocks_planning_before_repository_or_aur_queries(self):
+        pacman, helper = Mock(), Mock()
+        pacman.is_available.return_value = False
+        plan = create_bootstrap_plan(_assessment(distro="endeavouros"), pacman, helper)
+        self.assertEqual(plan.packages, ())
+        self.assertEqual(plan.unavailable_packages, ("retroarch",))
+        self.assertIn("Pacman is not available", plan.blocked_reason)
+        pacman.available.assert_not_called()
+        self.assertFalse(helper.mock_calls)
+
+    def test_missing_pacman_blocks_precomputed_repository_and_aur_plans(self):
+        for packages, community in ((("retroarch",), ()), ((), ("pcsx2-git",))):
+            for language in ("de", "en"):
+                with self.subTest(packages=packages, language=language):
+                    pacman, helper, prompt = Mock(), Mock(), Mock()
+                    pacman.is_available.return_value = False
+                    plan = BootstrapPlan(_assessment(distro="endeavouros"), packages,
+                                         aur_packages=community, aur_helper="paru")
+                    output = StringIO()
+                    self.assertEqual(run_bootstrap(plan, dry_run=False, input_function=prompt,
+                        stream=output, pacman=pacman, aur_helper=helper, language=language), 2)
+                    self.assertIn("Pacman", output.getvalue())
+                    prompt.assert_not_called()
+                    pacman.install.assert_not_called()
+                    helper.install.assert_not_called()
+
+    def test_pacman_adapter_never_invokes_a_missing_executable(self):
+        runner = Mock()
+        with patch("embercade.host_requirements.shutil.which", return_value=None):
+            adapter = Pacman(runner)
+            self.assertFalse(adapter.available("retroarch"))
+            self.assertEqual(adapter.install(("retroarch",)), 127)
+        runner.assert_not_called()
 
     def test_unsupported_distro_cannot_execute_even_a_prepopulated_install_plan(self):
         for distro in ('ubuntu','fedora','unvalidated-derivative'):

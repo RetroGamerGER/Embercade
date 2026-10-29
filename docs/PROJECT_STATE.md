@@ -1,5 +1,41 @@
 # Embercade Project State
 
+## Separate installer candidate — 29 October 2026
+
+The owner requests optional PSP/Xbox system-file setup and broader Arch-family
+recognition. The new candidate removes the fixed distro-name gate: ID=arch or
+an exact arch token in ID_LIKE identifies ancestry, and Pacman availability is
+checked before package actions in the GUI, planner and execution path. Existing
+repositories, stable/git fallbacks, optional existing paru/yay and explicit
+installation consent remain. No repository/helper is configured automatically;
+non-Arch hosts remain blocked even with Pacman present.
+
+Empty PSP/Xbox fields advance, and Skip for now recovers from an incomplete
+selection while keeping saved working PSP settings and isolated Xbox files.
+Unchanged PSP settings are not passed through a new import/validation request.
+No general BIOS path is automatically treated as a system-specific source.
+Incomplete deliberate choices remain validated and offer correction/clear/skip.
+
+The published 1.0 release, older builds, original private history and all normal
+profiles are preserved. Work stays on a local candidate branch with a separate
+Stage and AppImage; no push, release, tag or deployment. EndeavourOS behavior is
+automatically tested with os-release fixtures, not a real host installation or
+new runtime/gameplay acceptance. The owner retains manual acceptance.
+
+Validation: the complete isolated suite runs 864 tests, with 859 passing and
+five expected native/session opt-in skips. Both real GTK German/English flows
+run in a headless Broadway display; the English flow rejects a deliberately
+incomplete BIOS-folder choice and recovers through Skip for now. All 52 pinned
+structural routes, runtime smoke and public-tree audit pass. Native RA storage
+and Web API regression tests also pass without accessing a real account.
+
+The QA filesystem keeps normal homes, original build prerequisites and
+collections read-only. Synthetic input/graphics directories and an unconnected
+PulseAudio socket support generator-only tests; no emulator/game or package
+installation is performed. Headless SVG-loader/runtime setup failures were
+resolved in the disposable test environment, without a host or product change.
+These checks are not visible KDE/EndeavourOS installation acceptance.
+
 ## Public release authorization — 28 October 2026
 
 The owner authorizes publishing the sanitized stand and Embercade 1.0 release

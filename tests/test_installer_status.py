@@ -12,7 +12,7 @@ from embercade.first_run_ui import Wizard
 
 class InstallerStatusTests(unittest.TestCase):
     def assessment(self):
-        return HostAssessment(DistroInfo('garuda','Garuda',()),
+        return HostAssessment(DistroInfo('garuda','Garuda',('arch',)),
             (RequirementStatus(HostRequirement('dolphin','Dolphin','dolphin-emu',emulator='dolphin'),False,''),
              RequirementStatus(HostRequirement('python','Python runtime','python'),True,''),
              RequirementStatus(HostRequirement('rpcs3','RPCS3','rpcs3',emulator='rpcs3'),False,'')),

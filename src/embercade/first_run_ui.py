@@ -26,7 +26,7 @@ from embercade.version import FRONTEND_PRODUCT_LABEL
 from embercade.i18n import Translator, system_language
 from embercade.paths import EmbercadePaths
 from embercade.host_install import TerminalInstallation
-from embercade.host_requirements import read_os_release
+from embercade.host_requirements import PACMAN_UNAVAILABLE, Pacman, read_os_release
 from embercade.file_chooser import create_chooser, native_portal_available, validate_selection
 from embercade import controller_compat
 from embercade.controller_test import ChordTest
@@ -449,7 +449,7 @@ class Wizard:
             self._button("Save language and continue", self._save_language)
             self._button("Back", self._back)
         elif self.page == "welcome":
-            self._label('This installer currently supports Arch Linux, CachyOS and Garuda only. Host software is installed with pacman.')
+            self._label('Automatic host-software installation supports Arch-based distributions with pacman, including Arch Linux, CachyOS, Garuda and EndeavourOS.')
             self._label('Show Embercade where your files are. Embercade will take care of the rest.')
             self._label('Your games, BIOS files and source files will be preserved.', muted=True)
             if self.state.configured:
@@ -487,17 +487,20 @@ class Wizard:
             self._button('Continue', self._save_shadps4)
             self._button('Back', self._back)
         elif self.page == "assets":
+            self._label('PSP and Xbox system files are optional for Embercade setup. Leave these fields empty or skip this step if you do not need these systems yet.')
+            self._label('Choose a complete system-specific folder. The general BIOS folder is not used automatically.', muted=True)
             self._label('PSP games require the complete official PPSSPP assets folder with ppge_atlas.zim, lang/ and flash0/. PSP games cannot start reliably without it.', muted=True)
-            self.ppsspp_entry = self._field('PSP assets (required for PSP games)', self.ppsspp, directory=True)
+            self.ppsspp_entry = self._field('PSP assets (optional for setup; required for PSP games)', self.ppsspp, directory=True)
             self._label('Xemu requires Complex_4627.bin, mcpx_1.0.bin and xbox_hdd.qcow2. Embercade creates working copies. Xemu generates its EEPROM on first start; an existing Embercade EEPROM is preserved.', muted=True)
             if self.state.xemu_prepared:
                 self._label('Xemu system files are already prepared. You do not need to select their source folder again.', muted=True)
             self.xemu_entry = self._field('Xbox system files (if not set up yet)', self.xemu, directory=True)
             self._label("Xbox language and region are stored in Embercade's own EEPROM. You can import or edit it on the Xbox page.", muted=True)
             self._button('Continue', self._save_assets)
+            self._button('Skip for now', self._skip_assets)
             self._button('Back', self._back)
         elif self.page == "host":
-            self._label('This installer currently supports Arch Linux, CachyOS and Garuda only. Host software is installed with pacman.')
+            self._label('Automatic host-software installation supports Arch-based distributions with pacman, including Arch Linux, CachyOS, Garuda and EndeavourOS.')
             self._label("Components for your current collection appear first. Other emulators are optional.", muted=True)
             if self.last_report:
                 for item in self.last_report["requirements"]:
@@ -789,9 +792,15 @@ class Wizard:
             validate_asset_sources(Path(ppsspp) if ppsspp else None,
                                    Path(xemu) if xemu else None)
         except FirstRunError as error:
-            self._message("System files missing", self._t("Check that the selected PSP or Xbox folder contains all the files listed on this page. Your existing files are preserved."), error=True)
+            self._message("System files missing", self._t("The selected PSP or Xbox folder is incomplete. Choose the matching system files, clear the field, or select Skip for now. Your existing configuration and files are preserved."), error=True)
             return
         self.ppsspp, self.xemu = ppsspp, xemu
+        self._apply(next_page="host")
+
+    def _skip_assets(self) -> None:
+        # Discard only unsubmitted source choices, never a saved configuration
+        # or Xemu's existing isolated working files.
+        self.ppsspp, self.xemu = self.state.ppsspp_assets, ""
         self._apply(next_page="host")
 
     def _message(self, title: str, body: str, *, error: bool = False) -> None:
@@ -960,7 +969,8 @@ class Wizard:
                 self.state.config_path, roms=self.roms, bios=self.bios,
                 exit_hotkey=self.hotkey, cores_from=self.cores,
                 providers_from=self.providers,
-                ppsspp_assets_from=self.ppsspp, xemu_files_from=self.xemu,
+                ppsspp_assets_from=(self.ppsspp if self.ppsspp != self.state.ppsspp_assets else ""),
+                xemu_files_from=self.xemu,
                 shadps4_from=self.shadps4,
             )
         except FirstRunError as error:
@@ -1086,7 +1096,10 @@ class Wizard:
             return
         distro = read_os_release()
         if not distro.supports_automatic_install:
-            self._message("Unsupported distribution", self._t('Detected system: {distribution}. Automatic host-software installation with pacman is supported only on Arch Linux, CachyOS and Garuda. No packages have been installed.', distribution=distro.name), error=True)
+            self._message("Unsupported distribution", self._t('Detected system: {distribution}. Automatic host-software installation requires an Arch-based distribution and pacman. No packages have been installed.', distribution=distro.name), error=True)
+            return
+        if not Pacman.is_available():
+            self._message("Pacman unavailable", PACMAN_UNAVAILABLE, error=True)
             return
         if not self._question("Install missing host software?",
                               "Embercade opens a terminal so you can review and confirm the packages. It closes after success. On failure, the output stays visible until you press Enter."):

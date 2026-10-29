@@ -1,5 +1,34 @@
 # Embercade Agent Instructions
 
+## Optional system files and Arch-family candidate — 29 October 2026
+
+The owner authorizes these two scoped installer changes and a separate PRIVATE
+test AppImage, superseding the older exact distro-name gate below. Recognize
+Arch ancestry using ID=arch or the exact arch token in ID_LIKE; require a live
+Pacman executable before queries/install actions, including execution of prepared
+plans. Keep existing package sources, optional existing paru/yay, missing-package
+reporting and explicit consent. Never enable/configure Chaotic-AUR or a helper.
+Non-Arch hosts remain ineligible even if Pacman happens to be installed.
+
+PSP/Xbox files remain system-specific requirements, optional for general setup.
+Both fields can be empty. Skip for now discards pending source choices only,
+preserving saved PSP configuration and isolated Xbox state. Invalid explicit
+sources must explain how to correct, clear or skip; never infer them from the
+shared BIOS folder. Retain validation for deliberate imports.
+
+Use isolated automatic tests and a separate candidate Stage/output. Preserve
+all existing/installed/public release images, the original private repository,
+normal profiles and collections. No host packages, driver changes, deployment,
+push, tag or release are authorized. Detection tests for EndeavourOS are not
+new distro installation/gameplay acceptance. The screenshot-session handoff
+remains independent; do not silently replace its published AppImage.
+
+The isolated regression passes 864 tests (859 passed/five expected opt-in
+skips), including German/English GTK flows and 52 structural routes. Runtime
+smoke and public-tree audit pass. Reuse the verified frontend/native resources;
+only a fresh candidate Stage/AppImage may be produced. Do not infer a real
+EndeavourOS install or new desktop/GPU acceptance from metadata/GUI tests.
+
 ## Public release authorization — 28 October 2026
 
 The owner now authorizes pushing the sanitized public stand and publishing

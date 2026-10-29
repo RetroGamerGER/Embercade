@@ -213,7 +213,7 @@ print(json.dumps({k:str(v) for k,v in result.items()} if result else None))
                  patch("embercade.host_requirements.inspect_appimage_provider", return_value=XeniaProviderStatus("OPTIONAL", "optional")), \
                  patch("embercade.host_requirements.inspect_xenia_provider", return_value=XeniaProviderStatus("OPTIONAL", "optional")), \
                  patch("embercade.host_requirements._probe_requirement", side_effect=lambda r, *_: RequirementStatus(r, r.key != "libretro-shaders", "fixture")):
-                assessment = assess_host(resolver=Mock(), core_resolver=Mock(), environment={}, rom_root=Path("/roms"), systems_config=Path("/systems"), default_config=Path("/defaults"), user_config=Path("/user"), distro=DistroInfo(distro, distro, ()))
+                assessment = assess_host(resolver=Mock(), core_resolver=Mock(), environment={}, rom_root=Path("/roms"), systems_config=Path("/systems"), default_config=Path("/defaults"), user_config=Path("/user"), distro=DistroInfo(distro, distro, ("arch",) if distro in {"garuda", "cachyos", "endeavouros"} else ()))
                 plan = create_bootstrap_plan(assessment, Mock(available=lambda _: True))
                 self.assertEqual(plan.packages, ("libretro-shaders-slang",))
                 requirement = next(s.requirement for s in assessment.requirements if s.requirement.key == "libretro-shaders")

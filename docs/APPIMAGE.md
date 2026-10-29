@@ -1,8 +1,17 @@
 # Private Embercade 1.0 AppImage
 
-The current installer supports **Arch Linux, CachyOS and Garuda only** and uses
-`pacman` for automatic host packages. Other distributions and unvalidated Arch
-derivatives are outside current installer support.
+The updated installer candidate accepts Arch-based distributions declared by
+`ID=arch` or an exact `arch` token in `ID_LIKE`, including EndeavourOS. Pacman
+must also be available before package queries or installation; existing package
+sources and optional existing AUR helpers are reused with explicit consent.
+No repositories or helpers are installed automatically. Non-Arch systems remain
+ineligible for automatic Pacman installation. This is a separate local test
+candidate; published 1.0 and earlier builds remain unchanged. Broader distro
+recognition does not establish new runtime, GPU or gameplay compatibility.
+
+PSP/Xbox source folders are optional for setup, with an explicit Skip for now
+button and preserved existing settings. Missing files still need attention before
+using those systems; the general BIOS folder is not silently selected as a source.
 
 **Embercade 1.0 feature freeze reached.** This packages the frozen Production
 runtime; it is not a new launch/setup/controller architecture. The classic

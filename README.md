@@ -98,7 +98,11 @@ These are screenshots from a real Embercade 1.0 installation — not mockups.
 
 **[Get Embercade 1.0 and matching sources](https://github.com/RetroGamerGER/Embercade/releases/tag/v1.0.0)**
 
-Embercade currently supports **x86-64 Linux**. The **installer** supports **Arch Linux, CachyOS and Garuda**. It uses `pacman` for optional host software and does not currently support Fedora, Debian, Ubuntu or other Arch derivatives automatically.
+Embercade targets **x86-64 Linux**. The updated installer candidate accepts **Arch-based distributions with pacman**, including Arch Linux, CachyOS, Garuda and EndeavourOS. It checks `ID` and `ID_LIKE` in `os-release`, uses only your configured package sources and asks before installing anything. Fedora, Debian and Ubuntu are not enabled for automatic Pacman installation.
+
+**Candidate status:** these installer changes are local test changes; the linked public 1.0 release has not been replaced. EndeavourOS detection is covered by automated tests, not a new full installation or gameplay acceptance.
+
+PSP and Xbox system files are optional during general setup. Leave their fields empty or choose **Skip for now**; add complete system-specific files later when you want to use those systems. Existing working settings are kept.
 
 The tested environments include **Garuda KDE Plasma/Wayland** and **CachyOS Handheld Edition with Steam/Gamescope**. This is not a guarantee of compatibility with every GPU, distribution or game.
 
