@@ -449,7 +449,7 @@ class Wizard:
             self._button("Save language and continue", self._save_language)
             self._button("Back", self._back)
         elif self.page == "welcome":
-            self._label('Automatic host-software installation supports Arch-based distributions with pacman, including Arch Linux, CachyOS, Garuda and EndeavourOS.')
+            self._label('Installer supports Arch-based Linux distributions.')
             self._label('Show Embercade where your files are. Embercade will take care of the rest.')
             self._label('Your games, BIOS files and source files will be preserved.', muted=True)
             if self.state.configured:
@@ -500,7 +500,7 @@ class Wizard:
             self._button('Skip for now', self._skip_assets)
             self._button('Back', self._back)
         elif self.page == "host":
-            self._label('Automatic host-software installation supports Arch-based distributions with pacman, including Arch Linux, CachyOS, Garuda and EndeavourOS.')
+            self._label('Installer supports Arch-based Linux distributions.')
             self._label("Components for your current collection appear first. Other emulators are optional.", muted=True)
             if self.last_report:
                 for item in self.last_report["requirements"]:

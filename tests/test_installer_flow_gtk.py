@@ -49,7 +49,7 @@ class BilingualInstallerFlowTests(unittest.TestCase):
                     self.assertEqual(wizard.page, expected)
                     visited.append(expected)
                     if expected in ('welcome','host'):
-                        notice='Automatic host-software installation supports Arch-based distributions with pacman, including Arch Linux, CachyOS, Garuda and EndeavourOS.'
+                        notice='Installer supports Arch-based Linux distributions.'
                         labels=[child.get_text() for child in wizard.root.get_children() if isinstance(child,self.Gtk.Label)]
                         self.assertIn(Translator(language)(notice),labels)
                 def begin():

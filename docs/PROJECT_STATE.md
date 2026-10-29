@@ -1,5 +1,29 @@
 # Embercade Project State
 
+## Short installer notice and source publication — 29 October 2026
+
+The owner approves publishing the current installer source changes after
+shortening the shared Welcome/Host notice to "Installer supports Arch-based
+Linux distributions." The central German translation uses the same scope;
+README, Getting Started and AppImage documentation use the identical English
+sentence. Distribution examples are omitted from the notice; tested environments
+remain separate compatibility evidence. Ancestry and Pacman availability checks,
+package sources, optional helpers and installation consent are unchanged.
+
+The owner confirmed Skip works after selecting the required ROM/BIOS folders.
+That accepts this isolated wizard interaction, not a new distro or full-system
+installation. Source publication is now authorized; the public 1.0 binary/tag,
+earlier builds, private history and normal profiles stay unchanged. No new
+release, release-asset replacement or host deployment is authorized.
+
+The wording follow-up passes all 36 targeted installer/language/GTK-flow tests
+and the public-tree audit; the earlier complete 864-test candidate regression
+remains the logic baseline. The development SSD was not mounted during this
+follow-up, so the additional runtime-smoke attempt reported unprepared inputs.
+No runtime source was changed, no host preparation was attempted and no new
+AppImage was built. Existing screenshot and release images retain their bytes;
+the shorter notice is in the source update for the next separately built image.
+
 ## Separate installer candidate — 29 October 2026
 
 The owner requests optional PSP/Xbox system-file setup and broader Arch-family

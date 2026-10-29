@@ -1,13 +1,13 @@
 # Private Embercade 1.0 AppImage
 
-The updated installer candidate accepts Arch-based distributions declared by
-`ID=arch` or an exact `arch` token in `ID_LIKE`, including EndeavourOS. Pacman
-must also be available before package queries or installation; existing package
-sources and optional existing AUR helpers are reused with explicit consent.
-No repositories or helpers are installed automatically. Non-Arch systems remain
-ineligible for automatic Pacman installation. This is a separate local test
-candidate; published 1.0 and earlier builds remain unchanged. Broader distro
-recognition does not establish new runtime, GPU or gameplay compatibility.
+**Installer supports Arch-based Linux distributions.**
+
+Automatic package installation recognizes `ID=arch` or an exact `arch` token in
+`ID_LIKE` and checks that Pacman is available. Existing repositories and optional
+existing AUR helpers are reused with explicit consent; no repositories or helpers
+are installed automatically. Non-Arch systems remain ineligible for automatic
+Pacman installation. Published 1.0 and earlier builds remain unchanged. Broader
+distro recognition does not establish new runtime, GPU or gameplay compatibility.
 
 PSP/Xbox source folders are optional for setup, with an explicit Skip for now
 button and preserved existing settings. Missing files still need attention before

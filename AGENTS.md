@@ -1,5 +1,19 @@
 # Embercade Agent Instructions
 
+## Installer wording and source push approved — 29 October 2026
+
+The owner now approves pushing the current optional-files/Arch-family installer
+work and the short notice/documentation update to public origin/main. This
+supersedes the earlier push hold for these source commits only. The uniform
+visible notice is "Installer supports Arch-based Linux distributions." with
+the German translation in the central catalog. Do not enumerate distributions
+in that notice; keep tested environments in compatibility information.
+Preserve actual ancestry/Pacman checks, existing repositories, optional helpers
+and explicit installation consent. Do not replace published v1.0.0 assets, move
+a release tag, expose private history or deploy to hosts. Earlier/private test
+images remain preserved; a separately named wording candidate may be prepared.
+Do not interrupt the owner's active screenshot installer merely for this update.
+
 ## Optional system files and Arch-family candidate — 29 October 2026
 
 The owner authorizes these two scoped installer changes and a separate PRIVATE

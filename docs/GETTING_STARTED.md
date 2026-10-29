@@ -7,12 +7,12 @@ user-local checkout installation.
 
 ## Before you start
 
-The separate updated installer candidate supports automatic host-software
-installation on **Arch-based distributions with pacman**, including Arch Linux,
-CachyOS, Garuda and EndeavourOS. It recognizes `ID=arch` or an exact `arch` token
-in `ID_LIKE` from `/etc/os-release`, then checks that Pacman is available. Merely
-having Pacman on Debian/Ubuntu or Fedora does not enable automatic installation.
-These candidate changes have not replaced the public 1.0 download linked above.
+**Installer supports Arch-based Linux distributions.**
+
+Automatic host-software installation uses Pacman. Embercade recognizes `ID=arch`
+or an exact `arch` token in `ID_LIKE` from `/etc/os-release` and checks that Pacman
+is available. These source updates have not replaced the public 1.0 download
+linked above.
 
 On an ineligible system or with Pacman missing, the graphical installer explains
 why before opening a terminal or requesting package confirmation. The CLI

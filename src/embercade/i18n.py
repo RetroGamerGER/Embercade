@@ -15,7 +15,7 @@ GERMAN = {
 
  'Unsupported distribution': 'Nicht unterstützte Distribution',
  'Detected system: {distribution}. Automatic host-software installation requires an Arch-based distribution and pacman. No packages have been installed.': 'Erkanntes System: {distribution}. Die automatische Host-Software-Installation benötigt eine Arch-basierte Distribution und pacman. Es wurden keine Pakete installiert.',
- 'Automatic host-software installation supports Arch-based distributions with pacman, including Arch Linux, CachyOS, Garuda and EndeavourOS.': 'Die automatische Host-Software-Installation unterstützt Arch-basierte Distributionen mit pacman, darunter Arch Linux, CachyOS, Garuda und EndeavourOS.',
+ 'Installer supports Arch-based Linux distributions.': 'Der Installer unterstützt Arch-basierte Linux-Distributionen.',
  "RetroArch shader collection": "RetroArch-Shader-Sammlung",
  "Library video playback": "Videowiedergabe der Spielebibliothek",
  'Opening the host installation…': 'Host-Installation wird geöffnet…',
